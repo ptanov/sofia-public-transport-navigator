@@ -94,7 +94,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	private String sortOrder(double lat, double lon) {
-		return String.format("(ABS(lat-%f)+ABS(lon-%f)) ASC",
+		return String.format("(ABS(lat-(%f))+ABS(lon-(%f))) ASC",
 				lat, lon);
 	}
 

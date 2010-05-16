@@ -39,7 +39,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     };
 
 	public StationsOverlay(Activity context, MapView map) {
-		super(boundCenterBottom(context.getResources().getDrawable(R.drawable.icon)));
+		super(boundCenterBottom(context.getResources().getDrawable(R.drawable.station)));
 		this.context = context;
 		populate();
 //		placeStations();

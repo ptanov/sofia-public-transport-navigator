@@ -5,6 +5,7 @@ import java.util.List;
 import android.location.Location;
 import android.os.Bundle;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
@@ -15,6 +16,8 @@ import eu.tanov.android.spt.util.MapHelper;
 
 public class LocationView extends MapActivity {
 
+	private static final GeoPoint LOCATION_SOFIA = new GeoPoint(42696827, 23320916);
+
 	private MyLocationOverlay myLocationOverlay;
 	private StationsOverlay stationsOverlay;
 
@@ -24,6 +27,8 @@ public class LocationView extends MapActivity {
 		setContentView(R.layout.main);
 		final MapView map = (MapView) findViewById(R.id.mapview1);
 		map.setBuiltInZoomControls(true);
+		//locate in Sofia, before adding onLocationChanged listener
+		map.getController().animateTo(LOCATION_SOFIA);
 
 		//add overlays
 		final List<Overlay> overlays = map.getOverlays();

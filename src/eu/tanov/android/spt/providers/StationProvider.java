@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2007 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package eu.tanov.android.spt.providers;
 
 import java.util.HashMap;
@@ -37,8 +21,8 @@ import android.util.Log;
  * Provides access to a database of stations. Each station has a code and coordinates
  */
 public class StationProvider extends ContentProvider {
-	private static final int DATABASE_VERSION = 3;
-	private static final String DEFAULT_STATIONS_LIMIT = "3";
+	private static final int DATABASE_VERSION = 12;
+	private static final String DEFAULT_STATIONS_LIMIT = "10";
 
     private static final int STATIONS = 1;
     private static final int STATION_ID = 2;
@@ -48,7 +32,6 @@ public class StationProvider extends ContentProvider {
 	public static final String AUTHORITY = "eu.tanov.android.StationProvider";
 	private static final String STATIONS_TABLE_NAME = "stations";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/"+STATIONS_TABLE_NAME);
-    
 
     private static final String DATABASE_NAME = "station.db";
 
@@ -64,6 +47,7 @@ public class StationProvider extends ContentProvider {
         public static final String LAT = "lat";
         public static final String LON = "lon";
         public static final String CODE = "code";
+        public static final String LABEL = "label";
 
         public static final String DEFAULT_SORT_ORDER = CODE +" DESC";
     }
@@ -77,6 +61,7 @@ public class StationProvider extends ContentProvider {
         DEFAULT_COLUMNS_PROJECTION.put(Station.CODE, Station.CODE);
         DEFAULT_COLUMNS_PROJECTION.put(Station.LAT, Station.LAT);
         DEFAULT_COLUMNS_PROJECTION.put(Station.LON, Station.LON);
+        DEFAULT_COLUMNS_PROJECTION.put(Station.LABEL, Station.LABEL);
 
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         URI_MATCHER.addURI(AUTHORITY, "stations", STATIONS);
@@ -84,9 +69,12 @@ public class StationProvider extends ContentProvider {
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
+    	
+        private final InitStations initializer;
 
-        public DatabaseHelper(Context context) {
+		public DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
+            this.initializer = new InitStations(context);
         }
 
         @Override
@@ -95,30 +83,16 @@ public class StationProvider extends ContentProvider {
                     + Station._ID + " INTEGER PRIMARY KEY,"
                     + Station.CODE + " INTEGER,"
                     + Station.LAT + " FLOAT,"
-                    + Station.LON + " FLOAT"
+                    + Station.LON + " FLOAT,"
+                    + Station.LABEL + " VARCHAR(50)"
                     + ");");
             
-            populateData(db);
+            try {
+				initializer.createStations(db, STATIONS_TABLE_NAME);
+			} catch (Exception e) {
+				Log.e(TAG, "failed to create stations", e);
+			}
         }
-
-		private static void addStation(SQLiteDatabase db, int code, double lat, double lon) {
-        	final ContentValues values = new ContentValues();
-        	values.put(Station.CODE, code);
-        	values.put(Station.LAT, lat);
-        	values.put(Station.LON, lon);
-        	db.insert(STATIONS_TABLE_NAME, Station.CODE, values);
-		}
-
-        private static void populateData(SQLiteDatabase db) {
-        	addStation(db, 1903, 42.6904559680764, 23.332074880599976);
-        	addStation(db, 1902, 42.689943376606394, 23.330883979797363);
-        	addStation(db,  927, 42.688334600520754, 23.329392671585083);
-        	addStation(db, 1700, 42.692190861662795, 23.33517551422119);
-        	addStation(db,  299, 42.688279396680365, 23.328673839569092);
-        	addStation(db,  300, 42.688003376742486, 23.32924246788025);
-        	addStation(db,  926, 42.68828728294628, 23.327772617340088);
-        	addStation(db, 1914, 42.686568053294145, 23.330165147781372);
-		}
 
 		@Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

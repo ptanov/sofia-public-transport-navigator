@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">Градски транспорт</string>
+<string name="vehicleType_bus">Автобус</string>
+<string name="vehicleType_tram">Трамвай</string>
+<string name="vehicleType_trolley">Тролейбус</string>
+<string name="buttonOk">ОК</string>
+<string name="error_retrieveEstimates">Грешка при извличане на информация за разписанието</string>
+</resources>

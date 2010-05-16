@@ -37,6 +37,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     	Station.CODE, // 1
     	Station.LAT, // 2
     	Station.LON, // 3
+    	Station.LABEL, // 4
     };
 
 	public StationsOverlay(Activity context, MapView map) {
@@ -57,10 +58,12 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
         if (cursor.moveToFirst()) {
             int codeColumn = cursor.getColumnIndex(Station.CODE); 
+            int labelColumn = cursor.getColumnIndex(Station.LABEL); 
             int latColumn = cursor.getColumnIndex(Station.LAT);
             int lonColumn = cursor.getColumnIndex(Station.LON);
 
             String code; 
+            String label; 
             double lat; 
             double lon; 
         
@@ -72,11 +75,12 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                 	continue;
                 }
                 addedStations.add(code);
+                label = cursor.getString(labelColumn);
                 lat = cursor.getDouble(latColumn);
                 lon = cursor.getDouble(lonColumn);
 
                 final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
-                stations.add(new OverlayItem(point, code, ""));
+                stations.add(new OverlayItem(point, code, label));
 
                 //FIXME remove:
                 map.getController().animateTo(point);
@@ -106,14 +110,17 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
 	@Override
 	protected boolean onTap(int stationIndex) {
-		final String stationCode = stations.get(stationIndex).getTitle();
+		final OverlayItem overlayItem = stations.get(stationIndex);
+		final String stationCode = overlayItem.getTitle();
 		
 		//TODO add Please wait dialog, new thread, etc...
 		
 		try {
 			final String response = Browser.queryStation(stationCode);
 			if (response == null) {
-				showErrorMessage();
+				final String stationLabel = overlayItem.getSnippet();
+				Log.e(TAG, "could not get estimations (null) for "+stationCode+". "+stationLabel);
+				showErrorMessage(stationLabel);
 				return true;
 			}
 			final DialogBuilder builder = new DialogBuilder(context);
@@ -122,16 +129,17 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 			final AlertDialog dialog = builder.create();
 			dialog.show();
 		} catch (Exception e) {
-			Log.e(TAG, "could not get estimations for "+stationCode, e);
+			final String stationLabel = overlayItem.getSnippet();
+			Log.e(TAG, "could not get estimations for "+stationCode+". "+stationLabel, e);
 			//being safe (Throwable!?) ;)
-			showErrorMessage();
+			showErrorMessage(stationLabel);
 		}
 		
 		return true;
 	}
 
-	private void showErrorMessage() {
-	   Toast.makeText(context, R.string.error_retrieveEstimates,
-	        Toast.LENGTH_LONG).show();
+	private void showErrorMessage(String stationLabel) {
+		final String message = context.getResources().getString(R.string.error_retrieveEstimates, stationLabel);
+		Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 	}
 }

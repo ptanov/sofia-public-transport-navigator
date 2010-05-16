@@ -6,7 +6,6 @@ import java.util.HashSet;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.database.Cursor;
-import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,14 +46,23 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 //		placeStations();
 	}
-	
+	@Override
+	public boolean onTap(GeoPoint p, MapView mapView) {
+		final boolean result = super.onTap(p, mapView);
+		if (!result) {
+			//only if not on overlay item
+			placeStations(MapHelper.toCoordinate(p.getLatitudeE6()),
+					MapHelper.toCoordinate(p.getLongitudeE6()));
+		}
+		return result;
+	}
 	/**
 	 * should be called if location changes
 	 * @param location new location
 	 */
-	public void placeStations(Location location) {
+	public void placeStations(double newLat, double newLon) {
         final Cursor cursor = context.managedQuery(StationProvider.CONTENT_URI, PROJECTION,
-        		null, null, sortOrder(location));
+        		null, null, sortOrder(newLat, newLon));
 
         if (cursor.moveToFirst()) {
             int codeColumn = cursor.getColumnIndex(Station.CODE); 
@@ -90,9 +98,9 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	    populate();
 	}
 
-	private String sortOrder(Location location) {
+	private String sortOrder(double lat, double lon) {
 		return String.format("(ABS(lat-%f)+ABS(lon-%f)) ASC",
-				location.getLatitude(), location.getLongitude());
+				lat, lon);
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class LocationView extends MapActivity {
 			public synchronized void onLocationChanged(Location location) {
 				super.onLocationChanged(location);
 
-				stationsOverlay.placeStations(location);
+				stationsOverlay.placeStations(location.getLatitude(), location.getLongitude());
 				//FIXME remove:
 				map.getController().animateTo(
 						MapHelper.createGeoPoint(location.getLatitude(),location.getLongitude()));

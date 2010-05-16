@@ -10,4 +10,7 @@ public class MapHelper {
 		final Double result = coordinate * 1E6;
 		return result.intValue();
 	}
+	public static double toCoordinate(int coordinateE6) {
+		return coordinateE6 / 1E6;
+	}
 }

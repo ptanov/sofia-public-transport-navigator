@@ -27,7 +27,6 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
 	private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
 	private final Activity context;
-	private final MapView map;
 	
 	private final HashSet<String> addedStations = new HashSet<String>();
 
@@ -42,7 +41,6 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	public StationsOverlay(Activity context, MapView map) {
 		super(boundCenterBottom(context.getResources().getDrawable(R.drawable.icon)));
 		this.context = context;
-		this.map = map;
 		populate();
 //		placeStations();
 	}
@@ -89,9 +87,6 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
                 final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
                 stations.add(new OverlayItem(point, code, label));
-
-                //FIXME remove:
-                map.getController().animateTo(point);
             } while (cursor.moveToNext());
         }
         

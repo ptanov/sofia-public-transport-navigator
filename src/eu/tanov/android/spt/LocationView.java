@@ -29,14 +29,20 @@ public class LocationView extends MapActivity {
 		final List<Overlay> overlays = map.getOverlays();
 		stationsOverlay = new StationsOverlay(this, map);
 		myLocationOverlay = new MyLocationOverlay(this, map) {
+			boolean firstLocation = true;
 			@Override
 			public synchronized void onLocationChanged(Location location) {
 				super.onLocationChanged(location);
 
 				stationsOverlay.placeStations(location.getLatitude(), location.getLongitude());
+				
 				//FIXME remove:
-				map.getController().animateTo(
-						MapHelper.createGeoPoint(location.getLatitude(),location.getLongitude()));
+				if (firstLocation) {
+					//do not move map every time, only first time
+					firstLocation = false;
+					map.getController().animateTo(
+							MapHelper.createGeoPoint(location.getLatitude(),location.getLongitude()));
+				}
 			}
 		};
 //		myLocationOverlay.runOnFirstFix(new Runnable() {

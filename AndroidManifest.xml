@@ -13,11 +13,11 @@
             </intent-filter>
         </activity>
 
-        <provider android:name="eu.tanov.android.spt.providers.StationProvider"
+        <provider android:name=".providers.StationProvider"
             android:authorities="eu.tanov.android.StationProvider" />
     </application>
     <!-- FIXME find real min version: -->
-    <uses-sdk android:minSdkVersion="7" />
+    <uses-sdk android:minSdkVersion="4" />
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>

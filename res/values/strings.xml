@@ -7,4 +7,7 @@
 <string name="vehicleType_trolley">Тролейбус</string>
 <string name="buttonOk">ОК</string>
 <string name="error_retrieveEstimates">Грешка при извличане на информация за разписанието за спирка %s</string>
+<string name="progressDialog_message_estimating">Извличане на времена на пристигане</string>
+<string name="progressDialog_message_stations">Търсене на спирки</string>
+<string name="progressDialog_title">Моля изчакайте</string>
 </resources>

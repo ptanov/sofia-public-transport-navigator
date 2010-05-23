@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.database.Cursor;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,6 +30,8 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private final Activity context;
 	
 	private final HashSet<String> addedStations = new HashSet<String>();
+	private ProgressDialog pd;
+	private final Handler uiHandler = new Handler();
 
     private static final String[] PROJECTION = new String[] {
     	Station._ID, // 0
@@ -37,7 +40,109 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     	Station.LON, // 3
     	Station.LABEL, // 4
     };
+    
+    public class StationsQuery extends Thread {
+    	
+    	private final double lon;
+		private final double lat;
 
+		public StationsQuery(double lat, double lon) {
+    		this.lat = lat;
+    		this.lon = lon;
+    	}
+		private String sortOrder(double lat, double lon) {
+			return String.format("(ABS(lat-(%f))+ABS(lon-(%f))) ASC",
+					lat, lon);
+		}
+
+    	@Override
+    	public void run() {
+    		try {
+    			final Cursor cursor = context.managedQuery(StationProvider.CONTENT_URI, PROJECTION,
+    					null, null, sortOrder(lat, lon));
+    			
+    			if (!cursor.moveToFirst()) {
+    				//no results
+    				return;
+    			}
+    			
+    			//iterate over result
+    			int codeColumn = cursor.getColumnIndex(Station.CODE); 
+    			int labelColumn = cursor.getColumnIndex(Station.LABEL); 
+    			int latColumn = cursor.getColumnIndex(Station.LAT);
+    			int lonColumn = cursor.getColumnIndex(Station.LON);
+    			
+    			String code; 
+    			String label; 
+    			double lat; 
+    			double lon; 
+    			
+    			do {
+    				// Get the field values
+    				code = cursor.getString(codeColumn);
+    				if (addedStations.contains(code)) {
+    					//already added
+    					continue;
+    				}
+    				addedStations.add(code);
+    				label = cursor.getString(labelColumn);
+    				lat = cursor.getDouble(latColumn);
+    				lon = cursor.getDouble(lonColumn);
+    				
+    				final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
+    				stations.add(new OverlayItem(point, code, label));
+    			} while (cursor.moveToNext());
+    			
+    			//in UI thread
+    			populateInUiThread();
+    		} finally {
+    			hideProgressDialog();
+    		}
+		}
+    }
+
+
+    public class EstimatesQuery extends Thread {
+    	
+    	private final OverlayItem overlayItem;
+
+		public EstimatesQuery(OverlayItem overlayItem) {
+			if (overlayItem == null) {
+				throw new IllegalArgumentException("overlay item is null");
+			}
+    		this.overlayItem = overlayItem;
+    	}
+    	@Override
+    	public void run() {
+    		final String stationCode = overlayItem.getTitle();
+    		
+    		try {
+    			final String response = Browser.queryStation(stationCode);
+    			if (response == null) {
+    				final String stationLabel = overlayItem.getSnippet();
+    				Log.e(TAG, "could not get estimations (null) for "+stationCode+". "+stationLabel);
+    				
+					showErrorMessage(stationLabel);
+    				return;
+    			}
+    			final DialogBuilder builder = new DialogBuilder(context);
+    			new Parser(response, builder).parse();
+    			
+				//in UI thread
+    			showEstimates(builder);
+    		} catch (Exception e) {
+    			final String stationLabel = overlayItem.getSnippet();
+    			Log.e(TAG, "could not get estimations for "+stationCode+". "+stationLabel, e);
+    			//being safe (Throwable!?) ;)
+    			showErrorMessage(stationLabel);
+    		} finally {
+    			hideProgressDialog();
+    		}
+    		
+    		return;
+    	}
+    
+    }
 	public StationsOverlay(Activity context, MapView map) {
 		super(boundCenterBottom(context.getResources().getDrawable(R.drawable.station)));
 		this.context = context;
@@ -59,45 +164,10 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	 * @param location new location
 	 */
 	public void placeStations(double newLat, double newLon) {
-        final Cursor cursor = context.managedQuery(StationProvider.CONTENT_URI, PROJECTION,
-        		null, null, sortOrder(newLat, newLon));
-
-        if (cursor.moveToFirst()) {
-            int codeColumn = cursor.getColumnIndex(Station.CODE); 
-            int labelColumn = cursor.getColumnIndex(Station.LABEL); 
-            int latColumn = cursor.getColumnIndex(Station.LAT);
-            int lonColumn = cursor.getColumnIndex(Station.LON);
-
-            String code; 
-            String label; 
-            double lat; 
-            double lon; 
-        
-            do {
-                // Get the field values
-                code = cursor.getString(codeColumn);
-                if (addedStations.contains(code)) {
-                	//already added
-                	continue;
-                }
-                addedStations.add(code);
-                label = cursor.getString(labelColumn);
-                lat = cursor.getDouble(latColumn);
-                lon = cursor.getDouble(lonColumn);
-
-                final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
-                stations.add(new OverlayItem(point, code, label));
-            } while (cursor.moveToNext());
-        }
-        
-	    populate();
+		final StationsQuery query = new StationsQuery(newLat, newLon);
+		createProgressDialog(R.string.progressDialog_message_stations);
+		query.start();
 	}
-
-	private String sortOrder(double lat, double lon) {
-		return String.format("(ABS(lat-(%f))+ABS(lon-(%f))) ASC",
-				lat, lon);
-	}
-
 	@Override
 	protected OverlayItem createItem(int i) {
 		return stations.get(i);
@@ -113,36 +183,64 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
 	@Override
 	protected boolean onTap(int stationIndex) {
-		final OverlayItem overlayItem = stations.get(stationIndex);
-		final String stationCode = overlayItem.getTitle();
-		
-		//TODO add Please wait dialog, new thread, etc...
-		
-		try {
-			final String response = Browser.queryStation(stationCode);
-			if (response == null) {
-				final String stationLabel = overlayItem.getSnippet();
-				Log.e(TAG, "could not get estimations (null) for "+stationCode+". "+stationLabel);
-				showErrorMessage(stationLabel);
-				return true;
-			}
-			final DialogBuilder builder = new DialogBuilder(context);
-			new Parser(response, builder).parse();
-			
-			final AlertDialog dialog = builder.create();
-			dialog.show();
-		} catch (Exception e) {
-			final String stationLabel = overlayItem.getSnippet();
-			Log.e(TAG, "could not get estimations for "+stationCode+". "+stationLabel, e);
-			//being safe (Throwable!?) ;)
-			showErrorMessage(stationLabel);
-		}
+		final EstimatesQuery query = new EstimatesQuery(stations.get(stationIndex));
+		createProgressDialog(R.string.progressDialog_message_estimating);
+		query.start();
 		
 		return true;
 	}
 
-	private void showErrorMessage(String stationLabel) {
-		final String message = context.getResources().getString(R.string.error_retrieveEstimates, stationLabel);
-		Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+	/**
+	 * runs in ui thread
+	 */
+	private void showErrorMessage(final String stationLabel) {
+		uiHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				final String message = context.getResources().getString(
+						R.string.error_retrieveEstimates, stationLabel);
+				Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+			}
+		});
 	}
+	
+	private void populateInUiThread() {
+		uiHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				populate();
+			}
+		});
+	}
+	
+	private void showEstimates(final DialogBuilder builder) {
+		uiHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				builder.create().show();
+			}
+		});
+	}
+
+
+	private void createProgressDialog(int message) {
+		pd = ProgressDialog.show(context,
+				context.getResources().getString(R.string.progressDialog_title),
+				context.getResources().getString(message),
+				true, false
+		);
+	}
+
+	private void hideProgressDialog() {
+		uiHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				if(pd!=null) {
+					pd.dismiss();
+					pd = null;
+				}
+			}
+		});
+	}
+
 }

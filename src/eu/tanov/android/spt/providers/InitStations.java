@@ -39,6 +39,8 @@ public class InitStations {
 		@Override
 		public void startElement(String uri, String name, String qName,
 				Attributes atts) {
+			//TODO create in compiled statement and in transaction
+
 			if (STATION.equals(name)) {
 				final String code = atts.getValue(CODE);
 				final String lat = atts.getValue(LAT);
@@ -67,7 +69,7 @@ public class InitStations {
 
 	public void createStations(SQLiteDatabase db, String tableName) throws IOException, SAXException {
 		initParser();
-		
+
 		final XMLReader xr = XMLReaderFactory.createXMLReader();
 		final Handler handler = new Handler(db, tableName);
 

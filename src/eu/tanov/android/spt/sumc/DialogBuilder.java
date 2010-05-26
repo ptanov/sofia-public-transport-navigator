@@ -52,7 +52,7 @@ public class DialogBuilder implements ParserListener {
 	public AlertDialog create() {
 		dialogBuilder.setMessage(contentBuilder.toString())
 		       .setCancelable(true)
-		       .setPositiveButton(context.getResources().getString(R.string.buttonOk),
+		       .setPositiveButton(R.string.buttonOk,
 		    		   new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 				                dialog.dismiss();

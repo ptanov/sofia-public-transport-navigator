@@ -13,6 +13,6 @@
 <string name="menu_about">За програмата</string>
 <string name="menu_settings">Настройки</string>
 <string name="aboutDialog_title">Информация за спирките на градския транспорт в София (версия 0.1)</string>
-<string name="aboutDialog_content">Данните за времената на пристигане се извличат от http://m.sumc.bg\nИзползвате информацията на собствена отговорност.</string>
-<string name="aboutDialog_warranty">Използвайте информацията на собствена отговорност.</string>
+<string name="aboutDialog_content">Данните за времената на пристигане се извличат от http://m.sumc.bg\n\n\nИзползвате програмата на собствена отговорност.</string>
+
 </resources>

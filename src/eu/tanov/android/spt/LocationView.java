@@ -3,6 +3,8 @@ package eu.tanov.android.spt;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
@@ -94,13 +96,21 @@ public class LocationView extends MapActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
-			
+			final Intent intent = new Intent(this, PreferencesActivity.class);
+			startActivity(intent);
 			break;
 		case R.id.menu_about:
 			new AlertDialog.Builder(this).
 				setTitle(R.string.aboutDialog_title).
 				setCancelable(true).
 				setMessage(R.string.aboutDialog_content).
+				setPositiveButton(R.string.buttonOk,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					}
+			    ).
 				create().show();
 			break;
 

@@ -2,8 +2,11 @@ package eu.tanov.android.spt;
 
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -80,6 +83,34 @@ public class LocationView extends MapActivity {
 		super.onPause();
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		getMenuInflater().inflate(R.layout.menu, menu);  
+	    return true;  
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			
+			break;
+		case R.id.menu_about:
+			new AlertDialog.Builder(this).
+				setTitle(R.string.aboutDialog_title).
+				setCancelable(true).
+				setMessage(R.string.aboutDialog_content).
+				create().show();
+			break;
+
+		default:
+			break;
+		}
+		// TODO Auto-generated method stub
+		return super.onOptionsItemSelected(item);
+	}
+	
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;

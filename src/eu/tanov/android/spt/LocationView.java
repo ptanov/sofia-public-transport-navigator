@@ -43,8 +43,7 @@ public class LocationView extends MapActivity {
 			@Override
 			public synchronized void onLocationChanged(Location location) {
 				super.onLocationChanged(location);
-
-				stationsOverlay.placeStations(location.getLatitude(), location.getLongitude());
+				stationsOverlay.placeStations(location.getLatitude(), location.getLongitude(), false);
 				
 				//FIXME remove:
 				if (firstLocation) {

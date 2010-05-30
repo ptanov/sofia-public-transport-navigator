@@ -155,7 +155,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		if (!result) {
 			//only if not on overlay item
 			placeStations(MapHelper.toCoordinate(p.getLatitudeE6()),
-					MapHelper.toCoordinate(p.getLongitudeE6()));
+					MapHelper.toCoordinate(p.getLongitudeE6()), true);
 		}
 		return result;
 	}
@@ -163,9 +163,11 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	 * should be called if location changes
 	 * @param location new location
 	 */
-	public void placeStations(double newLat, double newLon) {
+	public void placeStations(double newLat, double newLon, boolean showDialog) {
 		final StationsQuery query = new StationsQuery(newLat, newLon);
-		createProgressDialog(R.string.progressDialog_message_stations);
+		if (showDialog) {
+			createProgressDialog(R.string.progressDialog_message_stations);
+		}
 		query.start();
 	}
 	@Override

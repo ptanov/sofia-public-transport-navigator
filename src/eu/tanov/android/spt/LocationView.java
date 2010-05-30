@@ -5,8 +5,10 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -23,6 +25,17 @@ public class LocationView extends MapActivity {
 
 	private static final GeoPoint LOCATION_SOFIA = new GeoPoint(42696827, 23320916);
 
+	private static final int REQUEST_CODE_SETTINGS = 1;
+
+	private static final String PREFERENCE_KEY_MAP_SATELLITE = "mapSatellite";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE = false;
+
+	private static final String PREFERENCE_KEY_MAP_STREET_VALUE = "mapStreetView";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE = true;
+
+	private static final String PREFERENCE_KEY_MAP_TRAFFIC = "mapTraffic";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC = false;
+
 	private MyLocationOverlay myLocationOverlay;
 	private StationsOverlay stationsOverlay;
 
@@ -34,6 +47,7 @@ public class LocationView extends MapActivity {
 		map.setBuiltInZoomControls(true);
 		//locate in Sofia, before adding onLocationChanged listener
 		map.getController().animateTo(LOCATION_SOFIA);
+		setMapSettings();
 
 		//add overlays
 		final List<Overlay> overlays = map.getOverlays();
@@ -90,13 +104,33 @@ public class LocationView extends MapActivity {
 		getMenuInflater().inflate(R.layout.menu, menu);  
 	    return true;  
 	}
-	
+
+	private void setMapSettings() {
+		final MapView map = (MapView) findViewById(R.id.mapview1);
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		map.setSatellite(settings.getBoolean(PREFERENCE_KEY_MAP_SATELLITE, PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE));
+		map.setStreetView(settings.getBoolean(PREFERENCE_KEY_MAP_STREET_VALUE, PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE));
+		map.setTraffic(settings.getBoolean(PREFERENCE_KEY_MAP_TRAFFIC, PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC));
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case REQUEST_CODE_SETTINGS:
+			setMapSettings();
+			break;
+
+		default:
+			break;
+		}
+	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
 			final Intent intent = new Intent(this, PreferencesActivity.class);
-			startActivity(intent);
+			startActivityForResult(intent, REQUEST_CODE_SETTINGS);
 			break;
 		case R.id.menu_about:
 			new AlertDialog.Builder(this).

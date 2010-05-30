@@ -112,6 +112,20 @@ public class LocationView extends MapActivity {
 			    ).
 				create().show();
 			break;
+		case R.id.menu_help:
+			new AlertDialog.Builder(this).
+				setTitle(R.string.helpDialog_title).
+				setCancelable(true).
+				setMessage(R.string.helpDialog_content).
+				setPositiveButton(R.string.buttonOk,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					}
+			    ).
+				create().show();
+			break;
 
 		default:
 			break;

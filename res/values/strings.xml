@@ -12,7 +12,12 @@
 <string name="progressDialog_title">Моля изчакайте</string>
 <string name="menu_about">За програмата</string>
 <string name="menu_settings">Настройки</string>
+<string name="menu_help">Помощ</string>
+
 <string name="aboutDialog_title">Информация за спирките на градския транспорт в София (версия 0.1)</string>
 <string name="aboutDialog_content">Данните за времената на пристигане се извличат от http://m.sumc.bg\n\n\nИзползвате програмата на собствена отговорност.</string>
+
+<string name="helpDialog_title">Помощ</string>
+<string name="helpDialog_content">Изберете точка на картата или използвайте вашите текущи координати. След това изберете спирка и вижте времената на пристигане.</string>
 
 </resources>

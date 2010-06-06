@@ -22,7 +22,8 @@ import android.util.Log;
  */
 public class StationProvider extends ContentProvider {
 	private static final int DATABASE_VERSION = 1;
-	private static final String DEFAULT_STATIONS_LIMIT = "10";
+	public static final int STATIONS_LIMIT = 10;
+	private static final String STATIONS_LIMIT_STRING = Integer.toString(STATIONS_LIMIT);
 
     private static final int STATIONS = 1;
     private static final int STATION_ID = 2;
@@ -128,7 +129,7 @@ public class StationProvider extends ContentProvider {
 
         // Get the database and run the query
         final SQLiteDatabase db = dbHelper.getReadableDatabase();
-        final Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy, DEFAULT_STATIONS_LIMIT);
+        final Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy, STATIONS_LIMIT_STRING);
 
         // Tell the cursor what uri to watch, so it knows when its source data changes
         c.setNotificationUri(getContext().getContentResolver(), uri);

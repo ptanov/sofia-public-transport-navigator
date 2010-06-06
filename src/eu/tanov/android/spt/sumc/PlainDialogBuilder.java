@@ -7,7 +7,6 @@ import eu.tanov.android.spt.R;
 
 public class PlainDialogBuilder implements ParserListener {
 //TODO add server time in dialog
-//TODO add text "get from m.sumc.bg
 //TODO add option for remaining time, not estimate hour
 	
 	private final StringBuilder contentBuilder = new StringBuilder();

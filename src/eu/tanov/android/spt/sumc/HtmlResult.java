@@ -40,7 +40,6 @@ public class HtmlResult implements EstimatesResolver {
 
 		final int endOfBody = response.indexOf("<div class=\"footer\"");
 		//TODO add server time in dialog
-		//TODO add text "get from m.sumc.bg
 		//TODO add option for remaining time, not estimate hour
 			
 		return response.substring(startOfBody, endOfBody) +

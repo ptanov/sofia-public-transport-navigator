@@ -5,8 +5,10 @@ import java.util.HashSet;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,13 +20,16 @@ import com.google.android.maps.OverlayItem;
 import eu.tanov.android.spt.R;
 import eu.tanov.android.spt.providers.StationProvider;
 import eu.tanov.android.spt.providers.StationProvider.Station;
-import eu.tanov.android.spt.sumc.Browser;
-import eu.tanov.android.spt.sumc.DialogBuilder;
-import eu.tanov.android.spt.sumc.Parser;
+import eu.tanov.android.spt.sumc.EstimatesResolver;
+import eu.tanov.android.spt.sumc.HtmlResult;
+import eu.tanov.android.spt.sumc.PlainResult;
 import eu.tanov.android.spt.util.MapHelper;
 
 public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private static final String TAG = "StationsOverlay";
+
+	private static final String PREFERENCE_KEY_USE_HTML = "useHtml";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_USE_HTML = true;
 
 	private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
 	private final Activity context;
@@ -90,7 +95,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     				lon = cursor.getDouble(lonColumn);
     				
     				final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
-    				stations.add(new OverlayItem(point, code, label));
+					stations.add(new OverlayItem(point, code, label));
     			} while (cursor.moveToNext());
     			
     			//in UI thread
@@ -115,23 +120,21 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     	@Override
     	public void run() {
     		final String stationCode = overlayItem.getTitle();
+    		final String stationLabel = overlayItem.getSnippet();
     		
     		try {
-    			final String response = Browser.queryStation(stationCode);
-    			if (response == null) {
-    				final String stationLabel = overlayItem.getSnippet();
-    				Log.e(TAG, "could not get estimations (null) for "+stationCode+". "+stationLabel);
-    				
-					showErrorMessage(stationLabel);
-    				return;
+    			final EstimatesResolver resolver;
+    			if (useHtml()) {
+    				resolver = new HtmlResult(context, stationCode, stationLabel);
+    			} else {
+    				resolver = new PlainResult(context, stationCode, stationLabel);
     			}
-    			final DialogBuilder builder = new DialogBuilder(context);
-    			new Parser(response, builder).parse();
-    			
-				//in UI thread
-    			showEstimates(builder);
+    			//long operation
+    			resolver.query();
+
+    			//in UI thread
+    			showEstimates(resolver);
     		} catch (Exception e) {
-    			final String stationLabel = overlayItem.getSnippet();
     			Log.e(TAG, "could not get estimations for "+stationCode+". "+stationLabel, e);
     			//being safe (Throwable!?) ;)
     			showErrorMessage(stationLabel);
@@ -149,6 +152,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 //		placeStations();
 	}
+	
 	@Override
 	public boolean onTap(GeoPoint p, MapView mapView) {
 		final boolean result = super.onTap(p, mapView);
@@ -192,6 +196,10 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		return true;
 	}
 
+	private boolean useHtml() {
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+		return settings.getBoolean(PREFERENCE_KEY_USE_HTML, PREFERENCE_DEFAULT_VALUE_USE_HTML);
+	}
 	/**
 	 * runs in ui thread
 	 */
@@ -215,11 +223,11 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		});
 	}
 	
-	private void showEstimates(final DialogBuilder builder) {
+	private void showEstimates(final EstimatesResolver resolver) {
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				builder.create().show();
+				resolver.showResult();
 			}
 		});
 	}

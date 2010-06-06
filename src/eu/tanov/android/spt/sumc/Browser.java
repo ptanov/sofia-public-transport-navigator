@@ -22,14 +22,21 @@ public class Browser {
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.8 (KHTML, like Gecko) Chrome/5.0.396.0 Safari/533.8";
 	private static final String URL = "http://m.sumc.bg/vt";
 
-	public static String queryStation(String stationCode) {
+	private ResponseHandler<String> responseHandler;
+	
+	public void setResponseHandler(ResponseHandler<String> responseHandler) {
+		this.responseHandler = responseHandler;
+	}
+	public String queryStation(String stationCode) {
 		//XXX do not create client every time, use HTTP1.1 keep-alive!
         final HttpClient client = new DefaultHttpClient();
 
         final HttpPost request = createRequest(stationCode);
         
         // Create a response handler
-        final ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        if (responseHandler == null) {
+        	responseHandler = new BasicResponseHandler();
+        }
         String result = null;
 		try {
 			result = client.execute(request, responseHandler);

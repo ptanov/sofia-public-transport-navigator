@@ -1,19 +1,22 @@
 package eu.tanov.android.spt.sumc;
 
-import eu.tanov.android.spt.R;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import eu.tanov.android.spt.R;
 
-public class DialogBuilder implements ParserListener {
-
+public class PlainDialogBuilder implements ParserListener {
+//TODO add server time in dialog
+//TODO add text "get from m.sumc.bg
+//TODO add option for remaining time, not estimate hour
+	
 	private final StringBuilder contentBuilder = new StringBuilder();
-	private final Context context;
+	private final Activity context;
 	private final AlertDialog.Builder dialogBuilder;
 	
 	private String lastVehicleType = null;
 
-	public DialogBuilder(Context context) {
+	public PlainDialogBuilder(Activity context) {
 		this.context = context;
 
 		dialogBuilder = new AlertDialog.Builder(this.context);

@@ -30,4 +30,5 @@
 <string name="settings_advanced_title">Други настройки</string>
 <string name="settings_useHtml_title">HTML визуализация</string>
 <string name="settings_useHtml_summary">Какъвто е отговора от m.sumc.bg или проста информация</string>
+<string name="html_header">&lt;head&gt;&lt;style type=&quot;text/css&quot;&gt;body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} .busLineNumber {background-color:%23ea0000;}.tramLineNumber {background-color:%23feab10;}.trolleyLineNumber {background-color:%230066aa;}.busHeader {border-bottom:1px solid %23ea0000;}.tramHeader {border-bottom:1px solid %23feab10;}.trolleyHeader {border-bottom:1px solid %230066aa;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid %23ddd;}.errorText {color: %23f00;}&lt;/style&gt;&lt;/head&gt;</string>
 </resources>

@@ -3,6 +3,11 @@ package eu.tanov.android.spt.util;
 import com.google.android.maps.GeoPoint;
 
 public class MapHelper {
+	/**
+	 * utility class - no instance
+	 */
+	private MapHelper() {}
+
 	public static GeoPoint createGeoPoint(double lat, double lon) {
 		return new GeoPoint(toE6(lat), toE6(lon));
 	}

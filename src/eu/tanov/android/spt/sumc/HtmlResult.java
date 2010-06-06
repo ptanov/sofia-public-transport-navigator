@@ -78,7 +78,6 @@ public class HtmlResult implements EstimatesResolver {
 		final int startOfBody = response.indexOf(BODY_START);
 
 		final int endOfBody = response.indexOf(BODY_END);
-		//TODO add option for remaining time, not estimate hour
 
 		String body = response.substring(startOfBody, endOfBody);
 		if (showRemainingTime) {

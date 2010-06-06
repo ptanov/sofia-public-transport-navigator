@@ -10,7 +10,6 @@ import eu.tanov.android.spt.R;
 import eu.tanov.android.spt.util.TimeHelper;
 
 public class PlainDialogBuilder implements ParserListener {
-//TODO add option for remaining time, not estimate hour
 	
 	private final StringBuilder contentBuilder = new StringBuilder();
 	private final Activity context;

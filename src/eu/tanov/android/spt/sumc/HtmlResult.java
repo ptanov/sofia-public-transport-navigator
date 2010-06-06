@@ -7,11 +7,14 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.webkit.WebView;
 import eu.tanov.android.spt.R;
 import eu.tanov.android.spt.util.TimeHelper;
 
 public class HtmlResult implements EstimatesResolver {
+	private static final String TAG = "HtmlResult";
+
 	private static final String ENCODING = "utf-8";
 	private static final String MIME_TYPE = "text/html";
 
@@ -81,7 +84,11 @@ public class HtmlResult implements EstimatesResolver {
 
 		String body = response.substring(startOfBody, endOfBody);
 		if (showRemainingTime) {
-			body = convertToRemainingTime(body);
+			try {
+				body = convertToRemainingTime(body);
+			} catch (Exception e) {
+	            Log.e(TAG, "Error while converting body: "+body, e);
+			}
 		}
 		return body + context.getString(R.string.legal_sumc_html);
 	}

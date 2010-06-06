@@ -41,6 +41,8 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private ProgressDialog pd;
 	private final Handler uiHandler = new Handler();
 
+	private final MapView map;
+
     private static final String[] PROJECTION = new String[] {
     	Station._ID, // 0
     	Station.CODE, // 1
@@ -153,6 +155,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	public StationsOverlay(Activity context, MapView map) {
 		super(boundCenterBottom(context.getResources().getDrawable(R.drawable.station)));
 		this.context = context;
+		this.map = map;
 		populateFixed();
 	}
 	
@@ -163,6 +166,8 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private void populateFixed() {
 		setLastFocusedIndex(-1);
 		populate();
+		//redraw items
+		map.invalidate();
 	}
 	
 	@Override

@@ -25,8 +25,8 @@
 <string name="settings_mapStreetView_title">Показвай имена на улици</string>
 <string name="settings_mapTraffic_title">Показвай трафик</string>
 <string name="settings_mapTraffic_summary">*Към момента тази информация не е налична за София</string>
-<string name="settings_showTimeToArrive_title">Показвай час на пристигане</string>
-<string name="settings_showTimeToArrive_summary">(или оставащо време)</string>
+<string name="settings_showRemainingTime_title">Показвай час на пристигане</string>
+<string name="settings_showRemainingTime_summary">(или оставащо време)</string>
 <string name="settings_advanced_title">Други настройки</string>
 <string name="settings_useHtml_title">HTML визуализация</string>
 <string name="settings_useHtml_summary">Какъвто е отговора от m.sumc.bg или проста информация</string>
@@ -34,4 +34,6 @@
 <string name="legal_sumc_plain">\n(взети от m.sumc.bg)</string>
 <string name="legal_sumc_html">&lt;p class=&quot;legal&quot;&gt;(взети от m.sumc.bg)&lt;/p&gt;</string>
 <string name="format_estimates_dialog_title">%s: %s</string>
+<string name="remainingTime_format_onlyMinutes">~%dм.</string>
+<string name="remainingTime_format_minutesAndHours">~%dч.%dм.</string>
 </resources>

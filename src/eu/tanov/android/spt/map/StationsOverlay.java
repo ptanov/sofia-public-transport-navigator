@@ -31,6 +31,9 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private static final String PREFERENCE_KEY_USE_HTML = "useHtml";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_USE_HTML = true;
 
+	private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = false;
+
 	private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
 	private final Activity context;
 	
@@ -126,9 +129,9 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     		try {
     			final EstimatesResolver resolver;
     			if (useHtml()) {
-    				resolver = new HtmlResult(context, stationCode, stationLabel);
+    				resolver = new HtmlResult(context, stationCode, stationLabel, showRemainingTime());
     			} else {
-    				resolver = new PlainResult(context, stationCode, stationLabel);
+    				resolver = new PlainResult(context, stationCode, stationLabel, showRemainingTime());
     			}
     			//long operation
     			resolver.query();
@@ -205,6 +208,14 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private boolean useHtml() {
 		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 		return settings.getBoolean(PREFERENCE_KEY_USE_HTML, PREFERENCE_DEFAULT_VALUE_USE_HTML);
+	}
+	/**
+	 * or hour of arriving
+	 * @return
+	 */
+	private boolean showRemainingTime() {
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+		return settings.getBoolean(PREFERENCE_KEY_SHOW_REMAINING_TIME, PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME);
 	}
 	/**
 	 * runs in ui thread

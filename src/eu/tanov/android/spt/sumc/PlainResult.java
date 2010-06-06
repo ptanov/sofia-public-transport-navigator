@@ -8,11 +8,13 @@ public class PlainResult implements EstimatesResolver {
 	private final Activity context;
 
 	private PlainDialogBuilder builder;
+	private final boolean showRemainingTime;
 
-	public PlainResult(Activity context, String stationCode, String stationLabel) {
+	public PlainResult(Activity context, String stationCode, String stationLabel, boolean showRemainingTime) {
 		this.stationCode = stationCode;
 		this.stationLabel = stationLabel;
 		this.context = context;
+		this.showRemainingTime = showRemainingTime;
 	}
 
 	@Override
@@ -25,7 +27,7 @@ public class PlainResult implements EstimatesResolver {
 			throw new IllegalStateException("could not get estimations (null) for " + stationCode
 					+ ". " + stationLabel);
 		}
-		builder = new PlainDialogBuilder(context, responseHandler.getDate());
+		builder = new PlainDialogBuilder(context, responseHandler.getDate(), showRemainingTime);
 		new Parser(response, builder).parse();
 	}
 

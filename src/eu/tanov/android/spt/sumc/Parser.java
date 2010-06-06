@@ -1,5 +1,7 @@
 package eu.tanov.android.spt.sumc;
 
+import eu.tanov.android.spt.util.TimeHelper;
+
 
 public class Parser {
 
@@ -18,8 +20,6 @@ public class Parser {
 	private static final String BEGIN_ESTIMATED_TIME = "-";
 	private static final int BEGIN_ESTIMATED_TIME_LEN = BEGIN_ESTIMATED_TIME.length();
 	private static final String END_ESTIMATED_TIME = "</div>";
-	private static final String SEPARATOR_ESTIMATED_TIME = ",";
-	
 
 	private final String response;
 	private final ParserListener parserListener;
@@ -90,10 +90,6 @@ public class Parser {
 		parsedToPosition = end;
 
 		String result = response.substring(start, end).trim();
-		if (result.endsWith(SEPARATOR_ESTIMATED_TIME)) {
-			//sometimes estimated time has one more comma: 21:00,21:20,
-			result = result.substring(0, result.length() - 1);
-		}
-		return result;
+		return TimeHelper.removeTrailingSeparator(result);
 	}
 }

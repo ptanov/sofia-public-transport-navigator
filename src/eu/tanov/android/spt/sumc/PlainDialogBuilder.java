@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.text.format.DateFormat;
 import eu.tanov.android.spt.R;
+import eu.tanov.android.spt.util.TimeHelper;
 
 public class PlainDialogBuilder implements ParserListener {
 //TODO add option for remaining time, not estimate hour
@@ -17,11 +18,22 @@ public class PlainDialogBuilder implements ParserListener {
 	
 	private String lastVehicleType = null;
 	private final Date date;
+	private final boolean showRemainingTime;
+	private final String formatMinutesAndHours;
+	private final String formatOnlyMinutes;
 
-	public PlainDialogBuilder(Activity context, Date date) {
+	public PlainDialogBuilder(Activity context, Date date, boolean showRemainingTime) {
 		this.context = context;
 		this.date = date;
+		this.showRemainingTime = showRemainingTime;
 
+//		if (showRemainingTime) {
+			this.formatOnlyMinutes = this.context.getString(R.string.remainingTime_format_onlyMinutes);
+			this.formatMinutesAndHours = this.context.getString(R.string.remainingTime_format_minutesAndHours);
+//		} else {
+//			this.formatOnlyMinutes = null;
+//			this.formatMinutesAndHours = null;
+//		}
 		dialogBuilder = new AlertDialog.Builder(this.context);
 	}
 	
@@ -35,6 +47,10 @@ public class PlainDialogBuilder implements ParserListener {
 	}
 
 	public void setEstimatedTime(String vehicleType, String lineNumber, String estimatedTime) {
+		if (showRemainingTime) {
+			estimatedTime = TimeHelper.toRemainingTime(date, estimatedTime,
+					formatOnlyMinutes, formatMinutesAndHours);
+		}
 		if (!vehicleType.equals(lastVehicleType)) {
 			lastVehicleType = vehicleType;
 			contentBuilder.append(localizedVehicleType(vehicleType));

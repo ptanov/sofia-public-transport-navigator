@@ -21,9 +21,9 @@
 			android:defaultValue="false" android:summary="@string/settings_mapTraffic_summary" />
 
 
-		<CheckBoxPreference android:key="showTimeToArrive"
-			android:title="@string/settings_showTimeToArrive_title"
-			android:defaultValue="false" android:summary="@string/settings_showTimeToArrive_summary" />
+		<CheckBoxPreference android:key="showRemainingTime"
+			android:title="@string/settings_showRemainingTime_title"
+			android:defaultValue="false" android:summary="@string/settings_showRemainingTime_summary" />
 
 
 		<PreferenceScreen android:title="@string/settings_advanced_title">

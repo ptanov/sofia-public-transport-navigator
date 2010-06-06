@@ -10,9 +10,9 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import eu.tanov.android.spt.R;
 import eu.tanov.android.spt.providers.StationProvider.Station;
 
@@ -21,45 +21,49 @@ public class InitStations {
 	private final Context context;
 
 	private static class Handler extends DefaultHandler {
+		private static final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)";
+
 		private static final String STATION = "station";
 		
-		private static final String CODE = "code";
-		private static final String LABEL = "label";
-		private static final String LON = "lon";
-		private static final String LAT = "lat";
+		//xml structure:
+		private static final String CODE = Station.CODE;
+		private static final String LABEL = Station.LABEL;
+		private static final String LON = Station.LON;
+		private static final String LAT = Station.LAT;
 
-		private final SQLiteDatabase db;
 		private final String tableName;
+		
+		private final SQLiteStatement insertStatement;
 
 		public Handler(SQLiteDatabase db, String tableName) {
-			this.db = db;
 			this.tableName = tableName;
+			
+			insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
+					this.tableName, Station.CODE, Station.LAT,
+					Station.LON, Station.LABEL)
+			);
 		}
 
 		@Override
 		public void startElement(String uri, String name, String qName,
 				Attributes atts) {
-			//TODO create in compiled statement and in transaction
-
 			if (STATION.equals(name)) {
 				final String code = atts.getValue(CODE);
 				final String lat = atts.getValue(LAT);
 				final String lon = atts.getValue(LON);
 				final String label = atts.getValue(LABEL);
 
-				addStation(db, tableName, Integer.valueOf(code), Double
+				addStation(Integer.valueOf(code), Double
 						.valueOf(lat), Double.valueOf(lon), label);
 			}
 		}
 
-		private static void addStation(SQLiteDatabase db, String tableName,
-				Integer code, Double lat, Double lon, String label) {
-			final ContentValues values = new ContentValues();
-			values.put(Station.CODE, code);
-			values.put(Station.LAT, lat);
-			values.put(Station.LON, lon);
-			values.put(Station.LABEL, label);
-			db.insert(tableName, Station.CODE, values);
+		private void addStation(Integer code, Double lat, Double lon, String label) {
+			insertStatement.bindLong(1, code);
+			insertStatement.bindDouble(2, lat);
+			insertStatement.bindDouble(3, lon);
+			insertStatement.bindString(4, label);
+			insertStatement.executeInsert();
 		}
 	}
 
@@ -81,7 +85,14 @@ public class InitStations {
 
 		final InputSource inputSource = new InputSource(openRawResource);
 		inputSource.setEncoding(ENCODING);
-		xr.parse(inputSource);
+		
+		db.beginTransaction();
+		try {
+			xr.parse(inputSource);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
 	}
 
 	private void initParser() {

@@ -29,10 +29,15 @@ public class TimeHelper {
 		for (String time : times) {
 			try {
 				result.append(toRemainingTime(now, time, formatOnlyMinutes, formatMinutesAndHours, calendar));
+				result.append(SEPARATOR_ESTIMATED_TIME);
 			} catch (Exception e) {
 				Log.e(TAG, "could not convert " + time, e);
 				result.append(time);
 			}
+		}
+		if (result.length()>0) {
+			//remove last comma
+			result.deleteCharAt(result.length() - 1);
 		}
 		
 		return result.toString();

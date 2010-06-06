@@ -53,6 +53,7 @@ public class PlainDialogBuilder implements ParserListener {
 	}
 
 	public AlertDialog create() {
+		contentBuilder.append(context.getString(R.string.legal_sumc_plain));
 		dialogBuilder.setMessage(contentBuilder.toString())
 		       .setCancelable(true)
 		       .setPositiveButton(R.string.buttonOk,

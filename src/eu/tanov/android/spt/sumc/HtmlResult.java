@@ -43,7 +43,8 @@ public class HtmlResult implements EstimatesResolver {
 		//TODO add text "get from m.sumc.bg
 		//TODO add option for remaining time, not estimate hour
 			
-		return response.substring(startOfBody, endOfBody);
+		return response.substring(startOfBody, endOfBody) +
+			context.getString(R.string.legal_sumc_html);
 	}
 
 	@Override

@@ -59,7 +59,6 @@ public class LocationView extends MapActivity {
 				super.onLocationChanged(location);
 				stationsOverlay.placeStations(location.getLatitude(), location.getLongitude(), false);
 				
-				//FIXME remove:
 				if (firstLocation) {
 					//do not move map every time, only first time
 					firstLocation = false;
@@ -164,7 +163,6 @@ public class LocationView extends MapActivity {
 		default:
 			break;
 		}
-		// TODO Auto-generated method stub
 		return super.onOptionsItemSelected(item);
 	}
 	

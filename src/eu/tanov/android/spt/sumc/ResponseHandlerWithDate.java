@@ -32,6 +32,9 @@ public class ResponseHandlerWithDate extends BasicResponseHandler {
 		return super.handleResponse(response);
 	}
 	
+	/**
+	 * @return always not null
+	 */
 	public Date getDate() {
 		return date;
 	}

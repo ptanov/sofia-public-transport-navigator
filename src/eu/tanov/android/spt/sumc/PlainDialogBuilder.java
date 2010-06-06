@@ -1,12 +1,14 @@
 package eu.tanov.android.spt.sumc;
 
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.text.format.DateFormat;
 import eu.tanov.android.spt.R;
 
 public class PlainDialogBuilder implements ParserListener {
-//TODO add server time in dialog
 //TODO add option for remaining time, not estimate hour
 	
 	private final StringBuilder contentBuilder = new StringBuilder();
@@ -14,15 +16,22 @@ public class PlainDialogBuilder implements ParserListener {
 	private final AlertDialog.Builder dialogBuilder;
 	
 	private String lastVehicleType = null;
+	private final Date date;
 
-	public PlainDialogBuilder(Activity context) {
+	public PlainDialogBuilder(Activity context, Date date) {
 		this.context = context;
+		this.date = date;
 
 		dialogBuilder = new AlertDialog.Builder(this.context);
 	}
 	
 	public void setStationName(String stationName) {
-		dialogBuilder.setTitle(stationName);
+		dialogBuilder.setTitle(
+				context.getString(R.string.format_estimates_dialog_title, 
+				DateFormat.getTimeFormat(context).format(date),
+				stationName
+			)
+		);
 	}
 
 	public void setEstimatedTime(String vehicleType, String lineNumber, String estimatedTime) {

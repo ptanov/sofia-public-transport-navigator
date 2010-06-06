@@ -81,6 +81,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     			String label; 
     			double lat; 
     			double lon; 
+    			final ArrayList<OverlayItem> newStations = new ArrayList<OverlayItem>(StationProvider.STATIONS_LIMIT);
     			
     			do {
     				// Get the field values
@@ -95,11 +96,11 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     				lon = cursor.getDouble(lonColumn);
     				
     				final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
-					stations.add(new OverlayItem(point, code, label));
+					newStations.add(new OverlayItem(point, code, label));
     			} while (cursor.moveToNext());
     			
     			//in UI thread
-    			populateInUiThread();
+    			populateInUiThread(newStations);
     		} finally {
     			hideProgressDialog();
     		}
@@ -149,8 +150,16 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	public StationsOverlay(Activity context, MapView map) {
 		super(boundCenterBottom(context.getResources().getDrawable(R.drawable.station)));
 		this.context = context;
+		populateFixed();
+	}
+	
+	/**
+	 * from http://groups.google.com/group/android-developers/browse_thread/thread/38b11314e34714c3
+	 * http://developmentality.wordpress.com/2009/10/19/android-itemizedoverlay-arrayindexoutofboundsexception-nullpointerexception-workarounds/
+	 */
+	private void populateFixed() {
+		setLastFocusedIndex(-1);
 		populate();
-//		placeStations();
 	}
 	
 	@Override
@@ -178,10 +187,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	protected OverlayItem createItem(int i) {
 		return stations.get(i);
 	}
-//	public void addOverlay(OverlayItem overlay) {
-//	    stations.add(overlay);
-//	    populate();
-//	}
+
 	@Override
 	public int size() {
 		return stations.size();
@@ -214,11 +220,12 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		});
 	}
 	
-	private void populateInUiThread() {
+	private void populateInUiThread(final ArrayList<OverlayItem> newStations) {
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				populate();
+				stations.addAll(newStations);
+				populateFixed();
 			}
 		});
 	}

@@ -1,4 +1,4 @@
-package eu.tanov.android.spt.map;
+package eu.tanov.android.sptn.map;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,13 +17,13 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
-import eu.tanov.android.spt.R;
-import eu.tanov.android.spt.providers.StationProvider;
-import eu.tanov.android.spt.providers.StationProvider.Station;
-import eu.tanov.android.spt.sumc.EstimatesResolver;
-import eu.tanov.android.spt.sumc.HtmlResult;
-import eu.tanov.android.spt.sumc.PlainResult;
-import eu.tanov.android.spt.util.MapHelper;
+import eu.tanov.android.sptn.R;
+import eu.tanov.android.sptn.providers.StationProvider;
+import eu.tanov.android.sptn.providers.StationProvider.Station;
+import eu.tanov.android.sptn.sumc.EstimatesResolver;
+import eu.tanov.android.sptn.sumc.HtmlResult;
+import eu.tanov.android.sptn.sumc.PlainResult;
+import eu.tanov.android.sptn.util.MapHelper;
 
 public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private static final String TAG = "StationsOverlay";

@@ -1,4 +1,4 @@
-package eu.tanov.android.spt;
+package eu.tanov.android.sptn;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-import eu.tanov.android.spt.map.StationsOverlay;
-import eu.tanov.android.spt.util.MapHelper;
+import eu.tanov.android.sptn.map.StationsOverlay;
+import eu.tanov.android.sptn.util.MapHelper;
 
 public class LocationView extends MapActivity {
 

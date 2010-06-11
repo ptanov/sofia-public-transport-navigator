@@ -1,6 +1,6 @@
-package eu.tanov.android.spt.sumc;
+package eu.tanov.android.sptn.sumc;
 
-import eu.tanov.android.spt.util.TimeHelper;
+import eu.tanov.android.sptn.util.TimeHelper;
 
 
 public class Parser {

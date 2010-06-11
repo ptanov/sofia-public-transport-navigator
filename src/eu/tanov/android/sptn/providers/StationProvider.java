@@ -1,4 +1,4 @@
-package eu.tanov.android.spt.providers;
+package eu.tanov.android.sptn.providers;
 
 import java.util.HashMap;
 

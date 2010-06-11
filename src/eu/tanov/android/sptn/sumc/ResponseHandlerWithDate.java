@@ -1,4 +1,4 @@
-package eu.tanov.android.spt.sumc;
+package eu.tanov.android.sptn.sumc;
 
 import java.io.IOException;
 import java.util.Date;

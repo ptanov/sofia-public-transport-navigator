@@ -1,4 +1,4 @@
-package eu.tanov.android.spt.sumc;
+package eu.tanov.android.sptn.sumc;
 
 import java.util.Date;
 
@@ -9,8 +9,8 @@ import android.content.DialogInterface;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.webkit.WebView;
-import eu.tanov.android.spt.R;
-import eu.tanov.android.spt.util.TimeHelper;
+import eu.tanov.android.sptn.R;
+import eu.tanov.android.sptn.util.TimeHelper;
 
 public class HtmlResult implements EstimatesResolver {
 	private static final String TAG = "HtmlResult";

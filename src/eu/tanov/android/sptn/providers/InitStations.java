@@ -1,4 +1,4 @@
-package eu.tanov.android.spt.providers;
+package eu.tanov.android.sptn.providers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,8 +13,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
-import eu.tanov.android.spt.R;
-import eu.tanov.android.spt.providers.StationProvider.Station;
+import eu.tanov.android.sptn.R;
+import eu.tanov.android.sptn.providers.StationProvider.Station;
 
 public class InitStations {
 	private static final String ENCODING = "UTF8";

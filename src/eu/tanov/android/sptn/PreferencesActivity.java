@@ -1,4 +1,4 @@
-package eu.tanov.android.spt;
+package eu.tanov.android.sptn;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

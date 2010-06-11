@@ -1,4 +1,4 @@
-package eu.tanov.android.spt.util;
+package eu.tanov.android.sptn.util;
 
 import com.google.android.maps.GeoPoint;
 

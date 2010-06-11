@@ -1,4 +1,4 @@
-package eu.tanov.android.spt.util;
+package eu.tanov.android.sptn.util;
 
 import java.util.Calendar;
 import java.util.Date;

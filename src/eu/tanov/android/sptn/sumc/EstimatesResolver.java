@@ -1,4 +1,4 @@
-package eu.tanov.android.spt.sumc;
+package eu.tanov.android.sptn.sumc;
 
 public interface EstimatesResolver {
 

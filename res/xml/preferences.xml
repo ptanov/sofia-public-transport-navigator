@@ -23,7 +23,7 @@
 
 		<CheckBoxPreference android:key="showRemainingTime"
 			android:title="@string/settings_showRemainingTime_title"
-			android:defaultValue="false" android:summary="@string/settings_showRemainingTime_summary" />
+			android:defaultValue="true" android:summary="@string/settings_showRemainingTime_summary" />
 
 
 		<PreferenceScreen android:title="@string/settings_advanced_title">

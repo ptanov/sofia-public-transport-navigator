@@ -32,7 +32,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private static final boolean PREFERENCE_DEFAULT_VALUE_USE_HTML = true;
 
 	private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
-	private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = false;
+	private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
 
 	private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
 	private final Activity context;

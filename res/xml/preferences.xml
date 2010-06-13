@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-	<PreferenceCategory android:title="@string/settings_category_main">
+	<PreferenceCategory android:title="@string/settings_category_map">
 		<!--
 			<ListPreference android:title="@string/settings_mapType_title"
 			android:summary="@string/settings_mapType_summary"
@@ -19,7 +18,8 @@
 		<CheckBoxPreference android:key="mapTraffic"
 			android:title="@string/settings_mapTraffic_title"
 			android:defaultValue="false" android:summary="@string/settings_mapTraffic_summary" />
-
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/settings_category_stations_info">
 
 		<CheckBoxPreference android:key="showRemainingTime"
 			android:title="@string/settings_showRemainingTime_title"

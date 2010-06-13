@@ -20,12 +20,12 @@
 <string name="helpDialog_title">Помощ</string>
 <string name="helpDialog_content">Изберете точка на картата или използвайте вашите текущи координати. След това изберете спирка и вижте времената на пристигане.</string>
 
-<string name="settings_category_main">Основни</string>
-<string name="settings_mapSatellite_title">Сателитно изображение</string>
-<string name="settings_mapStreetView_title">Показвай имена на улици</string>
-<string name="settings_mapTraffic_title">Показвай трафик</string>
+<string name="settings_category_stations_info">Информация за спирки</string>
+<string name="settings_mapSatellite_title">Сателитна карта</string>
+<string name="settings_mapStreetView_title">Улици</string>
+<string name="settings_mapTraffic_title">Трафик</string>
 <string name="settings_mapTraffic_summary">*Към момента тази информация не е налична за София</string>
-<string name="settings_showRemainingTime_title">Показвай оставащо време</string>
+<string name="settings_showRemainingTime_title">Оставащо време</string>
 <string name="settings_showRemainingTime_summary">(или час на пристигане)</string>
 <string name="settings_advanced_title">Други настройки</string>
 <string name="settings_useHtml_title">HTML визуализация</string>
@@ -36,4 +36,5 @@
 <string name="format_estimates_dialog_title">%s: %s</string>
 <string name="remainingTime_format_onlyMinutes">~%dм.</string>
 <string name="remainingTime_format_minutesAndHours">~%dч.%dм.</string>
+<string name="settings_category_map">Карта</string>
 </resources>

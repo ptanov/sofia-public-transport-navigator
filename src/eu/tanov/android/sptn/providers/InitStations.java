@@ -23,13 +23,14 @@ public class InitStations {
 	private static class Handler extends DefaultHandler {
 		private static final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)";
 
-		private static final String STATION = "station";
+		//FIXME rename to "busStop"
+		private static final String ELEMENT_NAME_BUS_STATION = "station";
 		
 		//xml structure:
-		private static final String CODE = Station.CODE;
-		private static final String LABEL = Station.LABEL;
-		private static final String LON = Station.LON;
-		private static final String LAT = Station.LAT;
+		private static final String ATTRIBUTE_NAME_CODE = Station.CODE;
+		private static final String ATTRIBUTE_NAME_LABEL = Station.LABEL;
+		private static final String ATTRIBUTE_NAME_LON = Station.LON;
+		private static final String ATTRIBUTE_NAME_LAT = Station.LAT;
 
 		private final String tableName;
 		
@@ -47,11 +48,11 @@ public class InitStations {
 		@Override
 		public void startElement(String uri, String name, String qName,
 				Attributes atts) {
-			if (STATION.equals(name)) {
-				final String code = atts.getValue(CODE);
-				final String lat = atts.getValue(LAT);
-				final String lon = atts.getValue(LON);
-				final String label = atts.getValue(LABEL);
+			if (ELEMENT_NAME_BUS_STATION.equals(name)) {
+				final String code = atts.getValue(ATTRIBUTE_NAME_CODE);
+				final String lat = atts.getValue(ATTRIBUTE_NAME_LAT);
+				final String lon = atts.getValue(ATTRIBUTE_NAME_LON);
+				final String label = atts.getValue(ATTRIBUTE_NAME_LABEL);
 
 				addStation(Integer.valueOf(code), Double
 						.valueOf(lat), Double.valueOf(lon), label);

@@ -75,8 +75,8 @@ public class LocationView extends MapActivity {
 //				System.out.println("sdfasdf sadf saf"+myLocationOverlay.getLastFix());
 //			}
 //		});
-		overlays.add(stationsOverlay);
 		overlays.add(myLocationOverlay);
+		overlays.add(stationsOverlay);
 
 		map.getController().setZoom(16);
 	}

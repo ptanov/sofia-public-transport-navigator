@@ -20,11 +20,13 @@ public class PlainDialogBuilder implements ParserListener {
 	private final boolean showRemainingTime;
 	private final String formatMinutesAndHours;
 	private final String formatOnlyMinutes;
+	private final String stationCode;
 
-	public PlainDialogBuilder(Activity context, Date date, boolean showRemainingTime) {
+	public PlainDialogBuilder(Activity context, Date date, boolean showRemainingTime, String stationCode) {
 		this.context = context;
 		this.date = date;
 		this.showRemainingTime = showRemainingTime;
+		this.stationCode = stationCode;
 
 //		if (showRemainingTime) {
 			this.formatOnlyMinutes = this.context.getString(R.string.remainingTime_format_onlyMinutes);
@@ -40,7 +42,7 @@ public class PlainDialogBuilder implements ParserListener {
 		dialogBuilder.setTitle(
 				context.getString(R.string.format_estimates_dialog_title, 
 				DateFormat.getTimeFormat(context).format(date),
-				stationName
+				stationName, stationCode
 			)
 		);
 	}

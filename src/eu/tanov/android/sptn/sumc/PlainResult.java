@@ -27,7 +27,7 @@ public class PlainResult implements EstimatesResolver {
 			throw new IllegalStateException("could not get estimations (null) for " + stationCode
 					+ ". " + stationLabel);
 		}
-		builder = new PlainDialogBuilder(context, responseHandler.getDate(), showRemainingTime);
+		builder = new PlainDialogBuilder(context, responseHandler.getDate(), showRemainingTime, stationCode);
 		new Parser(response, builder).parse();
 	}
 

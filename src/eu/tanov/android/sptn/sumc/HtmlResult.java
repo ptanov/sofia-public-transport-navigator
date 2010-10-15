@@ -135,7 +135,7 @@ public class HtmlResult implements EstimatesResolver {
 		dialogBuilder.setTitle(
 				context.getString(R.string.format_estimates_dialog_title, 
 						DateFormat.getTimeFormat(context).format(date),
-						stationLabel
+						stationLabel, stationCode
 				)
 		);
 

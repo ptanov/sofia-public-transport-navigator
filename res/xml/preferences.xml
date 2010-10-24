@@ -18,6 +18,9 @@
 		<CheckBoxPreference android:key="mapTraffic"
 			android:title="@string/settings_mapTraffic_title"
 			android:defaultValue="false" android:summary="@string/settings_mapTraffic_summary" />
+		<CheckBoxPreference android:key="mapCompass"
+			android:title="@string/settings_mapCompass_title"
+			android:defaultValue="true" android:summary="@string/settings_mapCompass_summary" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_stations_info">
 

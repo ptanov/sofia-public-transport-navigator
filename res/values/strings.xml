@@ -37,4 +37,6 @@
 <string name="remainingTime_format_onlyMinutes">~%dм.</string>
 <string name="remainingTime_format_minutesAndHours">~%dч.%dм.</string>
 <string name="settings_category_map">Карта</string>
+<string name="settings_mapCompass_title">Компас</string>
+<string name="settings_mapCompass_summary">Покажи стрелка с посока на гледане</string>
 </resources>

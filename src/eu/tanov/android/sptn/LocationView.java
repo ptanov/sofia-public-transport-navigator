@@ -36,6 +36,9 @@ public class LocationView extends MapActivity {
 	private static final String PREFERENCE_KEY_MAP_TRAFFIC = "mapTraffic";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC = false;
 
+	private static final String PREFERENCE_KEY_MAP_COMPASS = "mapCompass";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_COMPASS = true;
+
 	private MyLocationOverlay myLocationOverlay;
 	private StationsOverlay stationsOverlay;
 
@@ -67,6 +70,7 @@ public class LocationView extends MapActivity {
 				}
 			}
 		};
+		setCompassSettings();
 //		myLocationOverlay.runOnFirstFix(new Runnable() {
 //			
 //			@Override
@@ -85,6 +89,7 @@ public class LocationView extends MapActivity {
 	protected void onResume() {
 		if (myLocationOverlay != null) {
 			myLocationOverlay.enableMyLocation();
+			setCompassSettings();
 		}
 		super.onResume();
 	}
@@ -93,6 +98,7 @@ public class LocationView extends MapActivity {
 	protected void onPause() {
 		if (myLocationOverlay != null) {
 			myLocationOverlay.disableMyLocation();
+			myLocationOverlay.disableCompass();
 		}
 		super.onPause();
 	}
@@ -110,6 +116,23 @@ public class LocationView extends MapActivity {
 		map.setTraffic(settings.getBoolean(PREFERENCE_KEY_MAP_TRAFFIC, PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC));
 		map.setSatellite(settings.getBoolean(PREFERENCE_KEY_MAP_SATELLITE, PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE));
 		map.setStreetView(settings.getBoolean(PREFERENCE_KEY_MAP_STREET_VALUE, PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE));
+		
+		setCompassSettings(settings);
+	}
+	private void setCompassSettings() {
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		setCompassSettings(settings);
+	}
+	private void setCompassSettings(SharedPreferences settings) {
+		if (myLocationOverlay == null) {
+			return;
+		}
+		
+		if (settings.getBoolean(PREFERENCE_KEY_MAP_COMPASS, PREFERENCE_DEFAULT_VALUE_MAP_COMPASS)) {
+			myLocationOverlay.enableCompass();
+		} else {
+			myLocationOverlay.disableCompass();
+		}
 	}
 
 	@Override

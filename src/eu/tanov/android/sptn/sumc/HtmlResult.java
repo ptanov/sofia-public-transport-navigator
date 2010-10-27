@@ -13,19 +13,24 @@ import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.util.TimeHelper;
 
 public class HtmlResult implements EstimatesResolver {
+
+	private static final String REPLACEMENT_LINK_BEFORE = "<a href=\"/schedules/vehicle?";
+	private static final String REPLACEMENT_LINK_AFTER = "<a href=\"http://m.sumc.bg/schedules/vehicle?";
+
 	private static final String TAG = "HtmlResult";
 
 	private static final String ENCODING = "utf-8";
 	private static final String MIME_TYPE = "text/html";
 
-	private static final String BODY_START = "<p class=\"type";
-	private static final String BODY_END = "<div class=\"footer\"";
+	private static final String BODY_START = "<div class=\"arrivals\">";
+	//XXX this is not good end mark, but it is quick fix!
+	private static final String BODY_END = "\n</div>";
 	
 	private static final String HTML_START = "<html>";
 	private static final String HTML_END = "</html>";
 
-	private static final char REMAINING_TIME_START = '-';
-	private static final int REMAINING_TIME_START_LENGTH = String.valueOf(REMAINING_TIME_START).length();
+	private static final String REMAINING_TIME_START = "&nbsp;-&nbsp;";
+	private static final int REMAINING_TIME_START_LENGTH = REMAINING_TIME_START.length();
 
     private static final char REMAINING_TIME_END = '<';
 
@@ -80,9 +85,10 @@ public class HtmlResult implements EstimatesResolver {
 	private String createBody(String response) {
 		final int startOfBody = response.indexOf(BODY_START);
 
-		final int endOfBody = response.indexOf(BODY_END);
+		final int endOfBody = response.indexOf(BODY_END, startOfBody);
 
-		String body = response.substring(startOfBody, endOfBody);
+		String body = response.substring(startOfBody, endOfBody+BODY_END.length());
+		body = convertLinks(body);
 		if (showRemainingTime) {
 			try {
 				body = convertToRemainingTime(body);
@@ -91,6 +97,10 @@ public class HtmlResult implements EstimatesResolver {
 			}
 		}
 		return body + context.getString(R.string.legal_sumc_html);
+	}
+
+	private String convertLinks(String body) {
+		return body.replace(REPLACEMENT_LINK_BEFORE, REPLACEMENT_LINK_AFTER);
 	}
 
 	//XXX bad code, improve:

@@ -27,11 +27,11 @@
 <string name="settings_mapTraffic_summary">*Към момента тази информация не е налична за София</string>
 <string name="settings_showRemainingTime_title">Оставащо време</string>
 <string name="settings_showRemainingTime_summary">(или час на пристигане)</string>
-<string name="settings_advanced_title">Други настройки</string>
-<string name="settings_useHtml_title">HTML визуализация</string>
-<string name="settings_useHtml_summary">Какъвто е отговора от m.sumc.bg или проста информация</string>
+
+
+
 <string name="html_header">&lt;head&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} .busLineNumber {background-color:%23ea0000;}.tramLineNumber {background-color:%23feab10;}.trolleyLineNumber {background-color:%230066aa;}.busHeader {border-bottom:1px solid %23ea0000;}.tramHeader {border-bottom:1px solid %23feab10;}.trolleyHeader {border-bottom:1px solid %230066aa;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid %23ddd;}.errorText {color: %23f00;}.legal{font-size: 50%25;text-align:right;}&lt;/style&gt;&lt;/head&gt;</string>
-<string name="legal_sumc_plain">\n(взети от m.sumc.bg)</string>
+
 <string name="legal_sumc_html">&lt;p class=&quot;legal&quot;&gt;(взети от m.sumc.bg)&lt;/p&gt;</string>
 <string name="format_estimates_dialog_title">%s: %s (%s)</string>
 <string name="remainingTime_format_onlyMinutes">~%dм.</string>

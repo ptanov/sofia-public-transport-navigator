@@ -22,14 +22,11 @@ import eu.tanov.android.sptn.providers.StationProvider;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 import eu.tanov.android.sptn.sumc.EstimatesResolver;
 import eu.tanov.android.sptn.sumc.HtmlResult;
-import eu.tanov.android.sptn.sumc.PlainResult;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private static final String TAG = "StationsOverlay";
 
-	private static final String PREFERENCE_KEY_USE_HTML = "useHtml";
-	private static final boolean PREFERENCE_DEFAULT_VALUE_USE_HTML = true;
 
 	private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
@@ -129,12 +126,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     		final String stationLabel = overlayItem.getSnippet();
     		
     		try {
-    			final EstimatesResolver resolver;
-    			if (useHtml()) {
-    				resolver = new HtmlResult(context, stationCode, stationLabel, showRemainingTime());
-    			} else {
-    				resolver = new PlainResult(context, stationCode, stationLabel, showRemainingTime());
-    			}
+    			final EstimatesResolver resolver = new HtmlResult(context, stationCode, stationLabel, showRemainingTime());
     			//long operation
     			resolver.query();
 
@@ -210,10 +202,6 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		return true;
 	}
 
-	private boolean useHtml() {
-		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		return settings.getBoolean(PREFERENCE_KEY_USE_HTML, PREFERENCE_DEFAULT_VALUE_USE_HTML);
-	}
 	/**
 	 * or hour of arriving
 	 * @return

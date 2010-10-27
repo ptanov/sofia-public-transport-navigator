@@ -28,21 +28,22 @@
 			android:title="@string/settings_showRemainingTime_title"
 			android:defaultValue="true" android:summary="@string/settings_showRemainingTime_summary" />
 
-
+<!-- 
 		<PreferenceScreen android:title="@string/settings_advanced_title">
 			<CheckBoxPreference android:key="useHtml"
 				android:title="@string/settings_useHtml_title" android:defaultValue="true"
 				android:summary="@string/settings_useHtml_summary" />
-			<!--
+			<!- -
 				TODO where to get DB from: <EditTextPreference
 				android:dialogTitle="EditTextTitle"
 				android:dialogMessage="EditTextMessage"
 				android:dependency="Main_Option" android:key="pref_dialog"
 				android:title="SomeTitle" android:summary="Summary"
 				android:defaultValue="test" />
-			-->
+			- ->
 
 		</PreferenceScreen>
+ -->
 
 	</PreferenceCategory>
 

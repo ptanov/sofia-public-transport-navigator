@@ -18,7 +18,7 @@
 <string name="aboutDialog_content">Данните за времената на пристигане се извличат от http://m.sumc.bg\n\n\nИзползвате програмата на собствена отговорност.\n\n\nАвтор: Пламен Танов</string>
 
 <string name="helpDialog_title">Помощ</string>
-<string name="helpDialog_content">Изберете точка на картата или използвайте вашите текущи координати. След това изберете спирка и вижте времената на пристигане.</string>
+<string name="helpDialog_content">Изберете точка на картата или използвайте вашите текущи координати.\nСлед това изберете спирка и вижте времената на пристигане.\nМоже да натиснете върху номера на линията (тя е ЛИНК) за да видите разписанието й.</string>
 
 <string name="settings_category_stations_info">Информация за спирки</string>
 <string name="settings_mapSatellite_title">Сателитна карта</string>

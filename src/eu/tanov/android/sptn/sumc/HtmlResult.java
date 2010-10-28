@@ -14,9 +14,15 @@ import eu.tanov.android.sptn.util.TimeHelper;
 
 public class HtmlResult implements EstimatesResolver {
 
-	private static final String REPLACEMENT_LINK_BEFORE = "<a href=\"/schedules/vehicle?";
-	private static final String REPLACEMENT_LINK_AFTER = "<a href=\"http://m.sumc.bg/schedules/vehicle?";
-
+//	private static final String FORMAT_OUTPUT_INFO = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td class=\"direction\" colspan=\"2\">%s</td></tr></table>";
+	private static final String FORMAT_OUTPUT_INFO = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"direction\" >%s</td></tr></table>";
+	private static final String INFO_SPLITTER = "<a href=\"|\">|<b>|</b>|</a>&nbsp;-&nbsp;|<br />";
+	private static final int INFO_SPLIT_SIZE = 7;
+	
+	private static final String INFO_BEGIN = "<div class=\"arr_info_";
+	private static final int INFO_BEGIN_LENGTH = (INFO_BEGIN+"3\">").length();
+	private static final String INFO_END = "</div>";
+    
 	private static final String TAG = "HtmlResult";
 
 	private static final String ENCODING = "utf-8";
@@ -29,11 +35,6 @@ public class HtmlResult implements EstimatesResolver {
 	private static final String HTML_START = "<html>";
 	private static final String HTML_END = "</html>";
 
-	private static final String REMAINING_TIME_START = "&nbsp;-&nbsp;";
-	private static final int REMAINING_TIME_START_LENGTH = REMAINING_TIME_START.length();
-
-    private static final char REMAINING_TIME_END = '<';
-
     /**
      * size of buffer will be: body.size() + REMAINING_TIME_BUFFER_ADDITION
      * 10 - size of one remaining time
@@ -41,6 +42,7 @@ public class HtmlResult implements EstimatesResolver {
      * 11 - count of numbers 
      */
     private static final int REMAINING_TIME_BUFFER_ADDITION = 10 * 3 * 11;
+
 	
 	private final String stationCode;
 	private final String stationLabel;
@@ -87,53 +89,58 @@ public class HtmlResult implements EstimatesResolver {
 
 		final int endOfBody = response.indexOf(BODY_END, startOfBody);
 
-		String body = response.substring(startOfBody, endOfBody+BODY_END.length());
-		body = convertLinks(body);
-		if (showRemainingTime) {
-			try {
-				body = convertToRemainingTime(body);
-			} catch (Exception e) {
-	            Log.e(TAG, "Error while converting body: "+body, e);
-			}
-		}
-		return body + context.getString(R.string.legal_sumc_html);
-	}
+		final String body = response.substring(startOfBody, endOfBody+BODY_END.length());
+		final String fixedBody = fixBody(body);
 
-	private String convertLinks(String body) {
-		return body.replace(REPLACEMENT_LINK_BEFORE, REPLACEMENT_LINK_AFTER);
+		return fixedBody + context.getString(R.string.legal_sumc_html);
 	}
 
 	//XXX bad code, improve:
-	private String convertToRemainingTime(String body) {
-		final StringBuilder result = new StringBuilder(body.length() + REMAINING_TIME_BUFFER_ADDITION);
-		
+	private String fixBody(String body) {
+		//TODO calc buffer size
+		final StringBuilder result = new StringBuilder(body.length());
+
 		int end = 0;
-		int start = body.indexOf(REMAINING_TIME_START, end);
+		int start = body.indexOf(INFO_BEGIN, end);
 		while (start != -1) {
-			start += REMAINING_TIME_START_LENGTH;
+			start += INFO_BEGIN_LENGTH;
 			//just copy not remaining time data
 			result.append(body, end, start);
 			
-			end = body.indexOf(REMAINING_TIME_END, start);
+			end = body.indexOf(INFO_END, start);
 			if (end != -1) {
 				try {
-					String timeData = body.substring(start, end).trim();
-					timeData = TimeHelper.removeTrailingSeparator(timeData);
-					result.append(TimeHelper.toRemainingTime(date, timeData,
-						formatOnlyMinutes, formatMinutesAndHours)
-					);
+					final String[] split = body.substring(start, end).split(INFO_SPLITTER, INFO_SPLIT_SIZE);
+					if (split.length != INFO_SPLIT_SIZE) {
+						throw new IllegalStateException("different split size: " + split.length);
+					}
+					
+					result.append(formatSplitted(split));
 				} catch (Exception e) {
+					Log.e(TAG, "error while converting: " + body.substring(start, end), e);
 					//this is not remaining time - just copy:
 					result.append(body, start, end);
 				}
 			}
 
-			start = body.indexOf(REMAINING_TIME_START, end);
+			start = body.indexOf(INFO_BEGIN, end);
 		}
 		//append rest of body
 		result.append(body, end, body.length());
 		
 		return result.toString();
+	}
+
+	private String formatSplitted(String[] split) {
+		if (showRemainingTime) {
+			split[5] = TimeHelper.toRemainingTime(date, split[5].trim(),
+					formatOnlyMinutes, formatMinutesAndHours);
+		}
+
+		return String.format(
+				FORMAT_OUTPUT_INFO,
+				split[1], split[3], split[1], split[5], split[6]
+		);
 	}
 
 	@Override

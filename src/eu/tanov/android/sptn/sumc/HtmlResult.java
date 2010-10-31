@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -20,6 +21,9 @@ public class HtmlResult implements EstimatesResolver {
 	private static final String FORMAT_OUTPUT_INFO_RIGHT = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"direction\" style=\"font-size: %dpt;\" >%s</td></tr></table>";
 	private static final String FORMAT_OUTPUT_INFO_BOTTOM = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td colspan=\"2\" class=\"direction\" style=\"font-size: %dpt;\" >%s</td></tr></table>";
 	private static final String FORMAT_OUTPUT_INFO_NO_DIRECTION = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr></table>";
+
+	private static final String FORMAT_OUTPUT_INFO_WHATS_NEW_VERSION_1_06 = "<table><tr><td colspan=\"2\" style=\"color: red;\" >Текстът в синьо е линк към разписанието</td></tr><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td colspan=\"2\" class=\"direction\" style=\"font-size: 10pt;\" >%s</td></tr><tr><td colspan=\"2\" style=\"color: red;\" >^^^ Как да се показва направлението може да се контролира от ОК-МЕНЮ-Настройки</td></tr></table>";
+
 	private static final String INFO_SPLITTER = "<a href=\"|\">|<b>|</b>|</a>&nbsp;-&nbsp;|<br />";
 	private static final int INFO_SPLIT_SIZE = 7;
 	
@@ -51,6 +55,9 @@ public class HtmlResult implements EstimatesResolver {
 	private static final String PREFERENCE_KEY_ESTIMATES_DIRECTION_POSITION_IN_RIGHT = "directionPositionInRight";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_POSITION_IN_RIGHT = true;
 
+	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_06 = "whatsNewShowVersion1_06";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_06 = true;
+
 	
 	private final String stationCode;
 	private final String stationLabel;
@@ -61,6 +68,9 @@ public class HtmlResult implements EstimatesResolver {
 
 	private final String formatMinutesAndHours;
 	private final String formatOnlyMinutes;
+	private final Integer directionSize;
+	private final boolean directionPositionInRight;
+	private boolean showWhatsNewInVersion1_06;
 
 	public HtmlResult(Activity context, String stationCode, String stationLabel, boolean showRemainingTime) {
 		this.stationCode = stationCode;
@@ -68,13 +78,13 @@ public class HtmlResult implements EstimatesResolver {
 		this.context = context;
 		this.showRemainingTime = showRemainingTime;
 		
-	//	if (showRemainingTime) {
 		this.formatOnlyMinutes = this.context.getString(R.string.remainingTime_format_onlyMinutes);
 		this.formatMinutesAndHours = this.context.getString(R.string.remainingTime_format_minutesAndHours);
-	//	} else {
-	//		this.formatOnlyMinutes = null;
-	//		this.formatMinutesAndHours = null;
-	//	}		
+		
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+		directionSize = Integer.valueOf(settings.getString(PREFERENCE_KEY_ESTIMATES_DIRECTION_SIZE, PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_SIZE));
+		directionPositionInRight = settings.getBoolean(PREFERENCE_KEY_ESTIMATES_DIRECTION_POSITION_IN_RIGHT, PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_POSITION_IN_RIGHT);
+		showWhatsNewInVersion1_06 = settings.getBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_06, PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_06);
 	}
 
 	@Override
@@ -104,7 +114,7 @@ public class HtmlResult implements EstimatesResolver {
 	}
 
 	//XXX bad code, improve:
-	private String fixBody(String body) {
+	private String fixBody(final String body) {
 		//TODO calc buffer size
 		final StringBuilder result = new StringBuilder(body.length());
 
@@ -139,27 +149,37 @@ public class HtmlResult implements EstimatesResolver {
 		return result.toString();
 	}
 
+	/**
+	 * XXX bad code - many IFs... reduce them...
+	 */
 	private String formatSplitted(String[] split) {
 		if (showRemainingTime) {
 			split[5] = TimeHelper.toRemainingTime(date, split[5].trim(),
 					formatOnlyMinutes, formatMinutesAndHours);
 		}
 
-		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		final int size = Integer.valueOf(settings.getString(PREFERENCE_KEY_ESTIMATES_DIRECTION_SIZE, PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_SIZE));
 		
-		if (size<1) {
+		if (showWhatsNewInVersion1_06) {
+			final Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+			//show only first time:
+			editor.putBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_06, false);
+			editor.commit();
+			showWhatsNewInVersion1_06 = false;
+			return String.format(FORMAT_OUTPUT_INFO_WHATS_NEW_VERSION_1_06,
+					split[1], split[3], split[1], split[5], split[6]);
+		}
+			
+		if (directionSize<1) {
 			return String.format(FORMAT_OUTPUT_INFO_NO_DIRECTION,
 					split[1], split[3], split[1], split[5]);
 		}
-		final boolean positionInRight = settings.getBoolean(PREFERENCE_KEY_ESTIMATES_DIRECTION_POSITION_IN_RIGHT, PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_POSITION_IN_RIGHT);
 
-		if (positionInRight) {
+		if (directionPositionInRight) {
 			return String.format(FORMAT_OUTPUT_INFO_RIGHT,
-					split[1], split[3], split[1], split[5], size, split[6]);
+					split[1], split[3], split[1], split[5], directionSize, split[6]);
 		} else {
 			return String.format(FORMAT_OUTPUT_INFO_BOTTOM,
-					split[1], split[3], split[1], split[5], size, split[6]);
+					split[1], split[3], split[1], split[5], directionSize, split[6]);
 		}
 	}
 

@@ -54,7 +54,15 @@
 
 		</PreferenceScreen>
  -->
-
 	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/settings_category_other">
 
+		<PreferenceScreen android:title="@string/settings_whatsNewNotifications_title"
+			android:summary="@string/settings_whatsNewNotifications_summary">
+			<CheckBoxPreference android:key="whatsNewShowVersion1_06"
+				android:title="@string/settings_whatsNewShowVersion1_06_title"
+				android:defaultValue="true"
+				android:summary="@string/settings_whatsNewShowVersion1_06_summary" />
+		</PreferenceScreen>
+	</PreferenceCategory>
 </PreferenceScreen>

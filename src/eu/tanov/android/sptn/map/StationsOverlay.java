@@ -135,7 +135,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     		} catch (Exception e) {
     			Log.e(TAG, "could not get estimations for "+stationCode+". "+stationLabel, e);
     			//being safe (Throwable!?) ;)
-    			showErrorMessage(stationLabel);
+    			showErrorMessage(stationLabel, stationCode);
     		} finally {
     			hideProgressDialog();
     		}
@@ -212,13 +212,14 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 	/**
 	 * runs in ui thread
+	 * @param stationCode 
 	 */
-	private void showErrorMessage(final String stationLabel) {
+	private void showErrorMessage(final String stationLabel, final String stationCode) {
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
 				final String message = context.getResources().getString(
-						R.string.error_retrieveEstimates, stationLabel);
+						R.string.error_retrieveEstimates, stationLabel, stationCode);
 				Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 			}
 		});

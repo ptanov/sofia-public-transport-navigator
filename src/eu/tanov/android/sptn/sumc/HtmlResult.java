@@ -49,7 +49,6 @@ public class HtmlResult implements EstimatesResolver {
      * 3 - count of remaining times per number
      * 11 - count of numbers 
      */
-    private static final int REMAINING_TIME_BUFFER_ADDITION = 10 * 3 * 11;
 	private static final String PREFERENCE_KEY_ESTIMATES_DIRECTION_SIZE = "directionSize";
 	private static final String PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_SIZE = "2";
 	private static final String PREFERENCE_KEY_ESTIMATES_DIRECTION_POSITION_IN_RIGHT = "directionPositionInRight";
@@ -115,8 +114,7 @@ public class HtmlResult implements EstimatesResolver {
 
 	//XXX bad code, improve:
 	private String fixBody(final String body) {
-		//TODO calc buffer size
-		final StringBuilder result = new StringBuilder(body.length());
+		final StringBuilder result = new StringBuilder(body.length() * 2);
 
 		int end = 0;
 		int start = body.indexOf(INFO_BEGIN, end);

@@ -39,4 +39,10 @@
 <string name="settings_category_map">Карта</string>
 <string name="settings_mapCompass_title">Компас</string>
 <string name="settings_mapCompass_summary">Покажи стрелка с посока на гледане</string>
+
+<string name="settings_directionPositionInRight_title">Направлението в дясно от време на пристигане</string>
+<string name="settings_directionPositionInRight_summary">Или в дясно или под време на пристигане</string>
+<string name="settings_directionSize_title">Големина на шрифт на направление</string>
+<string name="settings_directionSize_summary">По-малко от 1 - скрива направление</string>
+
 </resources>

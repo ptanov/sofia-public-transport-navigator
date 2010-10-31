@@ -28,6 +28,16 @@
 			android:title="@string/settings_showRemainingTime_title"
 			android:defaultValue="true" android:summary="@string/settings_showRemainingTime_summary" />
 
+		<CheckBoxPreference android:key="directionPositionInRight"
+			android:title="@string/settings_directionPositionInRight_title"
+			android:defaultValue="true" android:summary="@string/settings_directionPositionInRight_summary" />
+
+		<EditTextPreference android:key="directionSize"
+			android:title="@string/settings_directionSize_title"
+			android:defaultValue="2" android:summary="@string/settings_directionSize_summary"
+		    android:numeric="integer" android:maxLength="2"
+			/>
+
 <!-- 
 		<PreferenceScreen android:title="@string/settings_advanced_title">
 			<CheckBoxPreference android:key="useHtml"

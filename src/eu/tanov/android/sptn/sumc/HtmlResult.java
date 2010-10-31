@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.webkit.WebView;
@@ -15,7 +17,9 @@ import eu.tanov.android.sptn.util.TimeHelper;
 public class HtmlResult implements EstimatesResolver {
 
 //	private static final String FORMAT_OUTPUT_INFO = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td class=\"direction\" colspan=\"2\">%s</td></tr></table>";
-	private static final String FORMAT_OUTPUT_INFO = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"direction\" >%s</td></tr></table>";
+	private static final String FORMAT_OUTPUT_INFO_RIGHT = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"direction\" style=\"font-size: %dpt;\" >%s</td></tr></table>";
+	private static final String FORMAT_OUTPUT_INFO_BOTTOM = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td colspan=\"2\" class=\"direction\" style=\"font-size: %dpt;\" >%s</td></tr></table>";
+	private static final String FORMAT_OUTPUT_INFO_NO_DIRECTION = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr></table>";
 	private static final String INFO_SPLITTER = "<a href=\"|\">|<b>|</b>|</a>&nbsp;-&nbsp;|<br />";
 	private static final int INFO_SPLIT_SIZE = 7;
 	
@@ -42,6 +46,10 @@ public class HtmlResult implements EstimatesResolver {
      * 11 - count of numbers 
      */
     private static final int REMAINING_TIME_BUFFER_ADDITION = 10 * 3 * 11;
+	private static final String PREFERENCE_KEY_ESTIMATES_DIRECTION_SIZE = "directionSize";
+	private static final String PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_SIZE = "2";
+	private static final String PREFERENCE_KEY_ESTIMATES_DIRECTION_POSITION_IN_RIGHT = "directionPositionInRight";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_POSITION_IN_RIGHT = true;
 
 	
 	private final String stationCode;
@@ -137,10 +145,22 @@ public class HtmlResult implements EstimatesResolver {
 					formatOnlyMinutes, formatMinutesAndHours);
 		}
 
-		return String.format(
-				FORMAT_OUTPUT_INFO,
-				split[1], split[3], split[1], split[5], split[6]
-		);
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+		final int size = Integer.valueOf(settings.getString(PREFERENCE_KEY_ESTIMATES_DIRECTION_SIZE, PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_SIZE));
+		
+		if (size<1) {
+			return String.format(FORMAT_OUTPUT_INFO_NO_DIRECTION,
+					split[1], split[3], split[1], split[5]);
+		}
+		final boolean positionInRight = settings.getBoolean(PREFERENCE_KEY_ESTIMATES_DIRECTION_POSITION_IN_RIGHT, PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_POSITION_IN_RIGHT);
+
+		if (positionInRight) {
+			return String.format(FORMAT_OUTPUT_INFO_RIGHT,
+					split[1], split[3], split[1], split[5], size, split[6]);
+		} else {
+			return String.format(FORMAT_OUTPUT_INFO_BOTTOM,
+					split[1], split[3], split[1], split[5], size, split[6]);
+		}
 	}
 
 	@Override

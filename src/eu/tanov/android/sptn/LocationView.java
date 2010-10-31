@@ -37,7 +37,7 @@ public class LocationView extends MapActivity {
 	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC = false;
 
 	private static final String PREFERENCE_KEY_MAP_COMPASS = "mapCompass";
-	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_COMPASS = true;
+	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_COMPASS = false;
 
 	private MyLocationOverlay myLocationOverlay;
 	private StationsOverlay stationsOverlay;

@@ -219,7 +219,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 			@Override
 			public void run() {
 				final String message = context.getResources().getString(
-						R.string.error_retrieveEstimates, stationLabel, stationCode);
+						R.string.error_retrieveEstimates_generic, stationLabel, stationCode);
 				Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 			}
 		});

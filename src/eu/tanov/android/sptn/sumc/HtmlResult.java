@@ -103,9 +103,21 @@ public class HtmlResult implements EstimatesResolver {
 
 	private String createBody(String response) {
 		final int startOfBody = response.indexOf(BODY_START);
-
 		final int endOfBody = response.indexOf(BODY_END, startOfBody);
 
+		if (startOfBody == -1 || endOfBody == -1) {
+			//error
+			if (response.contains(context.getResources().getString(
+					R.string.error_retrieveEstimates_matching_noInfo))) {
+				return context.getResources().getString(
+						R.string.error_retrieveEstimates_noInfo, stationLabel, stationCode);
+			} else if (response.contains(context.getResources().getString(
+					R.string.error_retrieveEstimates_matching_noBusStop))) {
+				return context.getResources().getString(
+						R.string.error_retrieveEstimates_noBusStop, stationLabel, stationCode);
+			}
+			throw new IllegalStateException("Unknown error with "+response);
+		}
 		final String body = response.substring(startOfBody, endOfBody+BODY_END.length());
 		final String fixedBody = fixBody(body);
 

@@ -6,7 +6,12 @@
 <string name="vehicleType_tram">Трамвай</string>
 <string name="vehicleType_trolley">Тролейбус</string>
 <string name="buttonOk">ОК</string>
-<string name="error_retrieveEstimates">Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
+<string name="error_retrieveEstimates_generic">Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
+<string name="error_retrieveEstimates_noInfo">&lt;b&gt;В момента СКГТ не предоставя информация за спирка &amp;quot;%s&amp;quot; (код: %s), моля опитайте пак по-късно.&lt;/b&gt;</string>
+<string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
+<string name="error_retrieveEstimates_noBusStop">&lt;b&gt;Спирката %s (%s) вече не съществува.&lt;/b&gt;</string>
+<string name="error_retrieveEstimates_matching_noBusStop">Няма намерена информация</string>
+
 <string name="progressDialog_message_estimating">Извличане на времена на пристигане</string>
 <string name="progressDialog_message_stations">Търсене на спирки</string>
 <string name="progressDialog_title">Моля изчакайте</string>
@@ -49,6 +54,7 @@
 
 <string name="settings_whatsNewNotifications_summary">Еднократно активира различни екрани с помощни съобщения за промените</string><string name="settings_whatsNewShowVersion1_06_title">Версия 1.06</string>
 <string name="settings_whatsNewShowVersion1_06_summary">Линк към разписание и в коя посока е спирката</string>
+
 
 
 </resources>

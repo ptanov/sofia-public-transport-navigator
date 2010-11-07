@@ -57,4 +57,6 @@
 
 
 
+<string name="favorities_empty_list">Няма запазени спирки, натиснете МЕНЮ&gt;Добави за да добавите спирка.</string>
+<string name="menu_favoroties">Избрани спирки</string>
 </resources>

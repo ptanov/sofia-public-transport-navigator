@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -26,6 +27,8 @@ public class LocationView extends MapActivity {
 	private static final GeoPoint LOCATION_SOFIA = new GeoPoint(42696827, 23320916);
 
 	private static final int REQUEST_CODE_SETTINGS = 1;
+	private static final int REQUEST_CODE_FAVORITIES = 2;
+	
 
 	private static final String PREFERENCE_KEY_MAP_SATELLITE = "mapSatellite";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE = false;
@@ -142,18 +145,43 @@ public class LocationView extends MapActivity {
 		case REQUEST_CODE_SETTINGS:
 			setMapSettings();
 			break;
+		case REQUEST_CODE_FAVORITIES:
+			if (resultCode < RESULT_FIRST_USER) {
+				return;
+			}
+			
+			showBusStop(resultCode-RESULT_FIRST_USER);
+			break;
 
 		default:
 			break;
 		}
 	}
+	private void showBusStop(int code) {
+		System.out.println("data: "+code);
+		// TODO Auto-generated method stub
+//		map.getController().animateTo(
+//				MapHelper.createGeoPoint(location.getLatitude(),location.getLongitude()));
+
+		//get bus stop coordinates
+		//animate to bus stop
+		//show near bus stops...
+		//simulate tap on bus stop		
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_settings:
+		case R.id.menu_favorities: {
+			final Intent intent = new Intent(this, FavoritiesActivity.class);
+			startActivityForResult(intent, REQUEST_CODE_FAVORITIES);
+			break;
+		}
+		case R.id.menu_settings: {
 			final Intent intent = new Intent(this, PreferencesActivity.class);
 			startActivityForResult(intent, REQUEST_CODE_SETTINGS);
 			break;
+		}
 		case R.id.menu_about:
 			new AlertDialog.Builder(this).
 				setTitle(R.string.aboutDialog_title).

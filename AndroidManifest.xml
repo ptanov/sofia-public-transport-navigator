@@ -15,8 +15,9 @@
 
         <provider android:name=".providers.StationProvider"
             android:authorities="eu.tanov.android.StationProvider" />
-    <activity android:name="PreferencesActivity"></activity>
-</application>
+	    <activity android:name="PreferencesActivity"></activity>
+	    <activity android:name="FavoritiesActivity"></activity>
+	</application>
     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="7" />
 
 	<uses-permission android:name="android.permission.INTERNET" />

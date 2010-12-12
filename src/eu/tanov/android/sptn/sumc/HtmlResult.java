@@ -97,7 +97,10 @@ public class HtmlResult implements EstimatesResolver {
 					"could not get estimations (null) for " + stationCode
 							+ ". " + stationLabel);
 		}
-		date = responseHandler.getDate();
+		
+//		servers of sumc does not have ntp synchronization and their time is wrong
+//		date = responseHandler.getDate();
+		date = new Date();
 		htmlData = HTML_START + context.getString(R.string.html_header) + createBody(response) + HTML_END;
 	}
 

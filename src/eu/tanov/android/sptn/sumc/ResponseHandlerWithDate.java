@@ -8,6 +8,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicResponseHandler;
 
+/**
+ * TODO remove this file - time is get from phone, because
+ * sumc server is inaccurate and unreliable
+ * @deprecated
+ */
+@Deprecated
 public class ResponseHandlerWithDate extends BasicResponseHandler {
 	private Date date;
 

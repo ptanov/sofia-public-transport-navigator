@@ -6,10 +6,10 @@
 <string name="vehicleType_tram">Трамвай</string>
 <string name="vehicleType_trolley">Тролейбус</string>
 <string name="buttonOk">ОК</string>
-<string name="error_retrieveEstimates_generic">Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
-<string name="error_retrieveEstimates_noInfo">&lt;b&gt;В момента СКГТ не предоставя информация за спирка &amp;quot;%s&amp;quot; (код: %s), моля опитайте пак по-късно.&lt;/b&gt;</string>
+<string name="error_retrieveEstimates_generic" formatted="false">Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
+<string name="error_retrieveEstimates_noInfo" formatted="false">&lt;b&gt;В момента СКГТ не предоставя информация за спирка &amp;quot;%s&amp;quot; (код: %s), моля опитайте пак по-късно.&lt;/b&gt;</string>
 <string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
-<string name="error_retrieveEstimates_noBusStop">&lt;b&gt;Спирката %s (%s) вече не съществува.&lt;/b&gt;</string>
+<string name="error_retrieveEstimates_noBusStop" formatted="false">&lt;b&gt;Спирката %s (%s) вече не съществува.&lt;/b&gt;</string>
 <string name="error_retrieveEstimates_matching_noBusStop">Няма намерена информация</string>
 
 <string name="progressDialog_message_estimating">Извличане на времена на пристигане</string>
@@ -35,12 +35,12 @@
 
 
 
-<string name="html_header">&lt;head&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} td.number {width:30px;text-align:right;}table {width:100%25;}div.arr_info_1 td.number {background-color:%23ea0000;}div.arr_info_2 td.number {background-color:%230066aa;}div.arr_info_3 td.number {background-color:%23feab10;}.number a:link {color:%23FFFFFF;font-weight: bold;}.number a:visited {color:%23FFFFFF;font-weight: bold;}.number a:hover {color:%23FFFFFF;font-weight: bold;}.number a:active {color:%23FFFFFF;font-weight: bold;}.direction {font-size: 2pt;text-align:right;}.estimates a {font-weight: bold;}.arr_title_1 b{color:%23ea0000;border-bottom:1px solid %23ea0000;}.arr_title_2 b{color:%230066aa;border-bottom:1px solid %230066aa;}.arr_title_3 b{color:%23feab10;border-bottom:1px solid %23feab10;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid %23ddd;}.errorText {color: %23f00;}.legal{font-size: 50%25;text-align:right;}&lt;/style&gt;&lt;/head&gt;</string>
+<string name="html_header" formatted="false">&lt;head&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} td.number {width:30px;text-align:right;}table {width:100%25;}div.arr_info_1 td.number {background-color:%23ea0000;}div.arr_info_2 td.number {background-color:%230066aa;}div.arr_info_3 td.number {background-color:%23feab10;}.number a:link {color:%23FFFFFF;font-weight: bold;}.number a:visited {color:%23FFFFFF;font-weight: bold;}.number a:hover {color:%23FFFFFF;font-weight: bold;}.number a:active {color:%23FFFFFF;font-weight: bold;}.direction {font-size: 2pt;text-align:right;}.estimates a {font-weight: bold;}.arr_title_1 b{color:%23ea0000;border-bottom:1px solid %23ea0000;}.arr_title_2 b{color:%230066aa;border-bottom:1px solid %230066aa;}.arr_title_3 b{color:%23feab10;border-bottom:1px solid %23feab10;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid %23ddd;}.errorText {color: %23f00;}.legal{font-size: 50%25;text-align:right;}&lt;/style&gt;&lt;/head&gt;</string>
 
-<string name="legal_sumc_html">&lt;p class=&quot;legal&quot;&gt;(взети от m.sumc.bg)&lt;/p&gt;</string>
-<string name="format_estimates_dialog_title">%s: %s (%s)</string>
-<string name="remainingTime_format_onlyMinutes">~%dм.</string>
-<string name="remainingTime_format_minutesAndHours">~%dч.%dм.</string>
+<string name="legal_sumc_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(взети от m.sumc.bg)&lt;/p&gt;</string>
+<string name="format_estimates_dialog_title" formatted="false">%s: %s (%s)</string>
+<string name="remainingTime_format_onlyMinutes" formatted="false">~%dм.</string>
+<string name="remainingTime_format_minutesAndHours" formatted="false">~%dч.%dм.</string>
 <string name="settings_category_map">Карта</string>
 <string name="settings_mapCompass_title">Компас</string>
 <string name="settings_mapCompass_summary">Покажи стрелка с посока на гледане</string>
@@ -57,6 +57,6 @@
 
 
 
-<string name="favorities_empty_list">Няма запазени спирки, натиснете МЕНЮ&gt;Добави за да добавите спирка.</string>
+<string name="favorities_empty_list" formatted="false">Няма запазени спирки, натиснете МЕНЮ&gt;Добави за да добавите спирка.</string>
 <string name="menu_favoroties">Избрани спирки</string>
 </resources>

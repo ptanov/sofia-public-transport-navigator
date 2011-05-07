@@ -57,7 +57,7 @@ public class FavoritiesService {
 			throw new IllegalStateException("Bus stop code should be integer, not: " + code);
 		}
 
-		final Object label = allLabels.get(code);
+		final Object label = allLabels.get(code.toString());
 		if (!(label instanceof String)) {
 			throw new IllegalStateException("Label for favorite bus stop <" + code + "> should be String, but was: " + label);
 		}

@@ -142,25 +142,15 @@ public class LocationView extends MapActivity {
 			if (resultCode < RESULT_FIRST_USER) {
 				return;
 			}
+			
+			final int code = resultCode - RESULT_FIRST_USER;
+			stationsOverlay.showStation(Integer.toString(code), true);
 
-			showBusStop(resultCode - RESULT_FIRST_USER);
 			break;
 
 		default:
 			break;
 		}
-	}
-
-	private void showBusStop(int code) {
-		// TODO Auto-generated method stub
-		System.out.println("data: " + code);
-		// map.getController().animateTo(
-		// MapHelper.createGeoPoint(location.getLatitude(),location.getLongitude()));
-
-		// get bus stop coordinates
-		// animate to bus stop
-		// show near bus stops...
-		// simulate tap on bus stop
 	}
 
 	@Override

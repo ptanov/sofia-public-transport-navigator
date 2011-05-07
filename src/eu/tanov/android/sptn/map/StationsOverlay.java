@@ -1,7 +1,8 @@
 package eu.tanov.android.sptn.map;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -34,7 +35,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
 	private final Activity context;
 	
-	private final HashSet<String> addedStations = new HashSet<String>();
+	private final Map<String, OverlayItem> codeToOverlayItem = new HashMap<String, OverlayItem>();
 	private ProgressDialog pd;
 	private final Handler uiHandler = new Handler();
 
@@ -47,26 +48,46 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     	Station.LON, // 3
     	Station.LABEL, // 4
     };
-    
-    public class StationsQuery extends Thread {
-    	
-    	private final double lon;
+
+	public class StationsQuery extends BaseQuery {
+		private final double lon;
 		private final double lat;
 
 		public StationsQuery(double lat, double lon) {
-    		this.lat = lat;
-    		this.lon = lon;
-    	}
-		private String sortOrder(double lat, double lon) {
-			return String.format("(ABS(lat-(%f))+ABS(lon-(%f))) ASC",
-					lat, lon);
+			this.lat = lat;
+			this.lon = lon;
 		}
+
+		private String sortOrder(double lat, double lon) {
+			return String.format("(ABS(lat-(%f))+ABS(lon-(%f))) ASC", lat, lon);
+		}
+
+		@Override
+		protected Cursor createCursor() {
+			return context.managedQuery(StationProvider.CONTENT_URI, PROJECTION, null, null, sortOrder(lat, lon));
+		}
+
+	}
+
+	public class StationQuery extends BaseQuery {
+		private final String code;
+
+		public StationQuery(String code) {
+			this.code = code;
+		}
+
+		@Override
+		protected Cursor createCursor() {
+			return context.managedQuery(StationProvider.CONTENT_URI, PROJECTION, "code="+code, null, null);
+		}
+	}
+
+    public abstract class BaseQuery implements Runnable {
 
     	@Override
     	public void run() {
     		try {
-    			final Cursor cursor = context.managedQuery(StationProvider.CONTENT_URI, PROJECTION,
-    					null, null, sortOrder(lat, lon));
+    			final Cursor cursor = createCursor();
     			
     			if (!cursor.moveToFirst()) {
     				//no results
@@ -88,17 +109,19 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     			do {
     				// Get the field values
     				code = cursor.getString(codeColumn);
-    				if (addedStations.contains(code)) {
+    				if (codeToOverlayItem.containsKey(code)) {
     					//already added
     					continue;
     				}
-    				addedStations.add(code);
+    				//not a best way to save index of node, but it works if stations are not removed
     				label = cursor.getString(labelColumn);
     				lat = cursor.getDouble(latColumn);
     				lon = cursor.getDouble(lonColumn);
     				
     				final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
-					newStations.add(new OverlayItem(point, code, label));
+					final OverlayItem overlayItem = new OverlayItem(point, code, label);
+					codeToOverlayItem.put(code, overlayItem);
+					newStations.add(overlayItem);
     			} while (cursor.moveToNext());
     			
     			//in UI thread
@@ -107,6 +130,8 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     			hideProgressDialog();
     		}
 		}
+
+		protected abstract Cursor createCursor();
     }
 
 
@@ -181,8 +206,36 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		if (showDialog) {
 			createProgressDialog(R.string.progressDialog_message_stations);
 		}
+		new Thread(query).start();
+	}
+
+	public void placeStation(String code) {
+		if (codeToOverlayItem.containsKey(code)) {
+			return;
+		}
+		new StationQuery(code).run();
+	}
+
+	public void showStation(String code, boolean animateTo) {
+		if (!codeToOverlayItem.containsKey(code)) {
+			placeStation(code);
+		}
+		final OverlayItem station = codeToOverlayItem.get(code);
+		if (station == null) {
+			throw new IllegalStateException("Unknown code: " + code);
+		}
+		if (animateTo) {
+			map.getController().animateTo(station.getPoint());
+		}
+		showStation(station);
+	}
+
+	protected void showStation(OverlayItem station) {
+		final EstimatesQuery query = new EstimatesQuery(station);
+		createProgressDialog(R.string.progressDialog_message_estimating);
 		query.start();
 	}
+
 	@Override
 	protected OverlayItem createItem(int i) {
 		return stations.get(i);
@@ -195,9 +248,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
 	@Override
 	protected boolean onTap(int stationIndex) {
-		final EstimatesQuery query = new EstimatesQuery(stations.get(stationIndex));
-		createProgressDialog(R.string.progressDialog_message_estimating);
-		query.start();
+		showStation(stations.get(stationIndex));
 		
 		return true;
 	}

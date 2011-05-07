@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -28,7 +27,6 @@ public class LocationView extends MapActivity {
 
 	private static final int REQUEST_CODE_SETTINGS = 1;
 	private static final int REQUEST_CODE_FAVORITIES = 2;
-	
 
 	private static final String PREFERENCE_KEY_MAP_SATELLITE = "mapSatellite";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE = false;
@@ -51,37 +49,30 @@ public class LocationView extends MapActivity {
 		setContentView(R.layout.main);
 		final MapView map = (MapView) findViewById(R.id.mapview1);
 		map.setBuiltInZoomControls(true);
-		//locate in Sofia, before adding onLocationChanged listener
+		// locate in Sofia, before adding onLocationChanged listener
 		map.getController().animateTo(LOCATION_SOFIA);
 		setMapSettings();
 
-		//add overlays
+		// add overlays
 		final List<Overlay> overlays = map.getOverlays();
 		stationsOverlay = new StationsOverlay(this, map);
 		myLocationOverlay = new MyLocationOverlay(this, map) {
 			boolean firstLocation = true;
+
 			@Override
 			public synchronized void onLocationChanged(Location location) {
 				super.onLocationChanged(location);
 				stationsOverlay.placeStations(location.getLatitude(), location.getLongitude(), false);
-				
+
 				if (firstLocation) {
-					//do not move map every time, only first time
+					// do not move map every time, only first time
 					firstLocation = false;
-					map.getController().animateTo(
-							MapHelper.createGeoPoint(location.getLatitude(),location.getLongitude()));
+					map.getController().animateTo(MapHelper.createGeoPoint(location.getLatitude(), location.getLongitude()));
 				}
 			}
 		};
 		setCompassSettings();
-//		myLocationOverlay.runOnFirstFix(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				System.out.println("sdfasdf sadf saf"+myLocationOverlay.getMyLocation());
-//				System.out.println("sdfasdf sadf saf"+myLocationOverlay.getLastFix());
-//			}
-//		});
+
 		overlays.add(myLocationOverlay);
 		overlays.add(stationsOverlay);
 
@@ -96,7 +87,7 @@ public class LocationView extends MapActivity {
 		}
 		super.onResume();
 	}
-	
+
 	@Override
 	protected void onPause() {
 		if (myLocationOverlay != null) {
@@ -109,8 +100,8 @@ public class LocationView extends MapActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		getMenuInflater().inflate(R.layout.menu, menu);  
-	    return true;  
+		getMenuInflater().inflate(R.layout.menu, menu);
+		return true;
 	}
 
 	private void setMapSettings() {
@@ -119,18 +110,20 @@ public class LocationView extends MapActivity {
 		map.setTraffic(settings.getBoolean(PREFERENCE_KEY_MAP_TRAFFIC, PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC));
 		map.setSatellite(settings.getBoolean(PREFERENCE_KEY_MAP_SATELLITE, PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE));
 		map.setStreetView(settings.getBoolean(PREFERENCE_KEY_MAP_STREET_VALUE, PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE));
-		
+
 		setCompassSettings(settings);
 	}
+
 	private void setCompassSettings() {
 		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		setCompassSettings(settings);
 	}
+
 	private void setCompassSettings(SharedPreferences settings) {
 		if (myLocationOverlay == null) {
 			return;
 		}
-		
+
 		if (settings.getBoolean(PREFERENCE_KEY_MAP_COMPASS, PREFERENCE_DEFAULT_VALUE_MAP_COMPASS)) {
 			myLocationOverlay.enableCompass();
 		} else {
@@ -149,24 +142,25 @@ public class LocationView extends MapActivity {
 			if (resultCode < RESULT_FIRST_USER) {
 				return;
 			}
-			
-			showBusStop(resultCode-RESULT_FIRST_USER);
+
+			showBusStop(resultCode - RESULT_FIRST_USER);
 			break;
 
 		default:
 			break;
 		}
 	}
-	private void showBusStop(int code) {
-		System.out.println("data: "+code);
-		// TODO Auto-generated method stub
-//		map.getController().animateTo(
-//				MapHelper.createGeoPoint(location.getLatitude(),location.getLongitude()));
 
-		//get bus stop coordinates
-		//animate to bus stop
-		//show near bus stops...
-		//simulate tap on bus stop		
+	private void showBusStop(int code) {
+		// TODO Auto-generated method stub
+		System.out.println("data: " + code);
+		// map.getController().animateTo(
+		// MapHelper.createGeoPoint(location.getLatitude(),location.getLongitude()));
+
+		// get bus stop coordinates
+		// animate to bus stop
+		// show near bus stops...
+		// simulate tap on bus stop
 	}
 
 	@Override
@@ -183,32 +177,20 @@ public class LocationView extends MapActivity {
 			break;
 		}
 		case R.id.menu_about:
-			new AlertDialog.Builder(this).
-				setTitle(R.string.aboutDialog_title).
-				setCancelable(true).
-				setMessage(R.string.aboutDialog_content).
-				setPositiveButton(R.string.buttonOk,
-					new DialogInterface.OnClickListener() {
+			new AlertDialog.Builder(this).setTitle(R.string.aboutDialog_title).setCancelable(true).setMessage(R.string.aboutDialog_content)
+					.setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							dialog.dismiss();
 						}
-					}
-			    ).
-				create().show();
+					}).create().show();
 			break;
 		case R.id.menu_help:
-			new AlertDialog.Builder(this).
-				setTitle(R.string.helpDialog_title).
-				setCancelable(true).
-				setMessage(R.string.helpDialog_content).
-				setPositiveButton(R.string.buttonOk,
-					new DialogInterface.OnClickListener() {
+			new AlertDialog.Builder(this).setTitle(R.string.helpDialog_title).setCancelable(true).setMessage(R.string.helpDialog_content)
+					.setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							dialog.dismiss();
 						}
-					}
-			    ).
-				create().show();
+					}).create().show();
 			break;
 
 		default:
@@ -216,7 +198,7 @@ public class LocationView extends MapActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;

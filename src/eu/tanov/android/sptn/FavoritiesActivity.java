@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import eu.tanov.android.sptn.favorities.BusStopItem;
 import eu.tanov.android.sptn.favorities.FavoritiesService;
 
@@ -65,7 +66,11 @@ public class FavoritiesActivity extends ListActivity {
 			refreshContent();
 			return true;
 		case R.id.menu_favorities_remove:
-			getFavoritiesService().remove(arrayAdapter.getItem(info.position));
+			final BusStopItem busStop = arrayAdapter.getItem(info.position);
+			getFavoritiesService().remove(busStop);
+			
+			final String message = getResources().getString(R.string.info_removedFromFavorities, busStop.getLabel(), busStop.getCode());
+			Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 
 			refreshContent();
 			return true;

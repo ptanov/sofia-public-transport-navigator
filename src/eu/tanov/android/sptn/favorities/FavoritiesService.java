@@ -93,8 +93,8 @@ public class FavoritiesService {
 		final SharedPreferences.Editor positionsStoreEditor = positionsStore.edit();
 		final SharedPreferences.Editor labelsStoreEditor = getLabelsStore().edit();
 
-		final int size = positionsStore.getAll().size();
-		positionsStoreEditor.putInt(Integer.toString(size), busStop.getCode());
+		final int newPosition = positionsStore.getAll().size();
+		positionsStoreEditor.putInt(Integer.toString(newPosition), busStop.getCode());
 		labelsStoreEditor.putString(Integer.toString(busStop.getCode()), busStop.getLabel());
 
 		if (positionsStoreEditor.commit()) {

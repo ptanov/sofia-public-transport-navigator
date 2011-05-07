@@ -12,7 +12,10 @@ import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.webkit.WebView;
+import android.widget.Toast;
 import eu.tanov.android.sptn.R;
+import eu.tanov.android.sptn.favorities.BusStopItem;
+import eu.tanov.android.sptn.favorities.FavoritiesService;
 import eu.tanov.android.sptn.util.TimeHelper;
 
 public class HtmlResult implements EstimatesResolver {
@@ -201,7 +204,7 @@ public class HtmlResult implements EstimatesResolver {
 		final WebView browser = new WebView(context);
 		browser.loadData(htmlData, MIME_TYPE, ENCODING);
 
-		Builder dialogBuilder = new AlertDialog.Builder(this.context);
+		final Builder dialogBuilder = new AlertDialog.Builder(this.context);
 		dialogBuilder.setTitle(
 				context.getString(R.string.format_estimates_dialog_title, 
 						DateFormat.getTimeFormat(context).format(date),
@@ -215,7 +218,31 @@ public class HtmlResult implements EstimatesResolver {
 						dialog.dismiss();
 					}
 				}).setView(browser);
+
+		handleFavorities(dialogBuilder);
 		dialogBuilder.create().show();
+	}
+
+	private void handleFavorities(Builder dialogBuilder) {
+		final FavoritiesService favoritiesService = getFavoritiesService();
+		final int code = Integer.valueOf(stationCode);
+		if (!favoritiesService.isFavorite(code)) {
+			// add to favorite
+			dialogBuilder.setNegativeButton(R.string.buttonAddToFavorities, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					favoritiesService.add(new BusStopItem(0, code, stationLabel));
+					final String message = context.getResources().getString(R.string.info_addedToFavorities, stationLabel, stationCode);
+					Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+					dialog.dismiss();
+				}
+			});
+		}
+
+	}
+
+	private FavoritiesService getFavoritiesService() {
+		// XXX how to pass this service across whole application?
+		return new FavoritiesService(context);
 	}
 
 }

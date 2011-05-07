@@ -63,4 +63,8 @@
 <string name="menu_favoroties_down">Надолу</string>
 <string name="menu_favoroties_remove">Премахни от избрани</string>
 <string name="info_removedFromFavorities" formatted="false">Спирката е премахната от избрани: %s (%s)</string>
+
+<string name="buttonAddToFavorities">В избрани</string>
+<string name="info_addedToFavorities" formatted="false">Спирката е успешно добавена в избрани: %s (%s)</string>
+
 </resources>

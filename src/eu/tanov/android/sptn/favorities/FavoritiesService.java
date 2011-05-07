@@ -88,6 +88,12 @@ public class FavoritiesService {
 		}
 	}
 
+	public boolean isFavorite(int code) {
+		final SharedPreferences labelsStore = getLabelsStore();
+		final String value = labelsStore.getString(Integer.toString(code), null);
+		return value != null;
+	}
+
 	public void add(BusStopItem busStop) {
 		final SharedPreferences positionsStore = getPositionsStore();
 		final SharedPreferences.Editor positionsStoreEditor = positionsStore.edit();

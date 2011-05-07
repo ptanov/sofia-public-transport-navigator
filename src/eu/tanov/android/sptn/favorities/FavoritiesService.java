@@ -70,6 +70,7 @@ public class FavoritiesService {
 	public void remove(BusStopItem busStop) {
 		final SharedPreferences positionsStore = getPositionsStore();
 		final SharedPreferences.Editor positionsStoreEditor = positionsStore.edit();
+		final SharedPreferences.Editor labelsStoreEditor = getLabelsStore().edit();
 
 		final Map<String, ?> allPositions = positionsStore.getAll();
 		final int oldPosition = busStop.getPosition();
@@ -80,8 +81,11 @@ public class FavoritiesService {
 		}
 		//remove last
 		positionsStoreEditor.remove(Integer.toString(lastPosition));
-		
-		positionsStoreEditor.commit();
+		labelsStoreEditor.remove(Integer.toString(busStop.getCode()));
+
+		if (positionsStoreEditor.commit()) {
+			labelsStoreEditor.commit();
+		}
 	}
 
 	public void add(BusStopItem busStop) {

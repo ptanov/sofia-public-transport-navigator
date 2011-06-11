@@ -58,6 +58,7 @@
 
 <string name="settings_whatsNewShowVersion1_09_title">Версия 1.09</string>
 <string name="settings_whatsNewShowVersion1_09_estimates_summary" formatted="false">Бутон \'В избрани\' и \'Обнови\' в прозореца с времена на пристигане</string>
+<string name="settings_whatsNewShowVersion1_09_favorities_summary">Списък с избрани спирки</string>
 
 
 
@@ -72,5 +73,7 @@
 <string name="info_addedToFavorities" formatted="false">Спирката е успешно добавена в избрани: %s (%s)</string>
 <string name="menu_favoroties_rename">Преименувай</string>
 <string name="buttonRefreshEstimates">Обнови</string>
+<string name="versionChanges_1_09_favorities_text">За времената на пристигане натиснете върху избраната спирка, за други действия (преименуване, местене, изтриване) задръжте върху съответната спирка и използвайте желаната опция от менюто.</string>
+<string name="versionChanges_1_09_favorities_title">Как да работим с избрани спирки</string>
 
 </resources>

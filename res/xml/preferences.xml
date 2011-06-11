@@ -67,6 +67,10 @@
 				android:title="@string/settings_whatsNewShowVersion1_09_title"
 				android:defaultValue="true"
 				android:summary="@string/settings_whatsNewShowVersion1_09_estimates_summary" />
+			<CheckBoxPreference android:key="whatsNewShowVersion1_09_favorities"
+				android:title="@string/settings_whatsNewShowVersion1_09_title"
+				android:defaultValue="true"
+				android:summary="@string/settings_whatsNewShowVersion1_09_favorities_summary" />
 		</PreferenceScreen>
 	</PreferenceCategory>
 </PreferenceScreen>

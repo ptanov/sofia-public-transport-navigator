@@ -7,7 +7,10 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
@@ -23,6 +26,10 @@ import eu.tanov.android.sptn.favorities.FavoritiesService;
 
 public class FavoritiesActivity extends ListActivity {
 	public static final String EXTRA_CODE_NAME = "code";
+
+	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_09 = "whatsNewShowVersion1_09_favorities";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09 = true;
+
 	private final List<BusStopItem> busStops = new ArrayList<BusStopItem>();
 	private ArrayAdapter<BusStopItem> arrayAdapter;
 
@@ -35,6 +42,28 @@ public class FavoritiesActivity extends ListActivity {
 		refreshContent();
 		setListAdapter(arrayAdapter);
 		registerForContextMenu(findViewById(android.R.id.list));
+
+		notifyForChangesInNewVersions();
+	}
+
+	private void notifyForChangesInNewVersions() {
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+
+		if (settings.getBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_09, PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09)) {
+			final Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+			// show only first time:
+			editor.putBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_09, false);
+			editor.commit();
+
+			new AlertDialog.Builder(this).setTitle(R.string.versionChanges_1_09_favorities_title).setCancelable(true)
+					.setMessage(R.string.versionChanges_1_09_favorities_text)
+					.setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					}).create().show();
+		}
+
 	}
 
 	private FavoritiesService getFavoritiesService() {

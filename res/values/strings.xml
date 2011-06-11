@@ -6,7 +6,7 @@
 <string name="vehicleType_tram">Трамвай</string>
 <string name="vehicleType_trolley">Тролейбус</string>
 <string name="buttonOk">ОК</string>
-<string name="error_retrieveEstimates_generic" formatted="false">Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
+<string name="error_retrieveEstimates_generic" formatted="false">Няма Интернет свързаност? Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
 <string name="error_retrieveEstimates_noInfo" formatted="false">&lt;b&gt;В момента СКГТ не предоставя информация за спирка &amp;quot;%s&amp;quot; (код: %s), моля опитайте пак по-късно.&lt;/b&gt;</string>
 <string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
 <string name="error_retrieveEstimates_noBusStop" formatted="false">&lt;b&gt;Спирката %s (%s) вече не съществува.&lt;/b&gt;</string>

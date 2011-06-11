@@ -16,6 +16,7 @@ import android.widget.Toast;
 import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.favorities.BusStopItem;
 import eu.tanov.android.sptn.favorities.FavoritiesService;
+import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.util.TimeHelper;
 
 public class HtmlResult implements EstimatesResolver {
@@ -73,9 +74,11 @@ public class HtmlResult implements EstimatesResolver {
 	private final Integer directionSize;
 	private final boolean directionPositionInRight;
 	private boolean showWhatsNewInVersion1_06;
+	private final StationsOverlay overlay;
 
-	public HtmlResult(Activity context, String stationCode, String stationLabel, boolean showRemainingTime) {
+	public HtmlResult(Activity context, StationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime) {
 		this.stationCode = stationCode;
+		this.overlay = overlay;
 		this.stationLabel = stationLabel;
 		this.context = context;
 		this.showRemainingTime = showRemainingTime;
@@ -206,7 +209,17 @@ public class HtmlResult implements EstimatesResolver {
 		}).setView(browser);
 
 		handleFavorities(dialogBuilder);
+		handleRefresh(dialogBuilder, browser);
 		dialogBuilder.create().show();
+	}
+
+	private void handleRefresh(Builder dialogBuilder, final WebView browser) {
+		dialogBuilder.setNeutralButton(R.string.buttonRefreshEstimates, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				overlay.showStation(stationCode, false);
+			}
+		});
+
 	}
 
 	private void handleFavorities(Builder dialogBuilder) {

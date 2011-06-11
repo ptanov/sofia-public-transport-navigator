@@ -149,7 +149,8 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 			final String stationLabel = overlayItem.getSnippet();
 
 			try {
-				final EstimatesResolver resolver = new HtmlResult(context, stationCode, stationLabel, showRemainingTime());
+				final EstimatesResolver resolver = new HtmlResult(context, StationsOverlay.this, stationCode, stationLabel,
+						showRemainingTime());
 				// long operation
 				resolver.query();
 

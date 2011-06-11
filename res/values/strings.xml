@@ -52,8 +52,12 @@
 
 <string name="settings_category_other">Допълнителни настройки</string><string name="settings_whatsNewNotifications_title">Уведомяване за промените</string>
 
-<string name="settings_whatsNewNotifications_summary">Еднократно активира различни екрани с помощни съобщения за промените</string><string name="settings_whatsNewShowVersion1_06_title">Версия 1.06</string>
+<string name="settings_whatsNewNotifications_summary">Еднократно активира различни екрани с помощни съобщения за промените</string>
+<string name="settings_whatsNewShowVersion1_06_title">Версия 1.06</string>
 <string name="settings_whatsNewShowVersion1_06_summary">Линк към разписание и в коя посока е спирката</string>
+
+<string name="settings_whatsNewShowVersion1_09_title">Версия 1.09</string>
+<string name="settings_whatsNewShowVersion1_09_estimates_summary" formatted="false">Бутон \'В избрани\' и \'Обнови\' в прозореца с времена на пристигане</string>
 
 
 

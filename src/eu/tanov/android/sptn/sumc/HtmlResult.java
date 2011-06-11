@@ -28,6 +28,7 @@ public class HtmlResult implements EstimatesResolver {
 	private static final String FORMAT_OUTPUT_INFO_NO_DIRECTION = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr></table>";
 
 	private static final String FORMAT_OUTPUT_INFO_WHATS_NEW_VERSION_1_06 = "<table><tr><td colspan=\"2\" style=\"color: red;\" >Текстът в синьо е линк към разписанието:</td></tr><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td colspan=\"2\" class=\"direction\" style=\"font-size: 10pt;\" >%s</td></tr><tr><td colspan=\"2\" style=\"color: red;\" >^^^ Как да се показва направлението може да се контролира от ОК-МЕНЮ-Настройки</td></tr></table>";
+	private static final String FORMAT_OUTPUT_INFO_WHATS_NEW_VERSION_1_09 = "<div style=\"color: red;\" >Версия 1.09: Използвайте бутона 'В избрани' за да добавите текущата спирка в списъка с избрани спирки. До него може да достигнете от основния екран, бутон 'МЕНЮ', 'Избрани спирки'.<br/>Бутонът 'Обнови' ще обнови данните за пристигане на автобусите с най-новите от сайта на СКГТ. Приятно и ползотворно ползване! :)</div>";
 
 	private static final String INFO_SPLITTER = "<a href=\"|\">|<b>|</b>|</a>&nbsp;-&nbsp;|<br />";
 	private static final int INFO_SPLIT_SIZE = 7;
@@ -62,6 +63,9 @@ public class HtmlResult implements EstimatesResolver {
 	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_06 = "whatsNewShowVersion1_06";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_06 = true;
 
+	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_09 = "whatsNewShowVersion1_09_estimates";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09 = true;
+
 	private final String stationCode;
 	private final String stationLabel;
 	private final Activity context;
@@ -74,6 +78,7 @@ public class HtmlResult implements EstimatesResolver {
 	private final Integer directionSize;
 	private final boolean directionPositionInRight;
 	private boolean showWhatsNewInVersion1_06;
+	private boolean showWhatsNewInVersion1_09;
 	private final StationsOverlay overlay;
 
 	public HtmlResult(Activity context, StationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime) {
@@ -93,6 +98,8 @@ public class HtmlResult implements EstimatesResolver {
 				PREFERENCE_DEFAULT_VALUE_ESTIMATES_DIRECTION_POSITION_IN_RIGHT);
 		showWhatsNewInVersion1_06 = settings.getBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_06,
 				PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_06);
+		showWhatsNewInVersion1_09 = settings.getBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_09,
+				PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09);
 	}
 
 	@Override
@@ -182,6 +189,14 @@ public class HtmlResult implements EstimatesResolver {
 			return String.format(FORMAT_OUTPUT_INFO_WHATS_NEW_VERSION_1_06, split[1], split[3], split[1], split[5], split[6]);
 		}
 
+		if (showWhatsNewInVersion1_09) {
+			final Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+			// show only first time:
+			editor.putBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_09, false);
+			editor.commit();
+			showWhatsNewInVersion1_09 = false;
+			return String.format(FORMAT_OUTPUT_INFO_WHATS_NEW_VERSION_1_09, split[1], split[3], split[1], split[5], split[6]);
+		}
 		if (directionSize < 1) {
 			return String.format(FORMAT_OUTPUT_INFO_NO_DIRECTION, split[1], split[3], split[1], split[5]);
 		}

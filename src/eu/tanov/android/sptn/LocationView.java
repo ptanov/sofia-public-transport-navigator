@@ -142,12 +142,12 @@ public class LocationView extends MapActivity {
 			if (resultCode != RESULT_OK) {
 				return;
 			}
-			final int code = data.getIntExtra(FavoritiesActivity.EXTRA_CODE_NAME, 0);
-			if (code == 0) {
+			final String code = data.getStringExtra(FavoritiesActivity.EXTRA_CODE_NAME);
+			if (code == null) {
 				throw new IllegalStateException("No code provided");
 			}
 
-			stationsOverlay.showStation(Integer.toString(code), true);
+			stationsOverlay.showStation(code, true);
 			break;
 
 		default:

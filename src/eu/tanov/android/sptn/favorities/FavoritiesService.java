@@ -53,7 +53,7 @@ public class FavoritiesService {
 	private BusStopItem busStopFromEntry(Entry<String, ?> positionEntry, Map<String, ?> allLabels) {
 		final String position = positionEntry.getKey();
 		final Object code = positionEntry.getValue();
-		if (!(code instanceof Integer)) {
+		if (!(code instanceof String)) {
 			throw new IllegalStateException("Bus stop code should be integer, not: " + code);
 		}
 
@@ -61,7 +61,7 @@ public class FavoritiesService {
 		if (!(label instanceof String)) {
 			throw new IllegalStateException("Label for favorite bus stop <" + code + "> should be String, but was: " + label);
 		}
-		return new BusStopItem(Integer.valueOf(position), (Integer) code, (String) label);
+		return new BusStopItem(Integer.valueOf(position), (String) code, (String) label);
 	}
 
 	/**
@@ -81,16 +81,16 @@ public class FavoritiesService {
 		}
 		// remove last
 		positionsStoreEditor.remove(Integer.toString(lastPosition));
-		labelsStoreEditor.remove(Integer.toString(busStop.getCode()));
+		labelsStoreEditor.remove(busStop.getCode());
 
 		if (positionsStoreEditor.commit()) {
 			labelsStoreEditor.commit();
 		}
 	}
 
-	public boolean isFavorite(int code) {
+	public boolean isFavorite(String code) {
 		final SharedPreferences labelsStore = getLabelsStore();
-		final String value = labelsStore.getString(Integer.toString(code), null);
+		final String value = labelsStore.getString(code, null);
 		return value != null;
 	}
 
@@ -100,8 +100,8 @@ public class FavoritiesService {
 		final SharedPreferences.Editor labelsStoreEditor = getLabelsStore().edit();
 
 		final int newPosition = positionsStore.getAll().size();
-		positionsStoreEditor.putInt(Integer.toString(newPosition), busStop.getCode());
-		labelsStoreEditor.putString(Integer.toString(busStop.getCode()), busStop.getLabel());
+		positionsStoreEditor.putString(Integer.toString(newPosition), busStop.getCode());
+		labelsStoreEditor.putString(busStop.getCode(), busStop.getLabel());
 
 		if (positionsStoreEditor.commit()) {
 			labelsStoreEditor.commit();
@@ -167,10 +167,10 @@ public class FavoritiesService {
 			// swap currentPosition with next position
 			final int nextPosition = currentPosition + increment;
 			final Object object = originalPositions.get(Integer.toString(nextPosition));
-			if (!(object instanceof Integer)) {
+			if (!(object instanceof String)) {
 				throw new IllegalStateException("No usable information for position(" + nextPosition + "): " + object);
 			}
-			positionsStoreEditor.putInt(Integer.toString(currentPosition), (Integer) object);
+			positionsStoreEditor.putString(Integer.toString(currentPosition), (String) object);
 		}
 		positionsStoreEditor.putInt(Integer.toString(newPosition), (Integer) busStopToMove);
 	}

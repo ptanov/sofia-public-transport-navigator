@@ -90,7 +90,7 @@ public class FavoritiesActivity extends ListActivity {
 		}
 	}
 
-	private void setNewLabel(final int code, String oldLabel) {
+	private void setNewLabel(final String code, String oldLabel) {
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		final EditText input = new EditText(this);
 		input.setText(oldLabel);
@@ -98,7 +98,7 @@ public class FavoritiesActivity extends ListActivity {
 		alert.setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				final String newLabel = input.getText().toString();
-				getFavoritiesService().rename(Integer.toString(code), newLabel);
+				getFavoritiesService().rename(code, newLabel);
 
 				refreshContent();
 			}

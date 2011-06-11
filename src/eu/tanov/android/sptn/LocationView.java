@@ -139,13 +139,15 @@ public class LocationView extends MapActivity {
 			setMapSettings();
 			break;
 		case REQUEST_CODE_FAVORITIES:
-			if (resultCode < RESULT_FIRST_USER) {
+			if (resultCode != RESULT_OK) {
 				return;
 			}
-			
-			final int code = resultCode - RESULT_FIRST_USER;
-			stationsOverlay.showStation(Integer.toString(code), true);
+			final int code = data.getIntExtra(FavoritiesActivity.EXTRA_CODE_NAME, 0);
+			if (code == 0) {
+				throw new IllegalStateException("No code provided");
+			}
 
+			stationsOverlay.showStation(Integer.toString(code), true);
 			break;
 
 		default:

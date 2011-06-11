@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -21,6 +22,7 @@ import eu.tanov.android.sptn.favorities.BusStopItem;
 import eu.tanov.android.sptn.favorities.FavoritiesService;
 
 public class FavoritiesActivity extends ListActivity {
+	public static final String EXTRA_CODE_NAME = "code";
 	private final List<BusStopItem> busStops = new ArrayList<BusStopItem>();
 	private ArrayAdapter<BusStopItem> arrayAdapter;
 
@@ -109,13 +111,13 @@ public class FavoritiesActivity extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		final BusStopItem selectedBusStop = (BusStopItem) getListView().getItemAtPosition(position);
-		// TODO how to pass position? maybe using intent?
-		// getIntent().putExtra("code", selectedBusStop.getCode());
-		// from http://stackoverflow.com/questions/2497205/how-to-return-a-result-startactivityforresult-from-a-tabhost-activity:
+		final Intent data = getIntent();
+		data.putExtra(EXTRA_CODE_NAME, selectedBusStop.getCode());
+
 		if (getParent() == null) {
-			setResult(RESULT_FIRST_USER + selectedBusStop.getCode());
+			setResult(RESULT_OK, data);
 		} else {
-			getParent().setResult(RESULT_FIRST_USER + selectedBusStop.getCode());
+			getParent().setResult(RESULT_OK, data);
 		}
 		finish();
 	}

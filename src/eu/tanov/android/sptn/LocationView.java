@@ -79,21 +79,28 @@ public class LocationView extends MapActivity {
 		map.getController().setZoom(16);
 	}
 
-	@Override
-	protected void onResume() {
+	public void disableLocationUpdates() {
+		if (myLocationOverlay != null) {
+			myLocationOverlay.disableMyLocation();
+			myLocationOverlay.disableCompass();
+		}
+	}
+
+	public void enableLocationUpdates() {
 		if (myLocationOverlay != null) {
 			myLocationOverlay.enableMyLocation();
 			setCompassSettings();
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		enableLocationUpdates();
 		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
-		if (myLocationOverlay != null) {
-			myLocationOverlay.disableMyLocation();
-			myLocationOverlay.disableCompass();
-		}
 		super.onPause();
 	}
 

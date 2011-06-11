@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
@@ -13,6 +14,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
+import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.favorities.BusStopItem;
 import eu.tanov.android.sptn.favorities.FavoritiesService;
@@ -68,7 +70,7 @@ public class HtmlResult implements EstimatesResolver {
 
 	private final String stationCode;
 	private final String stationLabel;
-	private final Activity context;
+	private final LocationView context;
 	private String htmlData;
 	private Date date;
 	private final boolean showRemainingTime;
@@ -81,7 +83,7 @@ public class HtmlResult implements EstimatesResolver {
 	private boolean showWhatsNewInVersion1_09;
 	private final StationsOverlay overlay;
 
-	public HtmlResult(Activity context, StationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime) {
+	public HtmlResult(LocationView context, StationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime) {
 		this.stationCode = stationCode;
 		this.overlay = overlay;
 		this.stationLabel = stationLabel;
@@ -210,6 +212,7 @@ public class HtmlResult implements EstimatesResolver {
 
 	@Override
 	public void showResult() {
+		context.disableLocationUpdates();
 		final WebView browser = new WebView(context);
 		browser.loadData(htmlData, MIME_TYPE, ENCODING);
 
@@ -219,10 +222,17 @@ public class HtmlResult implements EstimatesResolver {
 
 		dialogBuilder.setCancelable(true).setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
+				context.enableLocationUpdates();
 				dialog.dismiss();
 			}
 		}).setView(browser);
 
+		dialogBuilder.setOnCancelListener(new OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface arg0) {
+				context.enableLocationUpdates();
+			}
+		});
 		handleFavorities(dialogBuilder);
 		handleRefresh(dialogBuilder, browser);
 		dialogBuilder.create().show();
@@ -231,6 +241,8 @@ public class HtmlResult implements EstimatesResolver {
 	private void handleRefresh(Builder dialogBuilder, final WebView browser) {
 		dialogBuilder.setNeutralButton(R.string.buttonRefreshEstimates, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
+				context.enableLocationUpdates();
+
 				overlay.showStation(stationCode, false);
 			}
 		});
@@ -243,6 +255,8 @@ public class HtmlResult implements EstimatesResolver {
 			// add to favorite
 			dialogBuilder.setNegativeButton(R.string.buttonAddToFavorities, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
+					context.enableLocationUpdates();
+
 					favoritiesService.add(new BusStopItem(0, stationCode, stationLabel));
 					final String message = context.getResources().getString(R.string.info_addedToFavorities, stationLabel, stationCode);
 					Toast.makeText(context, message, Toast.LENGTH_LONG).show();

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -18,6 +17,7 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.providers.StationProvider;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
@@ -32,7 +32,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
 
 	private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
-	private final Activity context;
+	private final LocationView context;
 
 	private final Map<String, OverlayItem> codeToOverlayItem = new HashMap<String, OverlayItem>();
 	private ProgressDialog pd;
@@ -169,7 +169,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
 	}
 
-	public StationsOverlay(Activity context, MapView map) {
+	public StationsOverlay(LocationView context, MapView map) {
 		super(boundCenterBottom(context.getResources().getDrawable(R.drawable.station)));
 		this.context = context;
 		this.map = map;

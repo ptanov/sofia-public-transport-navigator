@@ -75,11 +75,11 @@ public class FavoritiesService {
 		final Map<String, ?> allPositions = positionsStore.getAll();
 		final int oldPosition = busStop.getPosition();
 		final int lastPosition = allPositions.size() - 1;
-		//move to end:
+		// move to end:
 		if (lastPosition != oldPosition) {
 			reorder(positionsStoreEditor, allPositions, oldPosition, lastPosition);
 		}
-		//remove last
+		// remove last
 		positionsStoreEditor.remove(Integer.toString(lastPosition));
 		labelsStoreEditor.remove(Integer.toString(busStop.getCode()));
 
@@ -108,6 +108,18 @@ public class FavoritiesService {
 		}
 	}
 
+	public void rename(String code, String newLabel) {
+		final SharedPreferences labelsStore = getLabelsStore();
+		final String oldName = labelsStore.getString(code, null);
+		if (oldName == null) {
+			throw new IllegalArgumentException(String.format("Station %s is not in favorities (newLabel: %s)", code, newLabel));
+		}
+		final SharedPreferences.Editor labelsStoreEditor = labelsStore.edit();
+		labelsStoreEditor.putString(code, newLabel);
+
+		labelsStoreEditor.commit();
+	}
+
 	/**
 	 * If positionOffset is outside [0; size) - uses first valid position in boundary
 	 */
@@ -131,7 +143,7 @@ public class FavoritiesService {
 		}
 
 		reorder(positionsStoreEditor, allPositions, oldPosition, newPosition);
-		
+
 		positionsStoreEditor.commit();
 	}
 
@@ -148,7 +160,7 @@ public class FavoritiesService {
 		if (!(busStopToMove instanceof Integer)) {
 			throw new IllegalStateException("No usable information for position(" + oldPosition + "): " + busStopToMove);
 		}
-		
+
 		final int increment = oldPosition < newPosition ? 1 : -1;
 
 		for (int currentPosition = oldPosition; currentPosition != newPosition; currentPosition += increment) {
@@ -160,6 +172,6 @@ public class FavoritiesService {
 			}
 			positionsStoreEditor.putInt(Integer.toString(currentPosition), (Integer) object);
 		}
-		positionsStoreEditor.putInt(Integer.toString(newPosition), (Integer)busStopToMove);
+		positionsStoreEditor.putInt(Integer.toString(newPosition), (Integer) busStopToMove);
 	}
 }

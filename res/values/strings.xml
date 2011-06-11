@@ -66,5 +66,6 @@
 
 <string name="buttonAddToFavorities">В избрани</string>
 <string name="info_addedToFavorities" formatted="false">Спирката е успешно добавена в избрани: %s (%s)</string>
+<string name="menu_favoroties_rename">Преименувай</string>
 
 </resources>

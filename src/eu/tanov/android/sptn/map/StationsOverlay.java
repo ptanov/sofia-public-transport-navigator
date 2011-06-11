@@ -28,26 +28,24 @@ import eu.tanov.android.sptn.util.MapHelper;
 public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private static final String TAG = "StationsOverlay";
 
-
 	private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
 
 	private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
 	private final Activity context;
-	
+
 	private final Map<String, OverlayItem> codeToOverlayItem = new HashMap<String, OverlayItem>();
 	private ProgressDialog pd;
 	private final Handler uiHandler = new Handler();
 
 	private final MapView map;
 
-    private static final String[] PROJECTION = new String[] {
-    	Station._ID, // 0
-    	Station.CODE, // 1
-    	Station.LAT, // 2
-    	Station.LON, // 3
-    	Station.LABEL, // 4
-    };
+	private static final String[] PROJECTION = new String[] { Station._ID, // 0
+			Station.CODE, // 1
+			Station.LAT, // 2
+			Station.LON, // 3
+			Station.LABEL, // 4
+	};
 
 	public class StationsQuery extends BaseQuery {
 		private final double lon;
@@ -78,128 +76,132 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
 		@Override
 		protected Cursor createCursor() {
-			return context.managedQuery(StationProvider.CONTENT_URI, PROJECTION, "code="+code, null, null);
+			return context.managedQuery(StationProvider.CONTENT_URI, PROJECTION, "code=" + code, null, null);
 		}
 	}
 
-    public abstract class BaseQuery implements Runnable {
+	public abstract class BaseQuery implements Runnable {
 
-    	@Override
-    	public void run() {
-    		try {
-    			final Cursor cursor = createCursor();
-    			
-    			if (!cursor.moveToFirst()) {
-    				//no results
-    				return;
-    			}
-    			
-    			//iterate over result
-    			int codeColumn = cursor.getColumnIndex(Station.CODE); 
-    			int labelColumn = cursor.getColumnIndex(Station.LABEL); 
-    			int latColumn = cursor.getColumnIndex(Station.LAT);
-    			int lonColumn = cursor.getColumnIndex(Station.LON);
-    			
-    			String code; 
-    			String label; 
-    			double lat; 
-    			double lon; 
-    			final ArrayList<OverlayItem> newStations = new ArrayList<OverlayItem>(StationProvider.STATIONS_LIMIT);
-    			
-    			do {
-    				// Get the field values
-    				code = cursor.getString(codeColumn);
-    				if (codeToOverlayItem.containsKey(code)) {
-    					//already added
-    					continue;
-    				}
-    				//not a best way to save index of node, but it works if stations are not removed
-    				label = cursor.getString(labelColumn);
-    				lat = cursor.getDouble(latColumn);
-    				lon = cursor.getDouble(lonColumn);
-    				
-    				final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
+		@Override
+		public void run() {
+			try {
+				final Cursor cursor = createCursor();
+
+				if (!cursor.moveToFirst()) {
+					// no results
+					return;
+				}
+
+				// iterate over result
+				int codeColumn = cursor.getColumnIndex(Station.CODE);
+				int labelColumn = cursor.getColumnIndex(Station.LABEL);
+				int latColumn = cursor.getColumnIndex(Station.LAT);
+				int lonColumn = cursor.getColumnIndex(Station.LON);
+
+				String code;
+				String label;
+				double lat;
+				double lon;
+				final ArrayList<OverlayItem> newStations = new ArrayList<OverlayItem>(StationProvider.STATIONS_LIMIT);
+
+				do {
+					// Get the field values
+					code = cursor.getString(codeColumn);
+					if (codeToOverlayItem.containsKey(code)) {
+						// already added
+						continue;
+					}
+					// not a best way to save index of node, but it works if stations are not removed
+					label = cursor.getString(labelColumn);
+					lat = cursor.getDouble(latColumn);
+					lon = cursor.getDouble(lonColumn);
+
+					final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
 					final OverlayItem overlayItem = new OverlayItem(point, code, label);
 					codeToOverlayItem.put(code, overlayItem);
 					newStations.add(overlayItem);
-    			} while (cursor.moveToNext());
-    			
-    			//in UI thread
-    			populateInUiThread(newStations);
-    		} finally {
-    			hideProgressDialog();
-    		}
+				} while (cursor.moveToNext());
+
+				// in UI thread
+				populateInUiThread(newStations);
+			} finally {
+				hideProgressDialog();
+			}
 		}
 
 		protected abstract Cursor createCursor();
-    }
+	}
 
+	public class EstimatesQuery extends Thread {
 
-    public class EstimatesQuery extends Thread {
-    	
-    	private final OverlayItem overlayItem;
+		private final OverlayItem overlayItem;
 
 		public EstimatesQuery(OverlayItem overlayItem) {
 			if (overlayItem == null) {
 				throw new IllegalArgumentException("overlay item is null");
 			}
-    		this.overlayItem = overlayItem;
-    	}
-    	@Override
-    	public void run() {
-    		final String stationCode = overlayItem.getTitle();
-    		final String stationLabel = overlayItem.getSnippet();
-    		
-    		try {
-    			final EstimatesResolver resolver = new HtmlResult(context, stationCode, stationLabel, showRemainingTime());
-    			//long operation
-    			resolver.query();
+			this.overlayItem = overlayItem;
+		}
 
-    			//in UI thread
-    			showEstimates(resolver);
-    		} catch (Exception e) {
-    			Log.e(TAG, "could not get estimations for "+stationCode+". "+stationLabel, e);
-    			//being safe (Throwable!?) ;)
-    			showErrorMessage(stationLabel, stationCode);
-    		} finally {
-    			hideProgressDialog();
-    		}
-    		
-    		return;
-    	}
-    
-    }
+		@Override
+		public void run() {
+			final String stationCode = overlayItem.getTitle();
+			final String stationLabel = overlayItem.getSnippet();
+
+			try {
+				final EstimatesResolver resolver = new HtmlResult(context, stationCode, stationLabel, showRemainingTime());
+				// long operation
+				resolver.query();
+
+				// in UI thread
+				showEstimates(resolver);
+			} catch (Exception e) {
+				Log.e(TAG, "could not get estimations for " + stationCode + ". " + stationLabel, e);
+				// being safe (Throwable!?) ;)
+				showErrorMessage(stationLabel, stationCode);
+			} finally {
+				hideProgressDialog();
+			}
+
+			return;
+		}
+
+	}
+
 	public StationsOverlay(Activity context, MapView map) {
 		super(boundCenterBottom(context.getResources().getDrawable(R.drawable.station)));
 		this.context = context;
 		this.map = map;
 		populateFixed();
 	}
-	
+
 	/**
 	 * from http://groups.google.com/group/android-developers/browse_thread/thread/38b11314e34714c3
-	 * http://developmentality.wordpress.com/2009/10/19/android-itemizedoverlay-arrayindexoutofboundsexception-nullpointerexception-workarounds/
+	 * http://developmentality.wordpress.com/2009/10/19/android-itemizedoverlay-arrayindexoutofboundsexception-nullpointerexception-
+	 * workarounds/
 	 */
 	private void populateFixed() {
 		setLastFocusedIndex(-1);
 		populate();
-		//redraw items
+		// redraw items
 		map.invalidate();
 	}
-	
+
 	@Override
 	public boolean onTap(GeoPoint p, MapView mapView) {
 		final boolean result = super.onTap(p, mapView);
 		if (!result) {
-			//only if not on overlay item
-			placeStations(MapHelper.toCoordinate(p.getLatitudeE6()),
-					MapHelper.toCoordinate(p.getLongitudeE6()), true);
+			// only if not on overlay item
+			placeStations(MapHelper.toCoordinate(p.getLatitudeE6()), MapHelper.toCoordinate(p.getLongitudeE6()), true);
 		}
 		return result;
 	}
+
 	/**
 	 * should be called if location changes
-	 * @param location new location
+	 * 
+	 * @param location
+	 *            new location
 	 */
 	public void placeStations(double newLat, double newLon, boolean showDialog) {
 		final StationsQuery query = new StationsQuery(newLat, newLon);
@@ -249,33 +251,36 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 	@Override
 	protected boolean onTap(int stationIndex) {
 		showStation(stations.get(stationIndex));
-		
+
 		return true;
 	}
 
 	/**
 	 * or hour of arriving
+	 * 
 	 * @return
 	 */
 	private boolean showRemainingTime() {
 		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 		return settings.getBoolean(PREFERENCE_KEY_SHOW_REMAINING_TIME, PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME);
 	}
+
 	/**
 	 * runs in ui thread
-	 * @param stationCode 
+	 * 
+	 * @param stationCode
 	 */
 	private void showErrorMessage(final String stationLabel, final String stationCode) {
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				final String message = context.getResources().getString(
-						R.string.error_retrieveEstimates_generic, stationLabel, stationCode);
+				final String message = context.getResources()
+						.getString(R.string.error_retrieveEstimates_generic, stationLabel, stationCode);
 				Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 			}
 		});
 	}
-	
+
 	private void populateInUiThread(final ArrayList<OverlayItem> newStations) {
 		uiHandler.post(new Runnable() {
 			@Override
@@ -285,7 +290,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 			}
 		});
 	}
-	
+
 	private void showEstimates(final EstimatesResolver resolver) {
 		uiHandler.post(new Runnable() {
 			@Override
@@ -295,20 +300,16 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		});
 	}
 
-
 	private void createProgressDialog(int message) {
-		pd = ProgressDialog.show(context,
-				context.getResources().getString(R.string.progressDialog_title),
-				context.getResources().getString(message),
-				true, false
-		);
+		pd = ProgressDialog.show(context, context.getResources().getString(R.string.progressDialog_title), context.getResources()
+				.getString(message), true, false);
 	}
 
 	private void hideProgressDialog() {
 		uiHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				if(pd!=null) {
+				if (pd != null) {
 					pd.dismiss();
 					pd = null;
 				}

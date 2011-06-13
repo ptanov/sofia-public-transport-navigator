@@ -157,7 +157,7 @@ public class FavoritiesService {
 	 */
 	private void reorder(SharedPreferences.Editor positionsStoreEditor, Map<String, ?> originalPositions, int oldPosition, int newPosition) {
 		final Object busStopToMove = originalPositions.get(Integer.toString(oldPosition));
-		if (!(busStopToMove instanceof Integer)) {
+		if (!(busStopToMove instanceof String)) {
 			throw new IllegalStateException("No usable information for position(" + oldPosition + "): " + busStopToMove);
 		}
 
@@ -168,10 +168,10 @@ public class FavoritiesService {
 			final int nextPosition = currentPosition + increment;
 			final Object object = originalPositions.get(Integer.toString(nextPosition));
 			if (!(object instanceof String)) {
-				throw new IllegalStateException("No usable information for position(" + nextPosition + "): " + object);
+				throw new IllegalStateException("No usable information for moving position(" + nextPosition + "): " + object);
 			}
 			positionsStoreEditor.putString(Integer.toString(currentPosition), (String) object);
 		}
-		positionsStoreEditor.putInt(Integer.toString(newPosition), (Integer) busStopToMove);
+		positionsStoreEditor.putString(Integer.toString(newPosition), (String) busStopToMove);
 	}
 }

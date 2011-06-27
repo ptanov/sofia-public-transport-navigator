@@ -7,9 +7,9 @@
 		android:id="@+id/menu_favorities_down" 
 		android:title="@string/menu_favoroties_down" />
 	<item
-		android:id="@+id/menu_favorities_remove" 
-		android:title="@string/menu_favoroties_remove" />
-	<item
 		android:id="@+id/menu_favorities_rename" 
 		android:title="@string/menu_favoroties_rename" />
+	<item
+		android:id="@+id/menu_favorities_remove" 
+		android:title="@string/menu_favoroties_remove" />
 </menu>

@@ -2,7 +2,6 @@ package eu.tanov.android.sptn.sumc;
 
 import java.util.Date;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -241,8 +240,6 @@ public class HtmlResult implements EstimatesResolver {
 	private void handleRefresh(Builder dialogBuilder, final WebView browser) {
 		dialogBuilder.setNeutralButton(R.string.buttonRefreshEstimates, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				context.enableLocationUpdates();
-
 				overlay.showStation(stationCode, false);
 			}
 		});

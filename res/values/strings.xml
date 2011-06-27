@@ -19,7 +19,7 @@
 <string name="menu_settings">Настройки</string>
 <string name="menu_help">Помощ</string>
 
-<string name="aboutDialog_title">Спирките в София (версия 1.08)</string>
+<string name="aboutDialog_title">Спирките в София (версия 1.09)</string>
 <string name="aboutDialog_content">Данните за времената на пристигане се извличат от http://m.sumc.bg\n\n\nИзползвате програмата на собствена отговорност.\n\n\nАвтор: Пламен Танов</string>
 
 <string name="helpDialog_title">Помощ</string>

@@ -40,6 +40,9 @@ public class LocationView extends MapActivity {
 	private static final String PREFERENCE_KEY_MAP_COMPASS = "mapCompass";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_COMPASS = false;
 
+	private static final String PREFERENCE_KEY_STARTUP_SCREEN_FAVORITIES = "commonStartupScreenFavorities";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_STARTUP_SCREEN_FAVORITIES = false;
+
 	private MyLocationOverlay myLocationOverlay;
 	private StationsOverlay stationsOverlay;
 
@@ -77,6 +80,17 @@ public class LocationView extends MapActivity {
 		overlays.add(stationsOverlay);
 
 		map.getController().setZoom(16);
+
+		selectStartupScreen();
+	}
+
+	private void selectStartupScreen() {
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		final boolean startupScreenFavorities = settings.getBoolean(PREFERENCE_KEY_STARTUP_SCREEN_FAVORITIES,
+				PREFERENCE_DEFAULT_VALUE_STARTUP_SCREEN_FAVORITIES);
+		if (startupScreenFavorities) {
+			navigateToFavorities();
+		}
 	}
 
 	public void disableLocationUpdates() {
@@ -166,8 +180,7 @@ public class LocationView extends MapActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_favorities: {
-			final Intent intent = new Intent(this, FavoritiesActivity.class);
-			startActivityForResult(intent, REQUEST_CODE_FAVORITIES);
+			navigateToFavorities();
 			break;
 		}
 		case R.id.menu_settings: {
@@ -196,6 +209,11 @@ public class LocationView extends MapActivity {
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void navigateToFavorities() {
+		final Intent intent = new Intent(this, FavoritiesActivity.class);
+		startActivityForResult(intent, REQUEST_CODE_FAVORITIES);
 	}
 
 	@Override

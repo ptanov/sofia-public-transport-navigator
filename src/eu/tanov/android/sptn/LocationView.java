@@ -34,8 +34,9 @@ public class LocationView extends MapActivity {
 	private static final String PREFERENCE_KEY_MAP_SATELLITE = "mapSatellite";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE = false;
 
-	private static final String PREFERENCE_KEY_MAP_STREET_VALUE = "mapStreetView";
-	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE = true;
+//	issue #49: actually not used, mapSatellite has more priority
+//	private static final String PREFERENCE_KEY_MAP_STREET_VALUE = "mapStreetView";
+//	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE = true;
 
 	private static final String PREFERENCE_KEY_MAP_TRAFFIC = "mapTraffic";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC = false;
@@ -154,7 +155,8 @@ public class LocationView extends MapActivity {
 		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		map.setTraffic(settings.getBoolean(PREFERENCE_KEY_MAP_TRAFFIC, PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC));
 		map.setSatellite(settings.getBoolean(PREFERENCE_KEY_MAP_SATELLITE, PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE));
-		map.setStreetView(settings.getBoolean(PREFERENCE_KEY_MAP_STREET_VALUE, PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE));
+//		as suggested in http://stackoverflow.com/questions/7478952/mapview-rendering-with-tiles-missing-with-an-x-in-the-center#7510957 :
+//		map.setStreetView(settings.getBoolean(PREFERENCE_KEY_MAP_STREET_VALUE, PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE));
 
 		setCompassSettings(settings);
 	}

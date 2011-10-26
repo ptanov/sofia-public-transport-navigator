@@ -75,5 +75,7 @@
 <string name="buttonRefreshEstimates">Обнови</string>
 <string name="versionChanges_1_09_favorities_text">За времената на пристигане натиснете върху избраната спирка, за други действия (преименуване, местене, изтриване) задръжте върху съответната спирка и използвайте желаната опция от менюто.</string>
 <string name="versionChanges_1_09_favorities_title">Как да работим с избрани спирки</string>
+<string name="versionChanges_1_10_startupScreen_text">От [MENU&gt;Настройки&gt;&quot;Избрани спирки&quot; за начален екран] можете да укажете при стартиране на приложението да се показва списъкът с избрани спирки</string>
+<string name="versionChanges_1_10_startupScreen_title">Избор на начален екран</string>
 
 </resources>

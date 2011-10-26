@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,6 +23,8 @@ import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class LocationView extends MapActivity {
+	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_10 = "whatsNewShowVersion1_10_startupScreen";
+	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_10 = true;
 
 	private static final GeoPoint LOCATION_SOFIA = new GeoPoint(42696827, 23320916);
 
@@ -80,8 +83,29 @@ public class LocationView extends MapActivity {
 		overlays.add(stationsOverlay);
 
 		map.getController().setZoom(16);
+		notifyForChangesInNewVersions();
 
 		selectStartupScreen();
+	}
+
+	private void notifyForChangesInNewVersions() {
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+
+		if (settings.getBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_10, PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_10)) {
+			final Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+			// show only first time:
+			editor.putBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_10, false);
+			editor.commit();
+
+			new AlertDialog.Builder(this).setTitle(R.string.versionChanges_1_10_startupScreen_title).setCancelable(true)
+					.setMessage(R.string.versionChanges_1_10_startupScreen_text)
+					.setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					}).create().show();
+		}
+
 	}
 
 	private void selectStartupScreen() {

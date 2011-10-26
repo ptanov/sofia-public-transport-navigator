@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/settings_category_common">
+		<CheckBoxPreference android:key="commonStartupScreenFavorities"
+			android:title="@string/settings_commonStartupScreenFavorities_title"
+			android:defaultValue="false" android:summary="@string/settings_commonStartupScreenFavorities_summary" />
+	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_map">
 		<!--
 			<ListPreference android:title="@string/settings_mapType_title"

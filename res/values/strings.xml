@@ -77,5 +77,8 @@
 <string name="versionChanges_1_09_favorities_title">Как да работим с избрани спирки</string>
 <string name="versionChanges_1_10_startupScreen_text">От [MENU&gt;Настройки&gt;&quot;Избрани спирки&quot; за начален екран] можете да укажете при стартиране на приложението да се показва списъкът с избрани спирки</string>
 <string name="versionChanges_1_10_startupScreen_title">Избор на начален екран</string>
+<string name="settings_category_common">Общи</string>
+<string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Избрани спирки\' за начален екран</string>
+<string name="settings_commonStartupScreenFavorities_summary">Екран с избрани спирки или карта</string>
 
 </resources>

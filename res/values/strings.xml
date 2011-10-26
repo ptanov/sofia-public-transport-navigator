@@ -60,6 +60,8 @@
 <string name="settings_whatsNewShowVersion1_09_estimates_summary" formatted="false">Бутон \'В избрани\' и \'Обнови\' в прозореца с времена на пристигане</string>
 <string name="settings_whatsNewShowVersion1_09_favorities_summary">Списък с избрани спирки</string>
 
+<string name="settings_whatsNewShowVersion1_10_title">Версия 1.10</string>
+<string name="settings_whatsNewShowVersion1_10_startupScreenFavorities_summary" formatted="false">Опция за избор на начален екран - карта или \'Избрани спирки\' (в \'Настройки\')</string>
 
 
 <string name="favorities_empty_list" formatted="false">Няма избрани спирки. За да добавите такава - използвайте бутона \'В избрани\' от прозореца с времена на пристигане на съответната спирка.</string>
@@ -75,7 +77,7 @@
 <string name="buttonRefreshEstimates">Обнови</string>
 <string name="versionChanges_1_09_favorities_text">За времената на пристигане натиснете върху избраната спирка, за други действия (преименуване, местене, изтриване) задръжте върху съответната спирка и използвайте желаната опция от менюто.</string>
 <string name="versionChanges_1_09_favorities_title">Как да работим с избрани спирки</string>
-<string name="versionChanges_1_10_startupScreen_text">От [MENU&gt;Настройки&gt;&quot;Избрани спирки&quot; за начален екран] можете да укажете при стартиране на приложението да се показва списъкът с избрани спирки</string>
+<string name="versionChanges_1_10_startupScreen_text" formatted="false">От [MENU&gt;Настройки&gt;\'Избрани спирки\' за начален екран] можете да укажете списъкът с избрани спирки да се показва при стартиране на приложението (вместо картата)</string>
 <string name="versionChanges_1_10_startupScreen_title">Избор на начален екран</string>
 <string name="settings_category_common">Общи</string>
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Избрани спирки\' за начален екран</string>

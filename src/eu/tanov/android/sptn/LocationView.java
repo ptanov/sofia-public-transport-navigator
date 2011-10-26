@@ -23,7 +23,7 @@ import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class LocationView extends MapActivity {
-	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_10 = "whatsNewShowVersion1_10_startupScreen";
+	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_10 = "whatsNewShowVersion1_10_startupScreenFavorities";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_10 = true;
 
 	private static final GeoPoint LOCATION_SOFIA = new GeoPoint(42696827, 23320916);

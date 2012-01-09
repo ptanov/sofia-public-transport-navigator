@@ -67,7 +67,7 @@ public class TimeHelper {
 
 	/**
 	 * @param remaining
-	 * @return something like ~1÷.22ì.
+	 * @return something like ~1Ñ‡.22Ð¼.
 	 */
 	private static String remainingTimeToHumanReadableForm(long remaining,
 			String formatOnlyMinutes, String formatMinutesAndHours) {

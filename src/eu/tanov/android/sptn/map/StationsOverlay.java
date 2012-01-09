@@ -2,6 +2,7 @@ package eu.tanov.android.sptn.map;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import android.app.ProgressDialog;
@@ -57,7 +58,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 		}
 
 		private String sortOrder(double lat, double lon) {
-			return String.format("(ABS(lat-(%f))+ABS(lon-(%f))) ASC", lat, lon);
+			return String.format(Locale.US, "(ABS(lat-(%f))+ABS(lon-(%f))) ASC", lat, lon);
 		}
 
 		@Override

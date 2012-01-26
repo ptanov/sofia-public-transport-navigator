@@ -1,10 +1,15 @@
 package eu.tanov.android.sptn.sumc;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 
 import android.util.Log;
@@ -19,7 +24,7 @@ public class Browser {
     /**
      * q=000000 in order to find only by ID (we expect that there is no label 000000)
      */
-    private static final String FORMAT_URL = "http://m.sofiatraffic.bg/vt?q=000000%s&o=1&go=1";
+    private static final String URL = "http://m.sofiatraffic.bg/vt";
 
     private ResponseHandler<String> responseHandler;
 
@@ -31,7 +36,10 @@ public class Browser {
         // XXX do not create client every time, use HTTP1.1 keep-alive!
         final HttpClient client = new DefaultHttpClient();
 
-        final HttpGet request = createRequest(stationCode);
+        final HttpPost request = createRequest(stationCode);
+        if (request == null) {
+            return null;
+        }
 
         // Create a response handler
         if (responseHandler == null) {
@@ -50,11 +58,19 @@ public class Browser {
         return result;
     }
 
-    private static HttpGet createRequest(String stationCode) {
-        final HttpGet result = new HttpGet(String.format(FORMAT_URL, stationCode));
+    private static HttpPost createRequest(String stationCode) {
+        final HttpPost result = new HttpPost(URL);
         result.addHeader("User-Agent", USER_AGENT);
         result.addHeader("Referer", REFERER);
         result.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
+        try {
+            final UrlEncodedFormEntity entity = new UrlEncodedFormEntity(Arrays.asList(new BasicNameValuePair("q",
+                    "000000" + stationCode), new BasicNameValuePair("o", "1"), new BasicNameValuePair("go", "1")));
+            result.setEntity(entity);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Not supported default encoding?", e);
+        }
+
         return result;
     }
 }

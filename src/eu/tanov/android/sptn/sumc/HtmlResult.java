@@ -24,9 +24,9 @@ public class HtmlResult implements EstimatesResolver {
 
 	// private static final String FORMAT_OUTPUT_INFO =
 	// "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td class=\"direction\" colspan=\"2\">%s</td></tr></table>";
-	private static final String FORMAT_OUTPUT_INFO_RIGHT = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"direction\" style=\"font-size: %dpt;\" >%s</td></tr></table>";
-	private static final String FORMAT_OUTPUT_INFO_BOTTOM = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td colspan=\"2\" class=\"direction\" style=\"font-size: %dpt;\" >%s</td></tr></table>";
-	private static final String FORMAT_OUTPUT_INFO_NO_DIRECTION = "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr></table>";
+    private static final String FORMAT_OUTPUT_INFO_RIGHT = "<table><tr><td class=\"number\"><a href=\"http://m.sofiatraffic.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sofiatraffic.bg%s\">%s</a></td><td class=\"direction\" style=\"font-size: %dpt;\" >%s</td></tr></table>";
+    private static final String FORMAT_OUTPUT_INFO_BOTTOM = "<table><tr><td class=\"number\"><a href=\"http://m.sofiatraffic.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sofiatraffic.bg%s\">%s</a></td></tr><tr><td colspan=\"2\" class=\"direction\" style=\"font-size: %dpt;\" >%s</td></tr></table>";
+    private static final String FORMAT_OUTPUT_INFO_NO_DIRECTION = "<table><tr><td class=\"number\"><a href=\"http://m.sofiatraffic.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sofiatraffic.bg%s\">%s</a></td></tr></table>";
 
 	private static final String FORMAT_OUTPUT_INFO_WHATS_NEW_VERSION_1_06 = "<table><tr><td colspan=\"2\" style=\"color: red;\" >Текстът в синьо е линк към разписанието:</td></tr><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td colspan=\"2\" class=\"direction\" style=\"font-size: 10pt;\" >%s</td></tr><tr><td colspan=\"2\" style=\"color: red;\" >^^^ Как да се показва направлението може да се контролира от ОК-МЕНЮ-Настройки</td></tr></table>";
 	private static final String FORMAT_OUTPUT_INFO_WHATS_NEW_VERSION_1_09 = "<div style=\"color: red;\" >Версия 1.09: Използвайте бутона 'В избрани' за да добавите текущата спирка в списъка с избрани спирки. До него може да достигнете от основния екран, бутон 'МЕНЮ', 'Избрани спирки'.<br/>Бутонът 'Обнови' ще обнови данните за пристигане на автобусите с най-новите от сайта на СКГТ. Приятно и ползотворно ползване! :)</div>";
@@ -213,7 +213,7 @@ public class HtmlResult implements EstimatesResolver {
 	public void showResult() {
 		context.disableLocationUpdates();
 		final WebView browser = new WebView(context);
-		browser.loadData(htmlData, MIME_TYPE, ENCODING);
+        browser.loadData(htmlData, MIME_TYPE, ENCODING);
 
 		final Builder dialogBuilder = new AlertDialog.Builder(this.context);
 		dialogBuilder.setTitle(context.getString(R.string.format_estimates_dialog_title, DateFormat.getTimeFormat(context).format(date),

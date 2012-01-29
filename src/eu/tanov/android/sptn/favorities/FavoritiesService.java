@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import eu.tanov.android.sptn.R;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -57,7 +59,10 @@ public class FavoritiesService {
 			throw new IllegalStateException("Bus stop code should be integer, not: " + code);
 		}
 
-		final Object label = allLabels.get(code.toString());
+		Object label = allLabels.get(code.toString());
+		if (label == null) {
+		    label = context.getString(R.string.favorities_null_label);
+		}
 		if (!(label instanceof String)) {
 			throw new IllegalStateException("Label for favorite bus stop <" + code + "> should be String, but was: " + label);
 		}

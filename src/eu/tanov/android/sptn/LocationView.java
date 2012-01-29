@@ -3,6 +3,7 @@ package eu.tanov.android.sptn;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -46,6 +48,7 @@ public class LocationView extends MapActivity {
 
     private static final String PREFERENCE_KEY_STARTUP_SCREEN_FAVORITIES = "commonStartupScreenFavorities";
     private static final boolean PREFERENCE_DEFAULT_VALUE_STARTUP_SCREEN_FAVORITIES = false;
+    private static final int DIALOG_ID_ABOUT = 1;
 
     private MyLocationOverlay myLocationOverlay;
     private StationsOverlay stationsOverlay;
@@ -220,13 +223,8 @@ public class LocationView extends MapActivity {
             break;
         }
         case R.id.menu_about:
-            new AlertDialog.Builder(this).setTitle(R.string.aboutDialog_title).setCancelable(true)
-                    .setMessage(R.string.aboutDialog_content)
-                    .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                        }
-                    }).create().show();
+            showDialog(DIALOG_ID_ABOUT);
+
             break;
         case R.id.menu_help:
             new AlertDialog.Builder(this).setTitle(R.string.helpDialog_title).setCancelable(true)
@@ -242,6 +240,29 @@ public class LocationView extends MapActivity {
             break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+        case DIALOG_ID_ABOUT:
+            return createAboutDialog();
+
+        default:
+            return null;
+        }
+    }
+
+    private Dialog createAboutDialog() {
+        final View view = this.getLayoutInflater().inflate(R.layout.about_dialog, null);
+        return new AlertDialog.Builder(this).setTitle(R.string.aboutDialog_title).setCancelable(true).setView(view)
+
+                .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                }).create();
+
     }
 
     private void navigateToFavorities() {

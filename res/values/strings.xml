@@ -84,5 +84,8 @@
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Избрани спирки\' за начален екран</string>
 <string name="settings_commonStartupScreenFavorities_summary">Екран с избрани спирки или карта</string>
 <string name="favorities_null_label">Без име - натисни и задръж за преименуване</string>
+<string name="captcha_dialog_title">Captcha</string>
+<string name="captcha_dialog_label">СКГТ явно не иска да популяризира градския транспорт като улесни пътниците и за това са сложили CAPTCHA. Нека бъдат живи и здрави!\nАко това не Ви харесва може да се обадите на телефоните им или да им напишете писмо и по този начин заедно да променим това отношение. Благодаря предварително!\n\nМоля въведете текста от изображението:</string>
+
 
 </resources>

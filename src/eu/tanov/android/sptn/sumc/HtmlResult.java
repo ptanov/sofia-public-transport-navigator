@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -81,12 +82,14 @@ public class HtmlResult implements EstimatesResolver {
 	private boolean showWhatsNewInVersion1_06;
 	private boolean showWhatsNewInVersion1_09;
 	private final StationsOverlay overlay;
+    private final Handler uiHandler;
 
-	public HtmlResult(LocationView context, StationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime) {
+	public HtmlResult(LocationView context, Handler uiHandler, StationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime) {
 		this.stationCode = stationCode;
 		this.overlay = overlay;
 		this.stationLabel = stationLabel;
 		this.context = context;
+		this.uiHandler = uiHandler;
 		this.showRemainingTime = showRemainingTime;
 
 		this.formatOnlyMinutes = this.context.getString(R.string.remainingTime_format_onlyMinutes);
@@ -108,7 +111,7 @@ public class HtmlResult implements EstimatesResolver {
 		final Browser browser = new Browser();
 		final ResponseHandlerWithDate responseHandler = new ResponseHandlerWithDate();
 		browser.setResponseHandler(responseHandler);
-		final String response = browser.queryStation(stationCode);
+		final String response = browser.queryStation(context, uiHandler, stationCode);
 		if (response == null) {
 			throw new IllegalStateException("could not get estimations (null) for " + stationCode + ". " + stationLabel);
 		}

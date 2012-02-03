@@ -36,6 +36,7 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import eu.tanov.android.sptn.R;
 
@@ -147,25 +148,26 @@ public class Browser {
     private static String getCaptchaText(Context context, Handler uiHandler, Bitmap captchaImage) {
         final Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setTitle(R.string.captcha_dialog_title);
-
-        final LinearLayout view = new LinearLayout(context);
-        view.setOrientation(LinearLayout.VERTICAL);
+        final LinearLayout panel = new LinearLayout(context);
+        panel.setOrientation(LinearLayout.VERTICAL);
         final TextView label = new TextView(context);
         label.setId(1);
         label.setText(R.string.captcha_dialog_label);
-        view.addView(label);
+        panel.addView(label);
 
         final ImageView image = new ImageView(context);
         image.setId(3);
         image.setImageBitmap(captchaImage);
-        view.addView(image);
+        panel.addView(image);
 
         final EditText input = new EditText(context);
         input.setId(2);
         input.setSingleLine();
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI
                 | InputType.TYPE_TEXT_VARIATION_PHONETIC);
-        view.addView(input);
+        final ScrollView view = new ScrollView(context);
+        view.addView(panel);
+        panel.addView(view);
 
         dialogBuilder.setCancelable(true).setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -177,7 +179,7 @@ public class Browser {
 
                 dialog.dismiss();
             }
-        }).setView(view);
+        }).setView(panel);
 
         dialogBuilder.setOnCancelListener(new OnCancelListener() {
             @Override

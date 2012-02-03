@@ -109,8 +109,6 @@ public class HtmlResult implements EstimatesResolver {
 	@Override
 	public void query() {
 		final Browser browser = new Browser();
-		final ResponseHandlerWithDate responseHandler = new ResponseHandlerWithDate();
-		browser.setResponseHandler(responseHandler);
 		final String response = browser.queryStation(context, uiHandler, stationCode);
 		if (response == null) {
 			throw new IllegalStateException("could not get estimations (null) for " + stationCode + ". " + stationLabel);

@@ -69,10 +69,6 @@ public class Browser {
     private static final Object wait = new Object[0];
     private static String result = null;
 
-    public void setResponseHandler(ResponseHandler<String> responseHandler) {
-        this.responseHandler = responseHandler;
-    }
-
     public String queryStation(Context context, Handler uiHandler, String stationCode) {
         // XXX do not create client every time, use HTTP1.1 keep-alive!
         final DefaultHttpClient client = new DefaultHttpClient();

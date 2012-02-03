@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="aboutDialog_title">Спирките в София (версия 1.16)</string>
     
     <string name="app_name">Градски транспорт, София</string>
 <string name="vehicleType_bus">Автобус</string>
@@ -19,7 +20,6 @@
 <string name="menu_settings">Настройки</string>
 <string name="menu_help">Помощ</string>
 
-<string name="aboutDialog_title">Спирките в София (версия 1.15)</string>
 <string name="aboutDialog_content">Показва времената на пристигане на превозните средства на градския транспорт в София.\n\n\nПроектът е с отворен код, за повече информация: http://sofia-public-transport-navigator.googlecode.com</string>
 <string name="aboutDialog_legal">Данните за времената на пристигане се извличат от http://m.sumc.bg\n\n\nИзползвате програмата на собствена отговорност.\n\n\nАвтор: Пламен Танов</string>
     

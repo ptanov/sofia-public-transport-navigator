@@ -162,8 +162,8 @@ public class Browser {
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI
                 | InputType.TYPE_TEXT_VARIATION_PHONETIC);
         final ScrollView view = new ScrollView(context);
+        panel.addView(input);
         view.addView(panel);
-        panel.addView(view);
 
         dialogBuilder.setCancelable(true).setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -175,7 +175,7 @@ public class Browser {
 
                 dialog.dismiss();
             }
-        }).setView(panel);
+        }).setView(view);
 
         dialogBuilder.setOnCancelListener(new OnCancelListener() {
             @Override

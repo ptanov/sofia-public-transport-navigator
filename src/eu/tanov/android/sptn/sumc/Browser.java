@@ -13,13 +13,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 
@@ -28,6 +28,8 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -63,54 +65,73 @@ public class Browser {
     private static final String REQUIRES_CAPTCHA = "Въведете символите от изображението";
     private static final String CAPTCHA_IMAGE = "http://m.sofiatraffic.bg/captcha/%s";
 
-    private ResponseHandler<String> responseHandler;
-    private static List<Cookie> cookies = new ArrayList<Cookie>();
-
-    private static final Object wait = new Object[0];
+    private static final Object wait = new int[0];
+    private static final String SHARED_PREFERENCES_NAME_SUMC_COOKIES = "sumc_cookies";
+    private static final String PREFERENCES_COOKIE_NAME = "name";
+    private static final String PREFERENCES_COOKIE_DOMAIN = "domain";
+    private static final String PREFERENCES_COOKIE_PATH = "path";
+    private static final String PREFERENCES_COOKIE_VALUE = "value";
     private static String result = null;
 
     public String queryStation(Context context, Handler uiHandler, String stationCode) {
         // XXX do not create client every time, use HTTP1.1 keep-alive!
         final DefaultHttpClient client = new DefaultHttpClient();
 
-        addCookies(client);
+        loadCookiesFromPreferences(context, client);
         // Create a response handler
-        if (responseHandler == null) {
-            responseHandler = new BasicResponseHandler();
-        }
         String result = null;
-        do {
-            final HttpPost request = createRequest(context, uiHandler, client, responseHandler, stationCode, result);
-
-            try {
-                result = client.execute(request, responseHandler);
-                saveCookies(client);
-            } catch (Exception e) {
-                Log.e(TAG, "Could not get data for station " + stationCode, e);
-                break;
-            }
-        } while (result.contains(REQUIRES_CAPTCHA));
-
-        // XXX do not create client every time, use HTTP1.1 keep-alive!
-        client.getConnectionManager().shutdown();
+        try {
+            do {
+                final HttpPost request = createRequest(context, uiHandler, client, stationCode, result);
+                result = client.execute(request, new BasicResponseHandler());
+                saveCookiesToPreferences(context, client);
+            } while (result.contains(REQUIRES_CAPTCHA));
+        } catch (Exception e) {
+            Log.e(TAG, "Could not get data for station " + stationCode, e);
+        } finally {
+            // XXX do not create client every time, use HTTP1.1 keep-alive!
+            client.getConnectionManager().shutdown();
+        }
 
         return result;
     }
 
-    private void saveCookies(DefaultHttpClient client) {
-        cookies.clear();
-        cookies.addAll(client.getCookieStore().getCookies());
+    private void saveCookiesToPreferences(Context context, DefaultHttpClient client) {
+        final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME_SUMC_COOKIES,
+                Context.MODE_PRIVATE);
+        final Editor edit = sharedPreferences.edit();
+        edit.clear();
+
+        int i = 0;
+        for (Cookie cookie : client.getCookieStore().getCookies()) {
+            edit.putString(PREFERENCES_COOKIE_NAME + i, cookie.getName());
+            edit.putString(PREFERENCES_COOKIE_VALUE + i, cookie.getValue());
+            edit.putString(PREFERENCES_COOKIE_DOMAIN + i, cookie.getDomain());
+            edit.putString(PREFERENCES_COOKIE_PATH + i, cookie.getPath());
+            i++;
+        }
+        edit.commit();
     }
 
-    private void addCookies(DefaultHttpClient client) {
+    private void loadCookiesFromPreferences(Context context, DefaultHttpClient client) {
         final CookieStore cookieStore = client.getCookieStore();
-        for (Cookie cookie : cookies) {
-            cookieStore.addCookie(cookie);
+        final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME_SUMC_COOKIES,
+                Context.MODE_PRIVATE);
+
+        int i = 0;
+        while (sharedPreferences.contains(PREFERENCES_COOKIE_NAME + i)) {
+            final String name = sharedPreferences.getString(PREFERENCES_COOKIE_NAME + i, null);
+            final String value = sharedPreferences.getString(PREFERENCES_COOKIE_VALUE + i, null);
+            final BasicClientCookie result = new BasicClientCookie(name, value);
+
+            result.setDomain(sharedPreferences.getString(PREFERENCES_COOKIE_DOMAIN + i, null));
+            result.setPath(sharedPreferences.getString(PREFERENCES_COOKIE_PATH + i, null));
+            cookieStore.addCookie(result);
+            i++;
         }
     }
 
     private static HttpPost createRequest(Context context, Handler uiHandler, HttpClient client,
-            ResponseHandler<String> responseHandler,
             String stationCode, String previous) {
         try {
             String captchaText = null;

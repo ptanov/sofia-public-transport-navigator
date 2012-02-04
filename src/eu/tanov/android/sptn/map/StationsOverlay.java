@@ -218,7 +218,9 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
      */
     public void placeStations(double newLat, double newLon, boolean showDialog) {
         final StationsQuery query = new StationsQuery(newLat, newLon);
-        context.showProgressPlaceStations();
+        if(showDialog) {
+            context.showProgressPlaceStations();
+        }
         new Thread(query).start();
     }
 

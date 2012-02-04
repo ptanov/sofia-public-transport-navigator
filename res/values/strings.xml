@@ -20,8 +20,9 @@
 <string name="menu_settings">Настройки</string>
 <string name="menu_help">Помощ</string>
 
-<string name="aboutDialog_content">Показва времената на пристигане на превозните средства на градския транспорт в София.\n\n\nПроектът е с отворен код, за повече информация: http://sofia-public-transport-navigator.googlecode.com</string>
-<string name="aboutDialog_legal">Данните за времената на пристигане се извличат от http://m.sumc.bg\n\n\nИзползвате програмата на собствена отговорност.\n\n\nАвтор: Пламен Танов</string>
+<string name="aboutDialog_content">Показва времената на пристигане на превозните средства на градския транспорт в София.\n\nПроектът е с отворен код, за повече информация: http://sofia-public-transport-navigator.googlecode.com</string>
+<string name="aboutDialog_market">Ако приложението Ви харесва може да гласувате за него тук: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
+<string name="aboutDialog_legal">\nАвтор: Пламен Танов\n\nДанните за времената на пристигане се извличат от http://m.sofiatraffic.bg\n\nИзползвате програмата на собствена отговорност.</string>
     
 <string name="helpDialog_title">Помощ</string>
 <string name="helpDialog_content">Изберете точка на картата или използвайте вашите текущи координати.\nСлед това изберете спирка и вижте времената на пристигане.\nМоже да натиснете върху номера на линията (тя е ЛИНК) за да видите разписанието й.</string>

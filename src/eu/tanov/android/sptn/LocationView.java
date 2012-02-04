@@ -12,9 +12,12 @@ import android.content.SharedPreferences.Editor;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -280,14 +283,15 @@ public class LocationView extends MapActivity {
 
     private Dialog createAboutDialog() {
         final View view = this.getLayoutInflater().inflate(R.layout.about_dialog, null);
+        final TextView androidMarketLink = (TextView) view.findViewById(R.id.androidMarketLink);
+        androidMarketLink.setMovementMethod(LinkMovementMethod.getInstance());
+        androidMarketLink.setText(Html.fromHtml(getResources().getString(R.string.aboutDialog_market)));
         return new AlertDialog.Builder(this).setTitle(R.string.aboutDialog_title).setCancelable(true).setView(view)
-
                 .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                     }
                 }).create();
-
     }
 
     private void navigateToFavorities() {

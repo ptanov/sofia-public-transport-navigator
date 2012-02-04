@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,9 +50,14 @@ public class LocationView extends MapActivity {
     private static final String PREFERENCE_KEY_STARTUP_SCREEN_FAVORITIES = "commonStartupScreenFavorities";
     private static final boolean PREFERENCE_DEFAULT_VALUE_STARTUP_SCREEN_FAVORITIES = false;
     private static final int DIALOG_ID_ABOUT = 1;
+    private static final int DIALOG_ID_PROGRESS_PLACE_STATIONS = 2;
+    private static final int DIALOG_ID_PROGRESS_QUERY_STATION = 3;
 
+    
     private MyLocationOverlay myLocationOverlay;
     private StationsOverlay stationsOverlay;
+    private boolean progressPlaceStationsDisplayed = false;
+    private boolean progressQueryStationsDisplayed = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -248,6 +254,25 @@ public class LocationView extends MapActivity {
         case DIALOG_ID_ABOUT:
             return createAboutDialog();
 
+        case DIALOG_ID_PROGRESS_PLACE_STATIONS: {
+            final ProgressDialog progressPlaceStations = new ProgressDialog(this);
+            progressPlaceStations.setTitle(R.string.progressDialog_title);
+            progressPlaceStations.setMessage(getResources().getString(R.string.progressDialog_message_stations));
+            progressPlaceStations.setIndeterminate(true);
+            progressPlaceStations.setCancelable(false);
+            
+            return progressPlaceStations;
+        }
+                   
+        case DIALOG_ID_PROGRESS_QUERY_STATION: {
+            final ProgressDialog progressQueryStations = new ProgressDialog(this);
+            progressQueryStations.setTitle(R.string.progressDialog_title);
+            progressQueryStations.setMessage(getResources().getString(R.string.progressDialog_message_estimating));
+            progressQueryStations.setIndeterminate(true);
+            progressQueryStations.setCancelable(false);
+
+            return progressQueryStations;
+        }
         default:
             return null;
         }
@@ -274,4 +299,40 @@ public class LocationView extends MapActivity {
     protected boolean isRouteDisplayed() {
         return false;
     }
+    
+
+    public void hideProgressPlaceStations() {
+        if (!progressPlaceStationsDisplayed) {
+            return;
+        }
+        progressPlaceStationsDisplayed = false;
+        removeDialog(DIALOG_ID_PROGRESS_PLACE_STATIONS);
+    }
+
+    public void showProgressPlaceStations() {
+        if (progressPlaceStationsDisplayed) {
+            return;
+        }
+        progressPlaceStationsDisplayed = true;
+        showDialog(DIALOG_ID_PROGRESS_PLACE_STATIONS);
+    }
+
+    public void hideProgressQueryStation() {
+        if (!progressQueryStationsDisplayed) {
+            return;
+        }
+        progressQueryStationsDisplayed = false;
+
+        removeDialog(DIALOG_ID_PROGRESS_QUERY_STATION);
+    }
+
+    public void showProgressQueryStation() {
+        if (progressQueryStationsDisplayed) {
+            return;
+        }
+        progressQueryStationsDisplayed = true;
+
+        showDialog(DIALOG_ID_PROGRESS_QUERY_STATION);
+    }
+
 }

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Handler;
@@ -36,7 +35,6 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     private final LocationView context;
 
     private final Map<String, OverlayItem> codeToOverlayItem = new HashMap<String, OverlayItem>();
-    private ProgressDialog pd;
     private final Handler uiHandler = new Handler();
 
     private final MapView map;
@@ -125,8 +123,14 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
                 // in UI thread
                 populateInUiThread(newStations);
-            } finally {
-                hideProgressDialog();
+            } catch (Exception e) {
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        context.hideProgressPlaceStations();
+                    }
+                });
+                throw new RuntimeException("populate stations", e);
             }
         }
 
@@ -162,8 +166,13 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                 Log.e(TAG, "could not get estimations for " + stationCode + ". " + stationLabel, e);
                 // being safe (Throwable!?) ;)
                 showErrorMessage(stationLabel, stationCode);
-            } finally {
-                hideProgressDialog();
+                
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        context.hideProgressQueryStation();
+                    }
+                });
             }
 
             return;
@@ -209,9 +218,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
      */
     public void placeStations(double newLat, double newLon, boolean showDialog) {
         final StationsQuery query = new StationsQuery(newLat, newLon);
-        if (showDialog) {
-            createProgressDialog(R.string.progressDialog_message_stations);
-        }
+        context.showProgressPlaceStations();
         new Thread(query).start();
     }
 
@@ -238,7 +245,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
     protected void showStation(OverlayItem station) {
         final EstimatesQuery query = new EstimatesQuery(station);
-        createProgressDialog(R.string.progressDialog_message_estimating);
+        context.showProgressQueryStation();
         query.start();
     }
 
@@ -291,6 +298,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
             public void run() {
                 stations.addAll(newStations);
                 populateFixed();
+                context.hideProgressPlaceStations();
             }
         });
     }
@@ -300,24 +308,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
             @Override
             public void run() {
                 resolver.showResult();
-            }
-        });
-    }
-
-    private void createProgressDialog(int message) {
-        pd = ProgressDialog.show(context, context.getResources().getString(R.string.progressDialog_title), context
-                .getResources()
-                .getString(message), true, false);
-    }
-
-    private void hideProgressDialog() {
-        uiHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (pd != null) {
-                    pd.dismiss();
-                    pd = null;
-                }
+                context.hideProgressQueryStation();
             }
         });
     }

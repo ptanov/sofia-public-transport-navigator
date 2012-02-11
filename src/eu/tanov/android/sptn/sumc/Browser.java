@@ -162,54 +162,55 @@ public class Browser {
         }
     }
 
-    private static String getCaptchaText(Context context, Handler uiHandler, Bitmap captchaImage) {
-        final Builder dialogBuilder = new AlertDialog.Builder(context);
-        dialogBuilder.setTitle(R.string.captcha_dialog_title);
-        final LinearLayout panel = new LinearLayout(context);
-        panel.setOrientation(LinearLayout.VERTICAL);
-        final TextView label = new TextView(context);
-        label.setId(1);
-        label.setText(R.string.captcha_dialog_label);
-        panel.addView(label);
-
-        final ImageView image = new ImageView(context);
-        image.setId(3);
-        image.setImageBitmap(captchaImage);
-        panel.addView(image);
-
-        final EditText input = new EditText(context);
-        input.setId(2);
-        input.setSingleLine();
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI
-                | InputType.TYPE_TEXT_VARIATION_PHONETIC);
-        final ScrollView view = new ScrollView(context);
-        panel.addView(input);
-        view.addView(panel);
-
-        dialogBuilder.setCancelable(true).setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                result = input.getText().toString();
-
-                synchronized (wait) {
-                    wait.notifyAll();
-                }
-
-                dialog.dismiss();
-            }
-        }).setView(view);
-
-        dialogBuilder.setOnCancelListener(new OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface arg0) {
-                result = null;
-                synchronized (wait) {
-                    wait.notifyAll();
-                }
-            }
-        });
+    private static String getCaptchaText(final Context context, Handler uiHandler, final Bitmap captchaImage) {
+        
         uiHandler.post(new Runnable() {
             @Override
             public void run() {
+                final Builder dialogBuilder = new AlertDialog.Builder(context);
+                dialogBuilder.setTitle(R.string.captcha_dialog_title);
+                final LinearLayout panel = new LinearLayout(context);
+                panel.setOrientation(LinearLayout.VERTICAL);
+                final TextView label = new TextView(context);
+                label.setId(1);
+                label.setText(R.string.captcha_dialog_label);
+                panel.addView(label);
+
+                final ImageView image = new ImageView(context);
+                image.setId(3);
+                image.setImageBitmap(captchaImage);
+                panel.addView(image);
+
+                final EditText input = new EditText(context);
+                input.setId(2);
+                input.setSingleLine();
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI
+                        | InputType.TYPE_TEXT_VARIATION_PHONETIC);
+                final ScrollView view = new ScrollView(context);
+                panel.addView(input);
+                view.addView(panel);
+
+                dialogBuilder.setCancelable(true).setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        result = input.getText().toString();
+
+                        synchronized (wait) {
+                            wait.notifyAll();
+                        }
+
+                        dialog.dismiss();
+                    }
+                }).setView(view);
+
+                dialogBuilder.setOnCancelListener(new OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface arg0) {
+                        result = null;
+                        synchronized (wait) {
+                            wait.notifyAll();
+                        }
+                    }
+                });
                 dialogBuilder.create().show();
             }
         });

@@ -65,6 +65,9 @@
 <string name="settings_whatsNewShowVersion1_10_title">Версия 1.10</string>
 <string name="settings_whatsNewShowVersion1_10_startupScreenFavorities_summary" formatted="false">Опция за избор на начален екран - карта или \'Избрани спирки\' (в \'Настройки\')</string>
 
+<string name="settings_whatsNewShowVersion1_17_title">Версия 1.17</string>
+<string name="settings_whatsNewShowVersion1_17_tixbg_summary" formatted="false">Интеграция с tix.bg (От [MENU&gt;Задръствания/маршрути])</string>
+    
 
 <string name="favorities_empty_list" formatted="false">Няма избрани спирки. За да добавите такава - използвайте бутона \'В избрани\' от прозореца с времена на пристигане на съответната спирка.</string>
 <string name="menu_favoroties">Избрани спирки</string>
@@ -81,6 +84,8 @@
 <string name="versionChanges_1_09_favorities_title">Как да работим с избрани спирки</string>
 <string name="versionChanges_1_10_startupScreen_text" formatted="false">От [MENU&gt;Настройки&gt;\'Избрани спирки\' за начален екран] можете да укажете списъкът с избрани спирки да се показва при стартиране на приложението (вместо картата)</string>
 <string name="versionChanges_1_10_startupScreen_title">Избор на начален екран</string>
+<string name="versionChanges_1_17_startupScreen_text" formatted="false">От [MENU&gt;Задръствания/маршрути] може да видите задръстванията в София и да намерите маршрут с градския транспорт (използва се Tix.bg)</string>
+<string name="versionChanges_1_17_startupScreen_title">Задръствания/маршрути (Tix.bg)</string>
 <string name="settings_category_common">Общи</string>
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Избрани спирки\' за начален екран</string>
 <string name="settings_commonStartupScreenFavorities_summary">Екран с избрани спирки или карта</string>

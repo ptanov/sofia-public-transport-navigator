@@ -34,6 +34,9 @@ public class LocationView extends MapActivity {
     private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_10 = "whatsNewShowVersion1_10_startupScreenFavorities";
     private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_10 = true;
 
+    private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_17 = "whatsNewShowVersion1_17_tixbg";
+    private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_17 = true;
+
     private static final GeoPoint LOCATION_SOFIA = new GeoPoint(42696827, 23320916);
 
     private static final int REQUEST_CODE_SETTINGS = 1;
@@ -117,6 +120,22 @@ public class LocationView extends MapActivity {
             new AlertDialog.Builder(this).setTitle(R.string.versionChanges_1_10_startupScreen_title)
                     .setCancelable(true)
                     .setMessage(R.string.versionChanges_1_10_startupScreen_text)
+                    .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    }).create().show();
+        }
+
+        if (settings.getBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_17, PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_17)) {
+            final Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+            // show only first time:
+            editor.putBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_17, false);
+            editor.commit();
+
+            new AlertDialog.Builder(this).setTitle(R.string.versionChanges_1_17_startupScreen_title)
+                    .setCancelable(true)
+                    .setMessage(R.string.versionChanges_1_17_startupScreen_text)
                     .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.dismiss();

@@ -56,7 +56,6 @@ public class LocationView extends MapActivity {
     private static final int DIALOG_ID_PROGRESS_PLACE_STATIONS = 2;
     private static final int DIALOG_ID_PROGRESS_QUERY_STATION = 3;
 
-    
     private MyLocationOverlay myLocationOverlay;
     private StationsOverlay stationsOverlay;
     private boolean progressPlaceStationsDisplayed = false;
@@ -154,6 +153,7 @@ public class LocationView extends MapActivity {
 
     @Override
     protected void onPause() {
+        disableLocationUpdates();
         super.onPause();
     }
 
@@ -263,10 +263,10 @@ public class LocationView extends MapActivity {
             progressPlaceStations.setMessage(getResources().getString(R.string.progressDialog_message_stations));
             progressPlaceStations.setIndeterminate(true);
             progressPlaceStations.setCancelable(false);
-            
+
             return progressPlaceStations;
         }
-                   
+
         case DIALOG_ID_PROGRESS_QUERY_STATION: {
             final ProgressDialog progressQueryStations = new ProgressDialog(this);
             progressQueryStations.setTitle(R.string.progressDialog_title);
@@ -303,7 +303,6 @@ public class LocationView extends MapActivity {
     protected boolean isRouteDisplayed() {
         return false;
     }
-    
 
     public void hideProgressPlaceStations() {
         if (!progressPlaceStationsDisplayed) {

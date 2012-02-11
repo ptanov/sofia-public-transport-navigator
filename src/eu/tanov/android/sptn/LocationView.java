@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
@@ -18,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -55,6 +57,8 @@ public class LocationView extends MapActivity {
     private static final int DIALOG_ID_ABOUT = 1;
     private static final int DIALOG_ID_PROGRESS_PLACE_STATIONS = 2;
     private static final int DIALOG_ID_PROGRESS_QUERY_STATION = 3;
+    private static final String PACKAGE_TIX_BG = "bg.tix";
+    private static final String MARKET_TIX_BG = "market://details?id=" + PACKAGE_TIX_BG;
 
     private MyLocationOverlay myLocationOverlay;
     private StationsOverlay stationsOverlay;
@@ -244,11 +248,35 @@ public class LocationView extends MapActivity {
                         }
                     }).create().show();
             break;
+        case R.id.menu_tixbg:
+            navigateToTixBg();
 
         default:
             break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void navigateToTixBg() {
+        try {
+            final Intent toLaunch = getPackageManager().getLaunchIntentForPackage(PACKAGE_TIX_BG);
+            if (toLaunch == null) {
+                installTixBg();
+                return;
+            }
+            startActivity(toLaunch);
+            Toast.makeText(this, R.string.tixbg_info_return, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            installTixBg();
+        }
+
+    }
+
+    private void installTixBg() {
+        Toast.makeText(this, R.string.tixbg_install, Toast.LENGTH_LONG).show();
+
+        final Intent goToMarket = new Intent(Intent.ACTION_VIEW, Uri.parse(MARKET_TIX_BG));
+        startActivity(goToMarket);
     }
 
     @Override

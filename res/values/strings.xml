@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="aboutDialog_title">Спирките в София (версия 1.18)</string>
+<string name="aboutDialog_title">Спирките в София (версия 1.19)</string>
     
     <string name="app_name">Градски транспорт, София</string>
 <string name="vehicleType_bus">Автобус</string>

@@ -67,6 +67,7 @@ public class HtmlResult implements EstimatesResolver {
 
 	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_09 = "whatsNewShowVersion1_09_estimates";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09 = true;
+    private static final String HTML_HEADER = "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><style type=\"text/css\">body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} td.number {width:30px;text-align:right;}table {width:100%;}div.arr_info_1 td.number {background-color:#ea0000;}div.arr_info_2 td.number {background-color:#0066aa;}div.arr_info_3 td.number {background-color:#feab10;}.number a:link {color:#FFFFFF;font-weight: bold;}.number a:visited {color:#FFFFFF;font-weight: bold;}.number a:hover {color:#FFFFFF;font-weight: bold;}.number a:active {color:#FFFFFF;font-weight: bold;}.direction {font-size: 2pt;text-align:right;}.estimates a {font-weight: bold;}.arr_title_1 b{color:#ea0000;border-bottom:1px solid #ea0000;}.arr_title_2 b{color:#0066aa;border-bottom:1px solid #0066aa;}.arr_title_3 b{color:#feab10;border-bottom:1px solid #feab10;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid #ddd;}.errorText {color: #f00;}.legal{font-size: 50%;text-align:right;}</style></head>";
 
 	private final String stationCode;
 	private final String stationLabel;
@@ -117,7 +118,7 @@ public class HtmlResult implements EstimatesResolver {
 		// servers of sumc does not have ntp synchronization and their time is wrong
 		// date = responseHandler.getDate();
 		date = new Date();
-		htmlData = HTML_START + context.getString(R.string.html_header) + createBody(response) + HTML_END;
+		htmlData = HTML_START + HTML_HEADER + createBody(response) + HTML_END;
 	}
 
 	private String createBody(String response) {
@@ -214,7 +215,7 @@ public class HtmlResult implements EstimatesResolver {
 	public void showResult() {
 		context.disableLocationUpdates();
 		final WebView browser = new WebView(context);
-        browser.loadData(htmlData, MIME_TYPE, ENCODING);
+        browser.loadDataWithBaseURL(null, htmlData, MIME_TYPE, ENCODING, null);
 
 		final Builder dialogBuilder = new AlertDialog.Builder(this.context);
 		dialogBuilder.setTitle(context.getString(R.string.format_estimates_dialog_title, DateFormat.getTimeFormat(context).format(date),

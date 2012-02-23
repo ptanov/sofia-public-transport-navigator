@@ -67,6 +67,7 @@ public class LocationView extends MapActivity {
     private StationsOverlay stationsOverlay;
     private boolean progressPlaceStationsDisplayed = false;
     private boolean progressQueryStationsDisplayed = false;
+    private boolean estimatesDialogVisible = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -154,18 +155,28 @@ public class LocationView extends MapActivity {
         }
     }
 
-    public void disableLocationUpdates() {
+    private void disableLocationUpdates() {
         if (myLocationOverlay != null) {
             myLocationOverlay.disableMyLocation();
             myLocationOverlay.disableCompass();
         }
     }
 
-    public void enableLocationUpdates() {
-        if (myLocationOverlay != null) {
+    private void enableLocationUpdates() {
+        if (myLocationOverlay != null && !estimatesDialogVisible) {
             myLocationOverlay.enableMyLocation();
             setCompassSettings();
         }
+    }
+
+    public void estimatesDialogDisplayed() {
+        estimatesDialogVisible = true;
+        disableLocationUpdates();
+    }
+
+    public void estimatesDialogClosed() {
+        estimatesDialogVisible = false;
+        enableLocationUpdates();
     }
 
     @Override

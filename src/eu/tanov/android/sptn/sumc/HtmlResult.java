@@ -213,7 +213,7 @@ public class HtmlResult implements EstimatesResolver {
 
 	@Override
 	public void showResult() {
-		context.disableLocationUpdates();
+		context.estimatesDialogDisplayed();
 		final WebView browser = new WebView(context);
         browser.loadDataWithBaseURL(null, htmlData, MIME_TYPE, ENCODING, null);
 
@@ -223,7 +223,7 @@ public class HtmlResult implements EstimatesResolver {
 
 		dialogBuilder.setCancelable(true).setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				context.enableLocationUpdates();
+				context.estimatesDialogClosed();
 				dialog.dismiss();
 			}
 		}).setView(browser);
@@ -231,7 +231,7 @@ public class HtmlResult implements EstimatesResolver {
 		dialogBuilder.setOnCancelListener(new OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface arg0) {
-				context.enableLocationUpdates();
+				context.estimatesDialogClosed();
 			}
 		});
 		handleFavorities(dialogBuilder);
@@ -254,7 +254,7 @@ public class HtmlResult implements EstimatesResolver {
 			// add to favorite
 			dialogBuilder.setNegativeButton(R.string.buttonAddToFavorities, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-					context.enableLocationUpdates();
+					context.estimatesDialogClosed();
 
 					favoritiesService.add(new BusStopItem(0, stationCode, stationLabel));
 					final String message = context.getResources().getString(R.string.info_addedToFavorities, stationLabel, stationCode);

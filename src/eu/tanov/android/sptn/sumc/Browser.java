@@ -131,8 +131,8 @@ public class Browser {
         }
     }
 
-    private static HttpPost createRequest(Context context, Handler uiHandler, HttpClient client,
-            String stationCode, String previous) {
+    private static HttpPost createRequest(Context context, Handler uiHandler, HttpClient client, String stationCode,
+            String previous) {
         try {
             String captchaText = null;
             String captchaId = null;
@@ -163,7 +163,7 @@ public class Browser {
     }
 
     private static String getCaptchaText(final Context context, Handler uiHandler, final Bitmap captchaImage) {
-        
+
         uiHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -190,17 +190,18 @@ public class Browser {
                 panel.addView(input);
                 view.addView(panel);
 
-                dialogBuilder.setCancelable(true).setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        result = input.getText().toString();
+                dialogBuilder.setCancelable(true)
+                        .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                result = input.getText().toString();
 
-                        synchronized (wait) {
-                            wait.notifyAll();
-                        }
+                                synchronized (wait) {
+                                    wait.notifyAll();
+                                }
 
-                        dialog.dismiss();
-                    }
-                }).setView(view);
+                                dialog.dismiss();
+                            }
+                        }).setView(view);
 
                 dialogBuilder.setOnCancelListener(new OnCancelListener() {
                     @Override
@@ -288,7 +289,8 @@ public class Browser {
         final HttpPost result = new HttpPost(URL);
         result.addHeader("User-Agent", USER_AGENT);
         result.addHeader("Referer", REFERER);
-        result.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
+        // Issue 85:
+        // result.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
         try {
             final UrlEncodedFormEntity entity = new UrlEncodedFormEntity(
                     parameters(stationCode, captchaText, captchaId));
@@ -302,10 +304,8 @@ public class Browser {
 
     private static List<BasicNameValuePair> parameters(String stationCode, String captchaText, String captchaId) {
         final List<BasicNameValuePair> result = new ArrayList<BasicNameValuePair>(5);
-        result.addAll(Arrays.asList(new BasicNameValuePair(
-                QUERY_BUS_STOP_ID,
-                "000000" + stationCode), new BasicNameValuePair(QUERY_O, "1"),
-                new BasicNameValuePair(QUERY_GO, "1")));
+        result.addAll(Arrays.asList(new BasicNameValuePair(QUERY_BUS_STOP_ID, "000000" + stationCode),
+                new BasicNameValuePair(QUERY_O, "1"), new BasicNameValuePair(QUERY_GO, "1")));
 
         if (captchaText != null && captchaId != null) {
             result.add(new BasicNameValuePair(QUERY_CAPTCHA_ID, captchaId));

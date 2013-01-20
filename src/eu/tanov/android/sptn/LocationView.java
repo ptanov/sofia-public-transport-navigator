@@ -324,9 +324,10 @@ public class LocationView extends MapActivity {
             break;
         case R.id.menu_tixbg:
             navigateToTixBg();
+            break;
         case R.id.menu_searchByBusStopId:
             askForBusStopId();
-
+            break;
         default:
             break;
         }

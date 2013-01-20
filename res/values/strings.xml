@@ -99,5 +99,8 @@
 <string name="searchByBusStopId_dialogTitle">Търсене по номер на спирка</string>
 <string name="searchByBusStopId_dialogContent">Моля, въведете номер на спирка</string>
 
+<string name="settings_commonUserLocaleEnglish_title">Use English language</string>
+<string name="settings_commonUserLocaleEnglish_summary">(или български език)</string>
+<string name="settings_changeLocale_restart">Restarting in order to apply new language</string>
 
 </resources>

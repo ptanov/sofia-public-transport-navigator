@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import eu.tanov.android.sptn.favorities.BusStopItem;
 import eu.tanov.android.sptn.favorities.FavoritiesService;
+import eu.tanov.android.sptn.util.LocaleHelper;
 
 public class FavoritiesActivity extends ListActivity {
 	public static final String EXTRA_CODE_NAME = "code";
@@ -36,6 +37,7 @@ public class FavoritiesActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        LocaleHelper.selectLocale(this);
 
 		setContentView(R.layout.favorities);
 		arrayAdapter = new ArrayAdapter<BusStopItem>(this, android.R.layout.simple_list_item_1, busStops);

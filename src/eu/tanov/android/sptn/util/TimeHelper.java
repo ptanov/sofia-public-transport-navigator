@@ -8,10 +8,13 @@ import android.util.Log;
 public class TimeHelper {
 	private static final int MILLIS_TO_MINUTES = 1000 * 60;
 	private static final int MILLIS_TO_HOURS = MILLIS_TO_MINUTES * 60;
-
+    // 1 hour = 3 600 000 milliseconds
+	private static final int HOURS_TO_MILLIS = 60 * 60 * 1000;
+	
 	private static final String SEPARATOR_ESTIMATED_TIME = ",";
 	private static final String TAG = "TimeHelper";
 	private static final int SPACE_PER_REMAINING_TIME = 10;
+    private static final long NEXT_DAY_TRASHOLD = 20 * HOURS_TO_MILLIS;
 
 	/**
 	 * utility class - no instance
@@ -29,11 +32,11 @@ public class TimeHelper {
 		for (String time : times) {
 			try {
 				result.append(toRemainingTime(now, time, formatOnlyMinutes, formatMinutesAndHours, calendar));
-				result.append(SEPARATOR_ESTIMATED_TIME);
 			} catch (Exception e) {
 				Log.e(TAG, "could not convert " + time, e);
 				result.append(time);
 			}
+			result.append(SEPARATOR_ESTIMATED_TIME);
 		}
 		if (result.length()>0) {
 			//remove last comma
@@ -54,9 +57,7 @@ public class TimeHelper {
 		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hoursMinutes[0]));
 		calendar.set(Calendar.MINUTE, Integer.parseInt(hoursMinutes[1]));
 
-		final long arrivingTime = calendar.getTimeInMillis();
-
-		final long remainingTimeInMillis = arrivingTime - now.getTime();
+		final long remainingTimeInMillis = getRemainingTimeInMillis(now, calendar);
 		if (remainingTimeInMillis < 0) {
 			throw new IllegalArgumentException(String.format(
 					"negative remaining time: time = %s, now = %s, diff = %s",
@@ -65,6 +66,16 @@ public class TimeHelper {
 		return remainingTimeToHumanReadableForm(remainingTimeInMillis, formatOnlyMinutes, formatMinutesAndHours);
 	}
 
+	private static long getRemainingTimeInMillis(Date now, Calendar calendar) {
+        final long arrivingTime = calendar.getTimeInMillis();
+
+        final long remainingTimeInMillis = arrivingTime - now.getTime();
+        if (remainingTimeInMillis < 0 && remainingTimeInMillis > NEXT_DAY_TRASHOLD) {
+            calendar.add(Calendar.DATE, 1);
+            return getRemainingTimeInMillis(now, calendar);
+        }
+        return remainingTimeInMillis;
+	}
 	/**
 	 * @param remaining
 	 * @return something like ~1ч.22м.

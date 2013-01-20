@@ -288,12 +288,12 @@ public class LocationView extends MapActivity {
         Toast.makeText(this, R.string.settings_changeLocale_restart, Toast.LENGTH_LONG).show();
 
         final Intent intent = getIntent();
-        overridePendingTransition(0, 0);
+//        overridePendingTransition(0, 0);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         finish();
 
-        overridePendingTransition(0, 0);
+//        overridePendingTransition(0, 0);
         startActivity(intent);
     }
 

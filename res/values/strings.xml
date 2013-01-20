@@ -91,5 +91,9 @@
 <string name="menu_tixbg">Задръствания/маршрути</string>
 <string name="tixbg_info_return">За да се върнете натиснете BACK</string>
 <string name="tixbg_install">Инсталирайте Tix.bg, след което натиснете BACK и отново изберете опцията от менюто ("Задръствания/маршрути")</string>
+<string name="menu_searchByBusStopId">По номер на спирка</string>
+<string name="searchByBusStopId_dialogTitle">Търсене по номер на спирка</string>
+<string name="searchByBusStopId_dialogContent">Моля, въведете номер на спирка</string>
+
 
 </resources>

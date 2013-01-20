@@ -230,17 +230,25 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
         }
         new StationQuery(code).run();
     }
-
     public void showStation(String code, boolean animateTo) {
+        showStation(code, animateTo, false);
+    }
+    private void showStation(String code, boolean animateTo, boolean throwIfNotFound) {
         if (!codeToOverlayItem.containsKey(code)) {
             placeStation(code);
         }
-        final OverlayItem station = codeToOverlayItem.get(code);
+        OverlayItem station = codeToOverlayItem.get(code);
         if (station == null) {
-            throw new IllegalStateException("Unknown code: " + code);
-        }
-        if (animateTo) {
-            map.getController().animateTo(station.getPoint());
+            if (throwIfNotFound) {
+                // for future improving, now bus stops entered in SEARCH by busstop id can be unknown to our DB
+                throw new IllegalStateException("Unknown code: " + code);
+            } else {
+                station = new OverlayItem(new GeoPoint(0, 0), code, code);
+            }
+        } else {
+            if (animateTo) {
+                map.getController().animateTo(station.getPoint());
+            }
         }
         showStation(station);
     }

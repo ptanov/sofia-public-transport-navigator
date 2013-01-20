@@ -14,10 +14,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.text.InputType;
 import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -280,11 +282,29 @@ public class LocationView extends MapActivity {
             break;
         case R.id.menu_tixbg:
             navigateToTixBg();
+        case R.id.menu_searchByBusStopId:
+            askForBusStopId();
 
         default:
             break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void askForBusStopId() {
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER /*| InputType.TYPE_NUMBER_VARIATION_NORMAL*/);
+        new AlertDialog.Builder(this)
+        .setTitle(R.string.searchByBusStopId_dialogTitle)
+        .setMessage(R.string.searchByBusStopId_dialogContent)
+        .setView(input)
+        .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                final String value = input.getText().toString(); 
+                
+                stationsOverlay.showStation(value, true);
+            }
+        }).show();        
     }
 
     private void navigateToTixBg() {

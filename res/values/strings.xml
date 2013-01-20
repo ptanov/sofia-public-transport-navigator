@@ -3,9 +3,6 @@
 <string name="aboutDialog_title">Спирките в София (версия 1.20)</string>
     
     <string name="app_name">Градски транспорт, София</string>
-<string name="vehicleType_bus">Автобус</string>
-<string name="vehicleType_tram">Трамвай</string>
-<string name="vehicleType_trolley">Тролейбус</string>
 <string name="buttonOk">ОК</string>
 <string name="error_retrieveEstimates_generic" formatted="false">Няма Интернет свързаност? Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
 <string name="error_retrieveEstimates_noInfo" formatted="false">&lt;b&gt;В момента СКГТ не предоставя информация за спирка &amp;quot;%s&amp;quot; (код: %s), моля опитайте пак по-късно.&lt;/b&gt;</string>

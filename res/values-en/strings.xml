@@ -2,9 +2,6 @@
 <resources>
 <string name="aboutDialog_title">Sofia Public Transport (version 1.20)</string>
     
-<string name="vehicleType_bus">Bus</string>
-<string name="vehicleType_tram">Tram</string>
-<string name="vehicleType_trolley">Trolley</string>
 <string name="buttonOk">OK</string>
 <string name="error_retrieveEstimates_generic" formatted="false">No Internet connection? Error retrieving schedule information for bus stop %s (%s)</string>
 <string name="error_retrieveEstimates_noInfo" formatted="false">&lt;b&gt;Currently SUMC does not provide schedule for bus stop &amp;quot;%s&amp;quot; (code: %s), please try again later.&lt;/b&gt;</string>
@@ -95,5 +92,13 @@
 <string name="menu_searchByBusStopId">By bus stop</string>
 <string name="searchByBusStopId_dialogTitle">Search by bus stop ID</string>
 <string name="searchByBusStopId_dialogContent">Please enter bus stop ID</string>
+
+<!-- should not be translated -->
+<string name="app_name">Градски транспорт, София</string>
+<string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
+<string name="error_retrieveEstimates_matching_noBusStop">Няма намерена информация</string>
+<string name="settings_commonUserLocaleEnglish_title">Use English language</string>
+<string name="settings_commonUserLocaleEnglish_summary">(или български език)</string>
+<string name="settings_changeLocale_restart">Restarting in order to apply new language</string>
 
 </resources>

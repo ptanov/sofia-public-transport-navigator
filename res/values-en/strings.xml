@@ -59,7 +59,7 @@
 <string name="settings_whatsNewShowVersion1_17_tixbg_summary" formatted="false">Integration with tix.bg (From [MENU&gt;Traffic jams/routes])</string>
     
 <string name="settings_whatsNewShowVersion1_20_title">Version 1.20</string>
-<string name="settings_whatsNewShowVersion1_20_searchByBusStopId_summary" formatted="false">Search by bus stop ID (From [MENU&gt;By bus stop])</string>
+<string name="settings_whatsNewShowVersion1_20_searchByBusStopId_summary" formatted="false">Search by Bus Stop ID (From [MENU&gt;By Bus Stop ID])</string>
 
 <string name="favorities_empty_list" formatted="false">There are no favorities. To add favorite bus stop use button \'Add Favorite\' in schedule dialog for desired bus stop.</string>
 <string name="menu_favoroties">Favorites</string>
@@ -78,8 +78,8 @@
 <string name="versionChanges_1_10_startupScreen_title">Startup screen selection</string>
 <string name="versionChanges_1_17_startupScreen_text" formatted="false">You can get information about traffic jams or find routes with public transport from [MENU&gt;Traffic jams/routes] (third party application Tix.bg is used)</string>
 <string name="versionChanges_1_17_startupScreen_title">Traffic jams/routes (Tix.bg)</string>
-<string name="versionChanges_1_20_startupScreen_text" formatted="false">You can get schedule information by entering bus stop ID in [MENU&gt;By bus stop] (special thanks to Deno for the idea ;) )</string>
-<string name="versionChanges_1_20_startupScreen_title">Search by bus stop ID</string>
+<string name="versionChanges_1_20_startupScreen_text" formatted="false">You can get schedule information by entering bus stop ID in [MENU&gt;By Bus Stop ID] (special thanks to Deno for the idea ;) )</string>
+<string name="versionChanges_1_20_startupScreen_title">Search by Bus Stop ID</string>
 <string name="settings_category_common">Common</string>
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Favorities\' for startup screen</string>
 <string name="settings_commonStartupScreenFavorities_summary">Favorities or map</string>
@@ -89,9 +89,9 @@
 <string name="menu_tixbg">Traffic jams/routes</string>
 <string name="tixbg_info_return">Press BACK to return to Sofia Public Transport Navigator</string>
 <string name="tixbg_install">Please install Tix.bg, then press BACK and again select "Traffic jams/routes" from the menu</string>
-<string name="menu_searchByBusStopId">By bus stop</string>
-<string name="searchByBusStopId_dialogTitle">Search by bus stop ID</string>
-<string name="searchByBusStopId_dialogContent">Please enter bus stop ID</string>
+<string name="menu_searchByBusStopId">By Bus Stop ID</string>
+<string name="searchByBusStopId_dialogTitle">Search by Bus Stop ID</string>
+<string name="searchByBusStopId_dialogContent">Please enter Bus Stop ID</string>
 
 <!-- should not be translated -->
 <string name="app_name">Градски транспорт, София</string>

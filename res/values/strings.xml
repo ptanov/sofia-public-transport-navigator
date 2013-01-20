@@ -64,6 +64,8 @@
 <string name="settings_whatsNewShowVersion1_17_title">Версия 1.17</string>
 <string name="settings_whatsNewShowVersion1_17_tixbg_summary" formatted="false">Интеграция с tix.bg (От [MENU&gt;Задръствания/маршрути])</string>
     
+<string name="settings_whatsNewShowVersion1_20_title">Версия 1.20</string>
+<string name="settings_whatsNewShowVersion1_20_searchByBusStopId_summary" formatted="false">Търсене по номер на спирка (От [MENU&gt;По номер на спирка])</string>
 
 <string name="favorities_empty_list" formatted="false">Няма избрани спирки. За да добавите такава - използвайте бутона \'В избрани\' от прозореца с времена на пристигане на съответната спирка.</string>
 <string name="menu_favoroties">Избрани спирки</string>
@@ -82,6 +84,8 @@
 <string name="versionChanges_1_10_startupScreen_title">Избор на начален екран</string>
 <string name="versionChanges_1_17_startupScreen_text" formatted="false">От [MENU&gt;Задръствания/маршрути] може да видите задръстванията в София и да намерите маршрут с градския транспорт (използва се Tix.bg)</string>
 <string name="versionChanges_1_17_startupScreen_title">Задръствания/маршрути (Tix.bg)</string>
+<string name="versionChanges_1_20_startupScreen_text" formatted="false">От [MENU&gt;Търсене по номер на спирка] имате възможност да видите времената на пристигане на превозните средства по въведен номер на спирка (специални благодарности на Дено за идеята ;) )</string>
+<string name="versionChanges_1_20_startupScreen_title">Търсене по номер на спирка</string>
 <string name="settings_category_common">Общи</string>
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Избрани спирки\' за начален екран</string>
 <string name="settings_commonStartupScreenFavorities_summary">Екран с избрани спирки или карта</string>

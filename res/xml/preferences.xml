@@ -84,6 +84,11 @@
 				android:title="@string/settings_whatsNewShowVersion1_17_title"
 				android:defaultValue="true"
 				android:summary="@string/settings_whatsNewShowVersion1_17_tixbg_summary" />
+			<CheckBoxPreference android:key="whatsNewShowVersion1_20_searchByBusStopId"
+				android:title="@string/settings_whatsNewShowVersion1_20_title"
+				android:defaultValue="true"
+				android:summary="@string/settings_whatsNewShowVersion1_20_searchByBusStopId_summary" />
+			
 		</PreferenceScreen>
 	</PreferenceCategory>
 </PreferenceScreen>

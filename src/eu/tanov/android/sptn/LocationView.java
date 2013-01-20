@@ -343,8 +343,10 @@ public class LocationView extends MapActivity {
         .setView(input)
         .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                final String value = input.getText().toString(); 
-                
+                String value = input.getText().toString(); 
+                while(value.startsWith("0")) {
+                    value = value.substring(1);
+                }
                 stationsOverlay.showStation(value, true);
             }
         }).show();        

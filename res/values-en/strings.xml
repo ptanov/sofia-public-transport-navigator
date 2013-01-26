@@ -78,7 +78,7 @@
 <string name="versionChanges_1_10_startupScreen_title">Startup screen selection</string>
 <string name="versionChanges_1_17_startupScreen_text" formatted="false">You can get information about traffic jams or find routes with public transport from [MENU&gt;Traffic jams/routes] (third party application Tix.bg is used)</string>
 <string name="versionChanges_1_17_startupScreen_title">Traffic jams/routes (Tix.bg)</string>
-<string name="versionChanges_1_20_startupScreen_text" formatted="false">You can get schedule information by entering bus stop ID in [MENU&gt;By Bus Stop ID] (special thanks to Deno for the idea ;) )</string>
+<string name="versionChanges_1_20_startupScreen_text" formatted="false">You can get schedule information by entering bus stop ID in [MENU&gt;By Bus Stop ID] (special thanks to Deno for the idea ;) ).\nIf you like the application please vote: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
 <string name="versionChanges_1_20_startupScreen_title">Search by Bus Stop ID</string>
 <string name="settings_category_common">Common</string>
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Favorities\' for startup screen</string>

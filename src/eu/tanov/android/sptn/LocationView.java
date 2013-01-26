@@ -159,10 +159,15 @@ public class LocationView extends MapActivity {
             // show only first time:
             editor.putBoolean(PREFERENCE_KEY_WHATS_NEW_VERSION1_20, false);
             editor.commit();
+            final TextView message = new TextView(this);
+            message.setPadding(5, 5, 5, 5);
+            message.setMovementMethod(LinkMovementMethod.getInstance());
+
+            message.setText(Html.fromHtml(getResources().getString(R.string.versionChanges_1_20_startupScreen_text)));
 
             new AlertDialog.Builder(this).setTitle(R.string.versionChanges_1_20_startupScreen_title)
                     .setCancelable(true)
-                    .setMessage(R.string.versionChanges_1_20_startupScreen_text)
+                    .setView(message)
                     .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.dismiss();

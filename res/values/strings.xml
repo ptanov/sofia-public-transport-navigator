@@ -18,7 +18,7 @@
 <string name="menu_help">Помощ</string>
 
 <string name="aboutDialog_content">Показва времената на пристигане на превозните средства на градския транспорт в София.\n\nПроектът е с отворен код, за повече информация: http://sofia-public-transport-navigator.googlecode.com</string>
-<string name="aboutDialog_market">Ако приложението Ви харесва може да гласувате за него тук: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
+<string name="aboutDialog_market">Ако приложението Ви е от полза може да гласувате за него тук: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
 <string name="aboutDialog_legal">\nАвтор: Пламен Танов\n\nДанните за времената на пристигане се извличат от http://m.sofiatraffic.bg\n\nИзползвате програмата на собствена отговорност.</string>
     
 <string name="helpDialog_title">Помощ</string>
@@ -81,7 +81,7 @@
 <string name="versionChanges_1_10_startupScreen_title">Избор на начален екран</string>
 <string name="versionChanges_1_17_startupScreen_text" formatted="false">От [MENU&gt;Задръствания/маршрути] може да видите задръстванията в София и да намерите маршрут с градския транспорт (използва се Tix.bg)</string>
 <string name="versionChanges_1_17_startupScreen_title">Задръствания/маршрути (Tix.bg)</string>
-<string name="versionChanges_1_20_startupScreen_text" formatted="false">От [MENU&gt;Търсене по номер на спирка] имате възможност да видите времената на пристигане на превозните средства по въведен номер на спирка (специални благодарности на Дено за идеята ;) )</string>
+<string name="versionChanges_1_20_startupScreen_text" formatted="false">От [MENU&gt;По номер на спирка] имате възможност да видите времената на пристигане на превозните средства по въведен номер на спирка (специални благодарности на Дено за идеята ;) ).\nАко приложението Ви е от полза може да гласувате за него тук: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
 <string name="versionChanges_1_20_startupScreen_title">Търсене по номер на спирка</string>
 <string name="settings_category_common">Общи</string>
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Избрани спирки\' за начален екран</string>

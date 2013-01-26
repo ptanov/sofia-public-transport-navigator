@@ -95,6 +95,7 @@
 <string name="menu_searchByBusStopId">По номер на спирка</string>
 <string name="searchByBusStopId_dialogTitle">Търсене по номер на спирка</string>
 <string name="searchByBusStopId_dialogContent">Моля, въведете номер на спирка</string>
+<string name="searchByBusStopId_dialog_badBusStopID">Грешно въведен номер на спирка - моля, въведете цифри</string>
 
 <string name="settings_commonUserLocaleEnglish_title">Use English language</string>
 <string name="settings_commonUserLocaleEnglish_summary">(или български език)</string>

@@ -92,6 +92,7 @@
 <string name="menu_searchByBusStopId">By Bus Stop ID</string>
 <string name="searchByBusStopId_dialogTitle">Search by Bus Stop ID</string>
 <string name="searchByBusStopId_dialogContent">Please enter Bus Stop ID</string>
+<string name="searchByBusStopId_dialog_badBusStopID">Bad Bus Stop ID, please enter digits</string>
 
 <!-- should not be translated -->
 <string name="app_name">Градски транспорт, София</string>

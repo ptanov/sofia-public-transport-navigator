@@ -347,7 +347,12 @@ public class LocationView extends MapActivity {
                 while(value.startsWith("0")) {
                     value = value.substring(1);
                 }
-                stationsOverlay.showStation(value, true);
+                if (value.length() == 0 || value.replaceAll("\\d+","").length() > 0) {
+                    Toast.makeText(LocationView.this, R.string.searchByBusStopId_dialog_badBusStopID, Toast.LENGTH_LONG).show();
+                    askForBusStopId();
+                } else {
+                    stationsOverlay.showStation(value, true);
+                }
             }
         }).show();        
     }

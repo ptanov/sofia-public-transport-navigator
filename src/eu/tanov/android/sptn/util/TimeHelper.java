@@ -22,16 +22,13 @@ public class TimeHelper {
 	private TimeHelper() {
 	}
 
-	public static String toRemainingTime(Date now, String timeData,
+	public static String toRemainingTimes(Date now, String timeData,
 			String formatOnlyMinutes, String formatMinutesAndHours) {
-		final Calendar calendar = Calendar.getInstance();
-		calendar.setTime(now);
-
 		final String[] times = timeData.split(SEPARATOR_ESTIMATED_TIME);
 		final StringBuilder result = new StringBuilder(times.length * SPACE_PER_REMAINING_TIME);
 		for (String time : times) {
 			try {
-				result.append(toRemainingTime(now, time, formatOnlyMinutes, formatMinutesAndHours, calendar));
+				result.append(toRemainingTime(now, time, formatOnlyMinutes, formatMinutesAndHours));
 			} catch (Exception e) {
 				Log.e(TAG, "could not convert " + time, e);
 				result.append(time);
@@ -47,13 +44,15 @@ public class TimeHelper {
 	}
 
 	private static String toRemainingTime(Date now, String time,
-			String formatOnlyMinutes, String formatMinutesAndHours,
-			Calendar calendar) {
+			String formatOnlyMinutes, String formatMinutesAndHours) {
 		final String[] hoursMinutes = time.split(":");
 		if (hoursMinutes.length != 2) {
 			throw new IllegalArgumentException(
 					"could not split hours-minutes: " + time);
 		}
+		
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
 		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hoursMinutes[0]));
 		calendar.set(Calendar.MINUTE, Integer.parseInt(hoursMinutes[1]));
 
@@ -70,7 +69,7 @@ public class TimeHelper {
         final long arrivingTime = calendar.getTimeInMillis();
 
         final long remainingTimeInMillis = arrivingTime - now.getTime();
-        if (remainingTimeInMillis < 0 && remainingTimeInMillis > NEXT_DAY_TRASHOLD) {
+        if (remainingTimeInMillis < 0 && (-remainingTimeInMillis) > NEXT_DAY_TRASHOLD) {
             calendar.add(Calendar.DATE, 1);
             return getRemainingTimeInMillis(now, calendar);
         }

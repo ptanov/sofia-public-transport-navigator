@@ -180,7 +180,7 @@ public class HtmlResult implements EstimatesResolver {
 	 */
 	private String formatSplitted(String[] split) {
 		if (showRemainingTime) {
-			split[5] = TimeHelper.toRemainingTime(date, split[5].trim(), formatOnlyMinutes, formatMinutesAndHours);
+			split[5] = TimeHelper.toRemainingTimes(date, split[5].trim(), formatOnlyMinutes, formatMinutesAndHours);
 		}
 
 		if (showWhatsNewInVersion1_06) {

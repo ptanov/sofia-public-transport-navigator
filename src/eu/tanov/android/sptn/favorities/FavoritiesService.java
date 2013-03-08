@@ -14,7 +14,11 @@ import android.content.SharedPreferences;
 
 public class FavoritiesService {
 
-	private static final String SHARED_PREFERENCES_NAME_FAVORITIES_POSITIONS_TO_CODE = "favorities_positions";
+	/**
+	 * Should not be null because of checking for null value in rename
+	 */
+	private static final String EMPTY_LABEL = "";
+    private static final String SHARED_PREFERENCES_NAME_FAVORITIES_POSITIONS_TO_CODE = "favorities_positions";
 	private static final String SHARED_PREFERENCES_NAME_FAVORITIES_CODE_TO_LABELS = "favorities_labels";
 	private final Context context;
 
@@ -60,7 +64,7 @@ public class FavoritiesService {
 		}
 
 		Object label = allLabels.get(code.toString());
-		if (label == null) {
+		if (label == null || EMPTY_LABEL.equals(label)) {
 		    label = context.getString(R.string.favorities_null_label);
 		}
 		if (!(label instanceof String)) {
@@ -106,7 +110,11 @@ public class FavoritiesService {
 
 		final int newPosition = positionsStore.getAll().size();
 		positionsStoreEditor.putString(Integer.toString(newPosition), busStop.getCode());
-		labelsStoreEditor.putString(busStop.getCode(), busStop.getLabel());
+		String label = busStop.getLabel();
+		if (label == null) {
+		    label = EMPTY_LABEL;
+		}
+		labelsStoreEditor.putString(busStop.getCode(), label);
 
 		if (positionsStoreEditor.commit()) {
 			labelsStoreEditor.commit();

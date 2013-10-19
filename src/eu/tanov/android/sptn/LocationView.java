@@ -21,7 +21,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -387,11 +389,14 @@ public class LocationView extends MapActivity {
     private void askForBusStopId() {
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER /*| InputType.TYPE_NUMBER_VARIATION_NORMAL*/);
-//        final LinearLayout linearLayout = new LinearLayout(this);
-//        linearLayout.addView(input);
+
+        final LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(input);
         
-        final ScrollView scrollView = new ScrollView(this);
-        scrollView.addView(input);
+        final RadioGroup group = new RadioGroup(this);
+        linearLayout.addView(group);
+
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         final String selectedProvider = preferences.getString(PREFERENCE_KEY_DEFAULT_PROVIDER,
                 InitStations.PROVIDER_SOFIATRAFFIC);
@@ -400,13 +405,17 @@ public class LocationView extends MapActivity {
         for (String provider: InitStations.PROVIDERS) {
             final RadioButton radio = new RadioButton(this);
             radio.setText(provider);
+            radio.setId(radios.size());
             if (selectedProvider.equals(provider)) {
-                radio.setSelected(true);
+                radio.setChecked(true);
             }
             radios.add(radio);
-            scrollView.addView(radio);
+            group.addView(radio);
         }
         
+        final ScrollView scrollView = new ScrollView(this);
+        scrollView.addView(linearLayout);
+
         new AlertDialog.Builder(this)
         .setTitle(R.string.searchByBusStopId_dialogTitle)
         .setMessage(R.string.searchByBusStopId_dialogContent)

@@ -164,9 +164,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                         showRemainingTime());
             }
             if (InitStations.PROVIDER_VARNATRAFFIC.equals(busStopSource)) {
-                return new VarnaTrafficHtmlResult(context, uiHandler, StationsOverlay.this,
-                        stationCode, stationLabel,
-                        showRemainingTime());
+                return new VarnaTrafficHtmlResult(context, StationsOverlay.this, stationCode, stationLabel);
             }
 
             throw new IllegalStateException("Unknown source: " + busStopSource);

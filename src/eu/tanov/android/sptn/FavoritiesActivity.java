@@ -26,7 +26,8 @@ import eu.tanov.android.sptn.favorities.FavoritiesService;
 import eu.tanov.android.sptn.util.LocaleHelper;
 
 public class FavoritiesActivity extends ListActivity {
-	public static final String EXTRA_CODE_NAME = "code";
+    public static final String EXTRA_CODE_NAME = "code";
+    public static final String EXTRA_PROVIDER_NAME = "provider";
 
 	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_09 = "whatsNewShowVersion1_09_favorities";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09 = true;
@@ -113,7 +114,7 @@ public class FavoritiesActivity extends ListActivity {
 			return true;
 		case R.id.menu_favorities_rename:
 			final BusStopItem selected = arrayAdapter.getItem(info.position);
-			setNewLabel(selected.getCode(), selected.getLabel());
+			setNewLabel(selected);
 
 			return true;
 		default:
@@ -121,15 +122,15 @@ public class FavoritiesActivity extends ListActivity {
 		}
 	}
 
-	private void setNewLabel(final String code, String oldLabel) {
+	private void setNewLabel(final BusStopItem busStop) {
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		final EditText input = new EditText(this);
-		input.setText(oldLabel);
+		input.setText(busStop.getLabel());
 		alert.setView(input);
 		alert.setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				final String newLabel = input.getText().toString();
-				getFavoritiesService().rename(code, newLabel);
+				getFavoritiesService().rename(busStop.getProvider(), busStop.getCode(), newLabel);
 
 				refreshContent();
 			}
@@ -143,7 +144,8 @@ public class FavoritiesActivity extends ListActivity {
 		super.onListItemClick(l, v, position, id);
 		final BusStopItem selectedBusStop = (BusStopItem) getListView().getItemAtPosition(position);
 		final Intent data = getIntent();
-		data.putExtra(EXTRA_CODE_NAME, selectedBusStop.getCode());
+        data.putExtra(EXTRA_CODE_NAME, selectedBusStop.getCode());
+        data.putExtra(EXTRA_PROVIDER_NAME, selectedBusStop.getProvider());
 
 		if (getParent() == null) {
 			setResult(RESULT_OK, data);

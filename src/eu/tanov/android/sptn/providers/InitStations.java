@@ -26,8 +26,10 @@ public class InitStations {
     private static final String ENCODING = "UTF8";
 	private final Context context;
 
-    public static final String SOURCE_SOFIATRAFFIC = "sofiatraffic.bg";
-    public static final String SOURCE_VARNATRAFFIC = "varnatraffic.com";
+    public static final String PROVIDER_SOFIATRAFFIC = "sofiatraffic.bg";
+    public static final String PROVIDER_VARNATRAFFIC = "varnatraffic.com";
+
+    public static final String[] PROVIDERS = new String[] { PROVIDER_SOFIATRAFFIC, PROVIDER_VARNATRAFFIC };
 
 	//TODO move to external file
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -111,7 +113,7 @@ public class InitStations {
 			
 			insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
 					this.tableName, Station.CODE, Station.LAT,
-					Station.LON, Station.LABEL, Station.SOURCE, SOURCE_SOFIATRAFFIC)
+					Station.LON, Station.LABEL, Station.PROVIDER, PROVIDER_SOFIATRAFFIC)
 			);
 		}
 
@@ -157,7 +159,7 @@ public class InitStations {
         
         final SQLiteStatement insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
                 tableName, Station.CODE, Station.LAT,
-                Station.LON, Station.LABEL, Station.SOURCE, SOURCE_VARNATRAFFIC)
+                Station.LON, Station.LABEL, Station.PROVIDER, PROVIDER_VARNATRAFFIC)
         );
         
         for (BusStopVarnaTraffic busStopVarnaTraffic : all) {

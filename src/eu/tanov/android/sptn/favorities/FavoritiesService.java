@@ -8,11 +8,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import eu.tanov.android.sptn.R;
+import eu.tanov.android.sptn.providers.InitStations;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 public class FavoritiesService {
+    private static final String PROVIDER_CODE_SEPARATOR = ":";
 
 	/**
 	 * Should not be null because of checking for null value in rename
@@ -20,6 +23,7 @@ public class FavoritiesService {
 	private static final String EMPTY_LABEL = "";
     private static final String SHARED_PREFERENCES_NAME_FAVORITIES_POSITIONS_TO_CODE = "favorities_positions";
 	private static final String SHARED_PREFERENCES_NAME_FAVORITIES_CODE_TO_LABELS = "favorities_labels";
+    private static final String PREFERENCE_IS_PROVIDERS_FIXED_IN_FAVORITIES = "isProvidersFixedInFavorities";
 	private final Context context;
 
 	private static Comparator<BusStopItem> comparator = new Comparator<BusStopItem>() {
@@ -31,9 +35,34 @@ public class FavoritiesService {
 
 	public FavoritiesService(Context context) {
 		this.context = context;
+		
+		fixProviders();
 	}
 
-	private SharedPreferences getPositionsStore() {
+	private void fixProviders() {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (preferences.getBoolean(PREFERENCE_IS_PROVIDERS_FIXED_IN_FAVORITIES, false)) {
+            return;
+        }
+        final SharedPreferences positionsStore = getPositionsStore();
+        final SharedPreferences labelsStore = getLabelsStore();
+        final SharedPreferences.Editor positionsStoreEditor = positionsStore.edit();
+        final SharedPreferences.Editor labelsStoreEditor = labelsStore.edit();
+
+        for (Entry<String, ?> next : positionsStore.getAll().entrySet()) {
+            positionsStoreEditor.putString(next.getKey(), mergeProviderAndCode(InitStations.PROVIDER_SOFIATRAFFIC, (String) next.getValue()));
+        }
+        for (Entry<String, ?> next : labelsStore.getAll().entrySet()) {
+            labelsStoreEditor.putString(mergeProviderAndCode(InitStations.PROVIDER_SOFIATRAFFIC, next.getKey()),
+                    (String)next.getValue());
+        }
+
+        if (positionsStoreEditor.commit() && labelsStoreEditor.commit()) {
+            preferences.edit().putBoolean(PREFERENCE_IS_PROVIDERS_FIXED_IN_FAVORITIES, true).commit();
+        }
+    }
+
+    private SharedPreferences getPositionsStore() {
 		return context.getSharedPreferences(SHARED_PREFERENCES_NAME_FAVORITIES_POSITIONS_TO_CODE, Context.MODE_PRIVATE);
 	}
 
@@ -56,21 +85,30 @@ public class FavoritiesService {
 		return result;
 	}
 
+	private String splitToProvider(String all) {
+	       return all.split(PROVIDER_CODE_SEPARATOR, 2)[0];
+	}
+	private String splitToCode(String all) {
+	    return all.split(PROVIDER_CODE_SEPARATOR, 2)[1];
+	}
+	private String mergeProviderAndCode(String provider, String code) {
+	    return provider + PROVIDER_CODE_SEPARATOR + code;
+	}
 	private BusStopItem busStopFromEntry(Entry<String, ?> positionEntry, Map<String, ?> allLabels) {
 		final String position = positionEntry.getKey();
-		final Object code = positionEntry.getValue();
-		if (!(code instanceof String)) {
-			throw new IllegalStateException("Bus stop code should be integer, not: " + code);
+		final Object all = positionEntry.getValue();
+		if (!(all instanceof String)) {
+			throw new IllegalStateException("Bus stop code should be integer, not: " + all);
 		}
 
-		Object label = allLabels.get(code.toString());
+		Object label = allLabels.get(all.toString());
 		if (label == null || EMPTY_LABEL.equals(label)) {
 		    label = context.getString(R.string.favorities_null_label);
 		}
 		if (!(label instanceof String)) {
-			throw new IllegalStateException("Label for favorite bus stop <" + code + "> should be String, but was: " + label);
+			throw new IllegalStateException("Label for favorite bus stop <" + all + "> should be String, but was: " + label);
 		}
-		return new BusStopItem(Integer.valueOf(position), (String) code, (String) label);
+		return new BusStopItem(splitToProvider((String) all), Integer.valueOf(position), splitToCode((String) all), (String) label);
 	}
 
 	/**
@@ -90,16 +128,16 @@ public class FavoritiesService {
 		}
 		// remove last
 		positionsStoreEditor.remove(Integer.toString(lastPosition));
-		labelsStoreEditor.remove(busStop.getCode());
+		labelsStoreEditor.remove(mergeProviderAndCode(busStop.getProvider(), busStop.getCode()));
 
 		if (positionsStoreEditor.commit()) {
 			labelsStoreEditor.commit();
 		}
 	}
 
-	public boolean isFavorite(String code) {
+	public boolean isFavorite(String provider, String code) {
 		final SharedPreferences labelsStore = getLabelsStore();
-		final String value = labelsStore.getString(code, null);
+		final String value = labelsStore.getString(mergeProviderAndCode(provider, code), null);
 		return value != null;
 	}
 
@@ -109,26 +147,29 @@ public class FavoritiesService {
 		final SharedPreferences.Editor labelsStoreEditor = getLabelsStore().edit();
 
 		final int newPosition = positionsStore.getAll().size();
-		positionsStoreEditor.putString(Integer.toString(newPosition), busStop.getCode());
+		final String all = mergeProviderAndCode(busStop.getProvider(), busStop.getCode());
+		positionsStoreEditor.putString(Integer.toString(newPosition), all);
 		String label = busStop.getLabel();
 		if (label == null) {
 		    label = EMPTY_LABEL;
 		}
-		labelsStoreEditor.putString(busStop.getCode(), label);
+		labelsStoreEditor.putString(all, label);
 
 		if (positionsStoreEditor.commit()) {
 			labelsStoreEditor.commit();
 		}
 	}
 
-	public void rename(String code, String newLabel) {
+	public void rename(String provider, String code, String newLabel) {
+        final String all = mergeProviderAndCode(provider, code);
+
 		final SharedPreferences labelsStore = getLabelsStore();
-		final String oldName = labelsStore.getString(code, null);
+		final String oldName = labelsStore.getString(all, null);
 		if (oldName == null) {
-			throw new IllegalArgumentException(String.format("Station %s is not in favorities (newLabel: %s)", code, newLabel));
+			throw new IllegalArgumentException(String.format("Station %s is not in favorities (newLabel: %s)", all, newLabel));
 		}
 		final SharedPreferences.Editor labelsStoreEditor = labelsStore.edit();
-		labelsStoreEditor.putString(code, newLabel);
+		labelsStoreEditor.putString(all, newLabel);
 
 		labelsStoreEditor.commit();
 	}

@@ -1,5 +1,6 @@
 package eu.tanov.android.sptn;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -20,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,7 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 import eu.tanov.android.sptn.map.StationsOverlay;
+import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.util.LocaleHelper;
 import eu.tanov.android.sptn.util.MapHelper;
 
@@ -61,6 +65,7 @@ public class LocationView extends MapActivity {
 
     private static final String PREFERENCE_KEY_STARTUP_SCREEN_FAVORITIES = "commonStartupScreenFavorities";
     private static final boolean PREFERENCE_DEFAULT_VALUE_STARTUP_SCREEN_FAVORITIES = false;
+    private static final String PREFERENCE_KEY_DEFAULT_PROVIDER = "defaultProvider";
 
     private static final String PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6 = "lastLocationLatitudeE6";
     private static final String PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6 = "lastLocationLongitudeE6";
@@ -315,12 +320,13 @@ public class LocationView extends MapActivity {
                 return;
             }
             final String code = data.getStringExtra(FavoritiesActivity.EXTRA_CODE_NAME);
-            if (code == null) {
+            final String provider = data.getStringExtra(FavoritiesActivity.EXTRA_PROVIDER_NAME);
+            if (code == null || provider == null) {
                 throw new IllegalStateException("No code provided");
             }
             map.getController().setZoom(ZOOM_DEFAULT);
 
-            stationsOverlay.showStation(code, true);
+            stationsOverlay.showStation(provider, code, true);
             break;
 
         default:
@@ -381,12 +387,35 @@ public class LocationView extends MapActivity {
     private void askForBusStopId() {
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER /*| InputType.TYPE_NUMBER_VARIATION_NORMAL*/);
+//        final LinearLayout linearLayout = new LinearLayout(this);
+//        linearLayout.addView(input);
+        
+        final ScrollView scrollView = new ScrollView(this);
+        scrollView.addView(input);
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final String selectedProvider = preferences.getString(PREFERENCE_KEY_DEFAULT_PROVIDER,
+                InitStations.PROVIDER_SOFIATRAFFIC);
+        
+        final List<RadioButton> radios = new LinkedList<RadioButton>();
+        for (String provider: InitStations.PROVIDERS) {
+            final RadioButton radio = new RadioButton(this);
+            radio.setText(provider);
+            if (selectedProvider.equals(provider)) {
+                radio.setSelected(true);
+            }
+            radios.add(radio);
+            scrollView.addView(radio);
+        }
+        
         new AlertDialog.Builder(this)
         .setTitle(R.string.searchByBusStopId_dialogTitle)
         .setMessage(R.string.searchByBusStopId_dialogContent)
-        .setView(input)
+        .setView(scrollView)
         .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+                
+                final String defaultProvider = saveDefaultProvider(preferences, radios);
+                
                 String value = input.getText().toString(); 
                 while(value.startsWith("0")) {
                     value = value.substring(1);
@@ -395,10 +424,22 @@ public class LocationView extends MapActivity {
                     Toast.makeText(LocationView.this, R.string.searchByBusStopId_dialog_badBusStopID, Toast.LENGTH_LONG).show();
                     askForBusStopId();
                 } else {
-                    stationsOverlay.showStation(value, true);
+                    stationsOverlay.showStation(defaultProvider, value, true);
                 }
             }
         }).show();        
+    }
+
+    protected String saveDefaultProvider(SharedPreferences preferences, List<RadioButton> radios) {
+        for (RadioButton radioButton : radios) {
+            if (radioButton.isChecked()) {
+                final Editor editor = preferences.edit();
+                editor.putString(PREFERENCE_KEY_DEFAULT_PROVIDER, radioButton.getText().toString());
+                editor.commit();
+                return radioButton.getText().toString();
+            }
+        }
+        throw new IllegalStateException("No provider selected");
     }
 
     private void navigateToTixBg() {

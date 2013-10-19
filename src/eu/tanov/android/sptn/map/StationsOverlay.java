@@ -30,7 +30,7 @@ import eu.tanov.android.sptn.util.MapHelper;
 public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     private static final String TAG = "StationsOverlay";
 
-    private static final String BUSSTOP_SOURCE_LABEL_SEPARATOR = ":";
+    private static final String BUSSTOP_PROVIDER_LABEL_SEPARATOR = ":";
 
     private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
     private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
@@ -38,17 +38,18 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
     private final LocationView context;
 
-    private final Map<String, OverlayItem> codeToOverlayItem = new HashMap<String, OverlayItem>();
+    private final Map<String, Map<String, OverlayItem>> providerToOverlayMap = new HashMap<String, Map<String,OverlayItem>>();
     private final Handler uiHandler = new Handler();
 
     private final MapView map;
+
 
     private static final String[] PROJECTION = new String[] { Station._ID, // 0
             Station.CODE, // 1
             Station.LAT, // 2
             Station.LON, // 3
             Station.LABEL, // 4
-            Station.SOURCE // 5
+            Station.PROVIDER // 5
     };
 
     public class StationsQuery extends BaseQuery {
@@ -101,19 +102,20 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                 final int labelColumn = cursor.getColumnIndex(Station.LABEL);
                 final int latColumn = cursor.getColumnIndex(Station.LAT);
                 final int lonColumn = cursor.getColumnIndex(Station.LON);
-                final int sourceColumn = cursor.getColumnIndex(Station.SOURCE);
+                final int providerColumn = cursor.getColumnIndex(Station.PROVIDER);
 
                 String code;
                 String label;
                 double lat;
                 double lon;
-                String source;
+                String provider;
                 final ArrayList<OverlayItem> newStations = new ArrayList<OverlayItem>(StationProvider.STATIONS_LIMIT);
 
                 do {
                     // Get the field values
                     code = cursor.getString(codeColumn);
-                    if (codeToOverlayItem.containsKey(code)) {
+                    provider = cursor.getString(providerColumn);
+                    if (getOverlayItem(provider, code) != null) {
                         // already added
                         continue;
                     }
@@ -121,11 +123,10 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                     label = cursor.getString(labelColumn);
                     lat = cursor.getDouble(latColumn);
                     lon = cursor.getDouble(lonColumn);
-                    source = cursor.getString(sourceColumn);
 
                     final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
-                    final OverlayItem overlayItem = new OverlayItem(point, code, source + BUSSTOP_SOURCE_LABEL_SEPARATOR + label);
-                    codeToOverlayItem.put(code, overlayItem);
+                    final OverlayItem overlayItem = new OverlayItem(point, code, provider + BUSSTOP_PROVIDER_LABEL_SEPARATOR + label);
+                    addOverlayItem(provider, code, overlayItem);
                     newStations.add(overlayItem);
                 } while (cursor.moveToNext());
 
@@ -157,12 +158,12 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
         }
 
         private EstimatesResolver createResolver(String busStopSource, String stationCode, String stationLabel) {
-            if (InitStations.SOURCE_SOFIATRAFFIC.equals(busStopSource)) {
+            if (InitStations.PROVIDER_SOFIATRAFFIC.equals(busStopSource)) {
                 return new HtmlResult(context, uiHandler, StationsOverlay.this,
                         stationCode, stationLabel,
                         showRemainingTime());
             }
-            if (InitStations.SOURCE_VARNATRAFFIC.equals(busStopSource)) {
+            if (InitStations.PROVIDER_VARNATRAFFIC.equals(busStopSource)) {
                 return new VarnaTrafficHtmlResult(context, uiHandler, StationsOverlay.this,
                         stationCode, stationLabel,
                         showRemainingTime());
@@ -173,7 +174,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
         @Override
         public void run() {
             final String stationCode = overlayItem.getTitle();
-            final String[] snippets = overlayItem.getSnippet().split(BUSSTOP_SOURCE_LABEL_SEPARATOR, 2);
+            final String[] snippets = overlayItem.getSnippet().split(BUSSTOP_PROVIDER_LABEL_SEPARATOR, 2);
             final String stationLabel = snippets[1];
             final String busStopSource = snippets[0];
             try {
@@ -246,20 +247,35 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
         new Thread(query).start();
     }
 
-    public void placeStation(String code) {
-        if (codeToOverlayItem.containsKey(code)) {
+    public void placeStation(String provider, String code) {
+        if (getOverlayItem(provider, code) != null) {
             return;
         }
         new StationQuery(code).run();
     }
-    public void showStation(String code, boolean animateTo) {
-        showStation(code, animateTo, false);
+    public void showStation(String provider, String code, boolean animateTo) {
+        showStation(provider, code, animateTo, false);
     }
-    private void showStation(String code, boolean animateTo, boolean throwIfNotFound) {
-        if (!codeToOverlayItem.containsKey(code)) {
-            placeStation(code);
+    private OverlayItem getOverlayItem(String provider, String code) {
+        final Map<String, OverlayItem> map = providerToOverlayMap.get(provider);
+        if (map == null) {
+            return null;
         }
-        OverlayItem station = codeToOverlayItem.get(code);
+        return map.get(code);
+    }
+    private void addOverlayItem(String provider, String code, OverlayItem item) {
+        Map<String, OverlayItem> map = providerToOverlayMap.get(provider);
+        if (map == null) {
+            map = new HashMap<String, OverlayItem>();
+            providerToOverlayMap.put(provider, map);
+        }
+        map.put(code, item);
+    }
+    private void showStation(String provider, String code, boolean animateTo, boolean throwIfNotFound) {
+        if (getOverlayItem(provider, code) == null) {
+            placeStation(provider, code);
+        }
+        OverlayItem station = getOverlayItem(provider, code);
         if (station == null) {
             if (throwIfNotFound) {
                 // for future improving, now bus stops entered in SEARCH by busstop id can be unknown to our DB

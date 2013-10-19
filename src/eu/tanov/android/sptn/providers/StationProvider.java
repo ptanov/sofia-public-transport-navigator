@@ -21,7 +21,7 @@ import android.util.Log;
  * Provides access to a database of stations. Each station has a code and coordinates
  */
 public class StationProvider extends ContentProvider {
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 	public static final int STATIONS_LIMIT = 30;
 	private static final String STATIONS_LIMIT_STRING = Integer.toString(STATIONS_LIMIT);
 
@@ -49,7 +49,7 @@ public class StationProvider extends ContentProvider {
         public static final String LON = "lon";
         public static final String CODE = "code";
         public static final String LABEL = "label";
-        public static final String SOURCE = "source";
+        public static final String PROVIDER = "provider";
 
         public static final String DEFAULT_SORT_ORDER = CODE +" DESC";
     }
@@ -64,7 +64,7 @@ public class StationProvider extends ContentProvider {
         DEFAULT_COLUMNS_PROJECTION.put(Station.LAT, Station.LAT);
         DEFAULT_COLUMNS_PROJECTION.put(Station.LON, Station.LON);
         DEFAULT_COLUMNS_PROJECTION.put(Station.LABEL, Station.LABEL);
-        DEFAULT_COLUMNS_PROJECTION.put(Station.SOURCE, Station.SOURCE);
+        DEFAULT_COLUMNS_PROJECTION.put(Station.PROVIDER, Station.PROVIDER);
 
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         URI_MATCHER.addURI(AUTHORITY, "stations", STATIONS);
@@ -88,7 +88,7 @@ public class StationProvider extends ContentProvider {
                     + Station.LAT + " FLOAT,"
                     + Station.LON + " FLOAT,"
                     + Station.LABEL + " VARCHAR(50),"
-                    + Station.SOURCE + " VARCHAR(50)"
+                    + Station.PROVIDER + " VARCHAR(50)"
                     + ");");
             
             db.beginTransaction();

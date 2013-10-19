@@ -19,6 +19,7 @@ import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.favorities.BusStopItem;
 import eu.tanov.android.sptn.favorities.FavoritiesService;
 import eu.tanov.android.sptn.map.StationsOverlay;
+import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.util.TimeHelper;
 
 public class HtmlResult implements EstimatesResolver {
@@ -242,7 +243,7 @@ public class HtmlResult implements EstimatesResolver {
 	private void handleRefresh(Builder dialogBuilder, final WebView browser) {
 		dialogBuilder.setNeutralButton(R.string.buttonRefreshEstimates, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				overlay.showStation(stationCode, false);
+				overlay.showStation(InitStations.PROVIDER_SOFIATRAFFIC, stationCode, false);
 			}
 		});
 
@@ -250,13 +251,13 @@ public class HtmlResult implements EstimatesResolver {
 
 	private void handleFavorities(Builder dialogBuilder) {
 		final FavoritiesService favoritiesService = getFavoritiesService();
-		if (!favoritiesService.isFavorite(stationCode)) {
+		if (!favoritiesService.isFavorite(InitStations.PROVIDER_SOFIATRAFFIC, stationCode)) {
 			// add to favorite
 			dialogBuilder.setNegativeButton(R.string.buttonAddToFavorities, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					context.estimatesDialogClosed();
 
-					favoritiesService.add(new BusStopItem(0, stationCode, stationLabel));
+					favoritiesService.add(new BusStopItem(InitStations.PROVIDER_SOFIATRAFFIC, 0, stationCode, stationLabel));
 					final String message = context.getResources().getString(R.string.info_addedToFavorities, stationLabel, stationCode);
 					Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 					dialog.dismiss();

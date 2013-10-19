@@ -19,14 +19,18 @@ import com.google.android.maps.OverlayItem;
 
 import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.R;
+import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.providers.StationProvider;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 import eu.tanov.android.sptn.sumc.EstimatesResolver;
 import eu.tanov.android.sptn.sumc.HtmlResult;
+import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     private static final String TAG = "StationsOverlay";
+
+    private static final String BUSSTOP_SOURCE_LABEL_SEPARATOR = ":";
 
     private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
     private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
@@ -44,6 +48,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
             Station.LAT, // 2
             Station.LON, // 3
             Station.LABEL, // 4
+            Station.SOURCE // 5
     };
 
     public class StationsQuery extends BaseQuery {
@@ -92,15 +97,17 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                 }
 
                 // iterate over result
-                int codeColumn = cursor.getColumnIndex(Station.CODE);
-                int labelColumn = cursor.getColumnIndex(Station.LABEL);
-                int latColumn = cursor.getColumnIndex(Station.LAT);
-                int lonColumn = cursor.getColumnIndex(Station.LON);
+                final int codeColumn = cursor.getColumnIndex(Station.CODE);
+                final int labelColumn = cursor.getColumnIndex(Station.LABEL);
+                final int latColumn = cursor.getColumnIndex(Station.LAT);
+                final int lonColumn = cursor.getColumnIndex(Station.LON);
+                final int sourceColumn = cursor.getColumnIndex(Station.SOURCE);
 
                 String code;
                 String label;
                 double lat;
                 double lon;
+                String source;
                 final ArrayList<OverlayItem> newStations = new ArrayList<OverlayItem>(StationProvider.STATIONS_LIMIT);
 
                 do {
@@ -114,9 +121,10 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                     label = cursor.getString(labelColumn);
                     lat = cursor.getDouble(latColumn);
                     lon = cursor.getDouble(lonColumn);
+                    source = cursor.getString(sourceColumn);
 
                     final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
-                    final OverlayItem overlayItem = new OverlayItem(point, code, label);
+                    final OverlayItem overlayItem = new OverlayItem(point, code, source + BUSSTOP_SOURCE_LABEL_SEPARATOR + label);
                     codeToOverlayItem.put(code, overlayItem);
                     newStations.add(overlayItem);
                 } while (cursor.moveToNext());
@@ -148,15 +156,29 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
             this.overlayItem = overlayItem;
         }
 
+        private EstimatesResolver createResolver(String busStopSource, String stationCode, String stationLabel) {
+            if (InitStations.SOURCE_SOFIATRAFFIC.equals(busStopSource)) {
+                return new HtmlResult(context, uiHandler, StationsOverlay.this,
+                        stationCode, stationLabel,
+                        showRemainingTime());
+            }
+            if (InitStations.SOURCE_VARNATRAFFIC.equals(busStopSource)) {
+                return new VarnaTrafficHtmlResult(context, uiHandler, StationsOverlay.this,
+                        stationCode, stationLabel,
+                        showRemainingTime());
+            }
+
+            throw new IllegalStateException("Unknown source: " + busStopSource);
+        }
         @Override
         public void run() {
             final String stationCode = overlayItem.getTitle();
-            final String stationLabel = overlayItem.getSnippet();
-
+            final String[] snippets = overlayItem.getSnippet().split(BUSSTOP_SOURCE_LABEL_SEPARATOR, 2);
+            final String stationLabel = snippets[1];
+            final String busStopSource = snippets[0];
             try {
-                final EstimatesResolver resolver = new HtmlResult(context, uiHandler, StationsOverlay.this,
-                        stationCode, stationLabel,
-                        showRemainingTime());
+                final EstimatesResolver resolver = createResolver(busStopSource, stationCode, stationLabel);
+                
                 // long operation
                 resolver.query();
 

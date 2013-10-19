@@ -23,8 +23,11 @@ import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 
 public class InitStations {
-	private static final String ENCODING = "UTF8";
+    private static final String ENCODING = "UTF8";
 	private final Context context;
+
+    public static final String SOURCE_SOFIATRAFFIC = "sofiatraffic.bg";
+    public static final String SOURCE_VARNATRAFFIC = "varnatraffic.com";
 
 	//TODO move to external file
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -87,7 +90,8 @@ public class InitStations {
 
     }
 	private static class Handler extends DefaultHandler {
-		private static final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, 'sofiatraffic.bg')";
+
+        private static final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, '%s')";
 
 		//FIXME rename to "busStop"
 		private static final String ELEMENT_NAME_BUS_STATION = "station";
@@ -107,7 +111,7 @@ public class InitStations {
 			
 			insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
 					this.tableName, Station.CODE, Station.LAT,
-					Station.LON, Station.LABEL, Station.TYPE)
+					Station.LON, Station.LABEL, Station.SOURCE, SOURCE_SOFIATRAFFIC)
 			);
 		}
 
@@ -149,11 +153,11 @@ public class InitStations {
                 .openRawResource(R.raw.coordinates_varnatraffic);
 
         final BusStopVarnaTraffic[] all = OBJECT_MAPPER.readValue(openRawResource, BusStopVarnaTraffic[].class);
-        final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, 'varnatraffic.com')";
+        final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, '%s')";
         
         final SQLiteStatement insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
                 tableName, Station.CODE, Station.LAT,
-                Station.LON, Station.LABEL, Station.TYPE)
+                Station.LON, Station.LABEL, Station.SOURCE, SOURCE_VARNATRAFFIC)
         );
         
         for (BusStopVarnaTraffic busStopVarnaTraffic : all) {

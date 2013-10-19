@@ -13,6 +13,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 
@@ -20,6 +26,66 @@ public class InitStations {
 	private static final String ENCODING = "UTF8";
 	private final Context context;
 
+	//TODO move to external file
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class PositionVarnaTraffic {
+        private double lat;
+        private double lon;
+
+        public double getLat() {
+            return lat;
+        }
+
+        @SuppressWarnings("unused")
+        public void setLat(double lat) {
+            this.lat = lat;
+        }
+
+        public double getLon() {
+            return lon;
+        }
+
+        @SuppressWarnings("unused")
+        public void setLon(double lon) {
+            this.lon = lon;
+        }
+
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class BusStopVarnaTraffic {
+        private int id;
+        private String text;
+        private PositionVarnaTraffic position;
+
+        public int getId() {
+            return id;
+        }
+
+        @SuppressWarnings("unused")
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        @SuppressWarnings("unused")
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public PositionVarnaTraffic getPosition() {
+            return position;
+        }
+
+        @SuppressWarnings("unused")
+        public void setPosition(PositionVarnaTraffic position) {
+            this.position = position;
+        }
+
+    }
 	private static class Handler extends DefaultHandler {
 		private static final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, 'sofiatraffic.bg')";
 
@@ -74,9 +140,32 @@ public class InitStations {
 
 	public void createStations(SQLiteDatabase db, String tableName) throws IOException, SAXException {
 	    createSUMCStations(db, tableName);
+	    createVarnaStations(db, tableName);
 	}
 
-	private void createSUMCStations(SQLiteDatabase db, String tableName) throws IOException, SAXException {
+	private void createVarnaStations(SQLiteDatabase db, String tableName) throws JsonParseException, JsonMappingException, IOException {
+	    final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+        final InputStream openRawResource = context.getResources()
+                .openRawResource(R.raw.coordinates_varnatraffic);
+
+        final BusStopVarnaTraffic[] all = OBJECT_MAPPER.readValue(openRawResource, BusStopVarnaTraffic[].class);
+        final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, 'varnatraffic.com')";
+        
+        final SQLiteStatement insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
+                tableName, Station.CODE, Station.LAT,
+                Station.LON, Station.LABEL, Station.TYPE)
+        );
+        
+        for (BusStopVarnaTraffic busStopVarnaTraffic : all) {
+            insertStatement.bindLong(1, busStopVarnaTraffic.getId());
+            insertStatement.bindDouble(2, busStopVarnaTraffic.getPosition().getLat());
+            insertStatement.bindDouble(3, busStopVarnaTraffic.getPosition().getLon());
+            insertStatement.bindString(4, busStopVarnaTraffic.getText());
+            insertStatement.executeInsert();
+        }
+	}
+
+    private void createSUMCStations(SQLiteDatabase db, String tableName) throws IOException, SAXException {
         initParser();
 
         final XMLReader xr = XMLReaderFactory.createXMLReader();

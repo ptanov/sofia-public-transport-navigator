@@ -2,6 +2,7 @@ package eu.tanov.android.sptn.util;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TreeMap;
 
 import android.util.Log;
 
@@ -25,25 +26,31 @@ public class TimeHelper {
 	public static String toRemainingTimes(Date now, String timeData,
 			String formatOnlyMinutes, String formatMinutesAndHours) {
 		final String[] times = timeData.split(SEPARATOR_ESTIMATED_TIME);
-		final StringBuilder result = new StringBuilder(times.length * SPACE_PER_REMAINING_TIME);
-		for (String time : times) {
-			try {
-				result.append(toRemainingTime(now, time, formatOnlyMinutes, formatMinutesAndHours));
-			} catch (Exception e) {
-				Log.e(TAG, "could not convert " + time, e);
-				result.append(time);
-			}
-			result.append(SEPARATOR_ESTIMATED_TIME);
-		}
+		final TreeMap<Long, String> sortedTimes = new TreeMap<Long, String>();
+        for (String time : times) {
+            try {
+                toRemainingTime(sortedTimes, now, time, formatOnlyMinutes, formatMinutesAndHours);
+            } catch (Exception e) {
+                Log.e(TAG, "could not convert " + time, e);
+                addInFirstEmptyPlace(sortedTimes, 0, time);
+            }
+        }
+        
+        final StringBuilder result = new StringBuilder(times.length * SPACE_PER_REMAINING_TIME);
+        for (String time : sortedTimes.values()) {
+            result.append(time);
+            result.append(SEPARATOR_ESTIMATED_TIME);
+        }
+
 		if (result.length()>0) {
 			//remove last comma
-			result.deleteCharAt(result.length() - 1);
+			result.deleteCharAt(result.length() - SEPARATOR_ESTIMATED_TIME.length());
 		}
 		
 		return result.toString();
 	}
 
-	private static String toRemainingTime(Date now, String time,
+	private static void toRemainingTime(TreeMap<Long, String> sortedTimes, Date now, String time,
 			String formatOnlyMinutes, String formatMinutesAndHours) {
 		final String[] hoursMinutes = time.split(":");
 		if (hoursMinutes.length != 2) {
@@ -62,10 +69,18 @@ public class TimeHelper {
 					"negative remaining time: time = %s, now = %s, diff = %s",
 					time, now, remainingTimeInMillis));
 		}
-		return remainingTimeToHumanReadableForm(remainingTimeInMillis, formatOnlyMinutes, formatMinutesAndHours);
+		addInFirstEmptyPlace(sortedTimes, calendar.getTimeInMillis(), remainingTimeToHumanReadableForm(remainingTimeInMillis, formatOnlyMinutes, formatMinutesAndHours));
 	}
 
-	private static long getRemainingTimeInMillis(Date now, Calendar calendar) {
+	private static void addInFirstEmptyPlace(TreeMap<Long, String> sortedTimes, long timeInMillis,
+            String remainingTimeToHumanReadableForm) {
+	    while(sortedTimes.containsKey(timeInMillis)) {
+	        timeInMillis++;
+	    }
+	    sortedTimes.put(timeInMillis, remainingTimeToHumanReadableForm);
+    }
+
+    private static long getRemainingTimeInMillis(Date now, Calendar calendar) {
         final long arrivingTime = calendar.getTimeInMillis();
 
         final long remainingTimeInMillis = arrivingTime - now.getTime();

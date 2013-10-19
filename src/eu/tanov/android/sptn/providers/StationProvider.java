@@ -21,8 +21,8 @@ import android.util.Log;
  * Provides access to a database of stations. Each station has a code and coordinates
  */
 public class StationProvider extends ContentProvider {
-	private static final int DATABASE_VERSION = 1;
-	public static final int STATIONS_LIMIT = 10;
+	private static final int DATABASE_VERSION = 2;
+	public static final int STATIONS_LIMIT = 30;
 	private static final String STATIONS_LIMIT_STRING = Integer.toString(STATIONS_LIMIT);
 
     private static final int STATIONS = 1;
@@ -49,6 +49,7 @@ public class StationProvider extends ContentProvider {
         public static final String LON = "lon";
         public static final String CODE = "code";
         public static final String LABEL = "label";
+        public static final String TYPE = "type";
 
         public static final String DEFAULT_SORT_ORDER = CODE +" DESC";
     }
@@ -63,6 +64,7 @@ public class StationProvider extends ContentProvider {
         DEFAULT_COLUMNS_PROJECTION.put(Station.LAT, Station.LAT);
         DEFAULT_COLUMNS_PROJECTION.put(Station.LON, Station.LON);
         DEFAULT_COLUMNS_PROJECTION.put(Station.LABEL, Station.LABEL);
+        DEFAULT_COLUMNS_PROJECTION.put(Station.TYPE, Station.TYPE);
 
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         URI_MATCHER.addURI(AUTHORITY, "stations", STATIONS);
@@ -85,14 +87,18 @@ public class StationProvider extends ContentProvider {
                     + Station.CODE + " INTEGER,"
                     + Station.LAT + " FLOAT,"
                     + Station.LON + " FLOAT,"
-                    + Station.LABEL + " VARCHAR(50)"
+                    + Station.LABEL + " VARCHAR(50),"
+                    + Station.TYPE + " VARCHAR(50)"
                     + ");");
             
+            db.beginTransaction();
             try {
-				initializer.createStations(db, STATIONS_TABLE_NAME);
+                initializer.createStations(db, STATIONS_TABLE_NAME);
 			} catch (Exception e) {
 				Log.e(TAG, "failed to create stations", e);
-			}
+            } finally {
+                db.endTransaction();
+            }
         }
 
 		@Override

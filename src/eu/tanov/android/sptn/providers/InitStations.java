@@ -21,7 +21,7 @@ public class InitStations {
 	private final Context context;
 
 	private static class Handler extends DefaultHandler {
-		private static final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)";
+		private static final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, 'sofiatraffic.bg')";
 
 		//FIXME rename to "busStop"
 		private static final String ELEMENT_NAME_BUS_STATION = "station";
@@ -41,7 +41,7 @@ public class InitStations {
 			
 			insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
 					this.tableName, Station.CODE, Station.LAT,
-					Station.LON, Station.LABEL)
+					Station.LON, Station.LABEL, Station.TYPE)
 			);
 		}
 
@@ -73,30 +73,29 @@ public class InitStations {
 	}
 
 	public void createStations(SQLiteDatabase db, String tableName) throws IOException, SAXException {
-		initParser();
-
-		final XMLReader xr = XMLReaderFactory.createXMLReader();
-		final Handler handler = new Handler(db, tableName);
-
-		xr.setContentHandler(handler);
-		xr.setErrorHandler(handler);
-
-		final InputStream openRawResource = context.getResources()
-				.openRawResource(R.raw.coordinates);
-
-		final InputSource inputSource = new InputSource(openRawResource);
-		inputSource.setEncoding(ENCODING);
-		
-		db.beginTransaction();
-		try {
-			xr.parse(inputSource);
-			db.setTransactionSuccessful();
-		} finally {
-			db.endTransaction();
-		}
+	    createSUMCStations(db, tableName);
 	}
 
-	private void initParser() {
+	private void createSUMCStations(SQLiteDatabase db, String tableName) throws IOException, SAXException {
+        initParser();
+
+        final XMLReader xr = XMLReaderFactory.createXMLReader();
+        final Handler handler = new Handler(db, tableName);
+
+        xr.setContentHandler(handler);
+        xr.setErrorHandler(handler);
+
+        final InputStream openRawResource = context.getResources()
+                .openRawResource(R.raw.coordinates);
+
+        final InputSource inputSource = new InputSource(openRawResource);
+        inputSource.setEncoding(ENCODING);
+        
+        xr.parse(inputSource);
+        db.setTransactionSuccessful();
+    }
+
+    private void initParser() {
 		System.setProperty("org.xml.sax.driver","org.xmlpull.v1.sax2.Driver");
 	}
 

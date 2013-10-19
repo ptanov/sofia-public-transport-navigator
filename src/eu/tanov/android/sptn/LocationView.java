@@ -43,8 +43,6 @@ public class LocationView extends MapActivity {
     private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_20 = "whatsNewShowVersion1_20_searchByBusStopId";
     private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_20 = true;
 
-    private static final GeoPoint LOCATION_SOFIA = new GeoPoint(42696827, 23320916);
-
     private static final int REQUEST_CODE_SETTINGS = 1;
     private static final int REQUEST_CODE_FAVORITIES = 2;
 
@@ -63,6 +61,14 @@ public class LocationView extends MapActivity {
 
     private static final String PREFERENCE_KEY_STARTUP_SCREEN_FAVORITIES = "commonStartupScreenFavorities";
     private static final boolean PREFERENCE_DEFAULT_VALUE_STARTUP_SCREEN_FAVORITIES = false;
+
+    private static final String PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6 = "lastLocationLatitudeE6";
+    private static final String PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6 = "lastLocationLongitudeE6";
+    private static final String PREFERENCE_KEY_LAST_LOCATION_ZOOM = "lastLocationZoom";
+    private static final int LOCATION_SOFIA_LATITUDE_E6 = 42696827;
+    private static final int LOCATION_SOFIA_LONGITUDE_E6 = 23320916;
+    private static final int LOCATION_SOFIA_ZOOM = 16;
+
     private static final int DIALOG_ID_ABOUT = 1;
     private static final int DIALOG_ID_PROGRESS_PLACE_STATIONS = 2;
     private static final int DIALOG_ID_PROGRESS_QUERY_STATION = 3;
@@ -77,21 +83,25 @@ public class LocationView extends MapActivity {
     
     private String userLocale;
 
+    private MapView map;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocaleHelper.selectLocale(this);
         userLocale = LocaleHelper.getUserLocale(this);
         setContentView(R.layout.main);
-        final MapView map = (MapView) findViewById(R.id.mapview1);
+        map = (MapView) findViewById(R.id.mapview1);
         map.setBuiltInZoomControls(true);
-        // locate in Sofia, before adding onLocationChanged listener
-        map.getController().animateTo(LOCATION_SOFIA);
-        setMapSettings();
 
         // add overlays
         final List<Overlay> overlays = map.getOverlays();
         stationsOverlay = new StationsOverlay(this, map);
+
+        // locate to last location, before adding onLocationChanged listener
+        initializeMapLocation();
+        setMapSettings();
+
         myLocationOverlay = new MyLocationOverlay(this, map) {
             boolean firstLocation = true;
 
@@ -113,10 +123,37 @@ public class LocationView extends MapActivity {
         overlays.add(myLocationOverlay);
         overlays.add(stationsOverlay);
 
-        map.getController().setZoom(16);
+
         notifyForChangesInNewVersions();
 
         selectStartupScreen();
+    }
+
+    private void saveMapLastLocation() {
+        if (map == null) {
+            return;
+        }
+        final Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        final GeoPoint mapCenter = map.getMapCenter();
+        editor.putInt(PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6, mapCenter.getLatitudeE6());
+        editor.putInt(PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6, mapCenter.getLongitudeE6());
+        editor.putInt(PREFERENCE_KEY_LAST_LOCATION_ZOOM, map.getZoomLevel());
+        editor.commit();
+    }
+    private void initializeMapLocation() {
+
+        final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        // locate in Sofia if not set already
+        final int lat = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6, LOCATION_SOFIA_LATITUDE_E6);
+        final int lon = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6, LOCATION_SOFIA_LONGITUDE_E6);
+        final int zoom = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_ZOOM, LOCATION_SOFIA_ZOOM);
+        
+        final GeoPoint location = new GeoPoint(lat, lon);
+        map.getController().animateTo(location);
+        map.getController().setZoom(zoom);
+        
+        stationsOverlay.placeStations(MapHelper.toCoordinate(location.getLatitudeE6()),
+                MapHelper.toCoordinate(location.getLongitudeE6()), false);
     }
 
     private void notifyForChangesInNewVersions() {
@@ -219,6 +256,7 @@ public class LocationView extends MapActivity {
     @Override
     protected void onPause() {
         disableLocationUpdates();
+        saveMapLastLocation();
         super.onPause();
     }
 

@@ -67,7 +67,7 @@ public class LocationView extends MapActivity {
     private static final String PREFERENCE_KEY_LAST_LOCATION_ZOOM = "lastLocationZoom";
     private static final int LOCATION_SOFIA_LATITUDE_E6 = 42696827;
     private static final int LOCATION_SOFIA_LONGITUDE_E6 = 23320916;
-    private static final int LOCATION_SOFIA_ZOOM = 16;
+    private static final int ZOOM_DEFAULT = 16;
 
     private static final int DIALOG_ID_ABOUT = 1;
     private static final int DIALOG_ID_PROGRESS_PLACE_STATIONS = 2;
@@ -146,7 +146,7 @@ public class LocationView extends MapActivity {
         // locate in Sofia if not set already
         final int lat = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6, LOCATION_SOFIA_LATITUDE_E6);
         final int lon = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6, LOCATION_SOFIA_LONGITUDE_E6);
-        final int zoom = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_ZOOM, LOCATION_SOFIA_ZOOM);
+        final int zoom = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_ZOOM, ZOOM_DEFAULT);
         
         final GeoPoint location = new GeoPoint(lat, lon);
         map.getController().animateTo(location);
@@ -318,6 +318,7 @@ public class LocationView extends MapActivity {
             if (code == null) {
                 throw new IllegalStateException("No code provided");
             }
+            map.getController().setZoom(ZOOM_DEFAULT);
 
             stationsOverlay.showStation(code, true);
             break;

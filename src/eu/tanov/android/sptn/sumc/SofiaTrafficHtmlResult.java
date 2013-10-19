@@ -22,7 +22,7 @@ import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.util.TimeHelper;
 
-public class HtmlResult implements EstimatesResolver {
+public class SofiaTrafficHtmlResult implements EstimatesResolver {
 
 	// private static final String FORMAT_OUTPUT_INFO =
 	// "<table><tr><td class=\"number\"><a href=\"http://m.sumc.bg%s\">%s</a></td><td class=\"estimates\"><a href=\"http://m.sumc.bg%s\">%s</a></td></tr><tr><td class=\"direction\" colspan=\"2\">%s</td></tr></table>";
@@ -86,7 +86,7 @@ public class HtmlResult implements EstimatesResolver {
 	private final StationsOverlay overlay;
     private final Handler uiHandler;
 
-	public HtmlResult(LocationView context, Handler uiHandler, StationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime) {
+	public SofiaTrafficHtmlResult(LocationView context, Handler uiHandler, StationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime) {
 		this.stationCode = stationCode;
 		this.overlay = overlay;
 		this.stationLabel = stationLabel;

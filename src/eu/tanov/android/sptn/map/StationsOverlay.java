@@ -23,7 +23,7 @@ import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.providers.StationProvider;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 import eu.tanov.android.sptn.sumc.EstimatesResolver;
-import eu.tanov.android.sptn.sumc.HtmlResult;
+import eu.tanov.android.sptn.sumc.SofiaTrafficHtmlResult;
 import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult;
 import eu.tanov.android.sptn.util.MapHelper;
 
@@ -159,7 +159,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
         private EstimatesResolver createResolver(String busStopSource, String stationCode, String stationLabel) {
             if (InitStations.PROVIDER_SOFIATRAFFIC.equals(busStopSource)) {
-                return new HtmlResult(context, uiHandler, StationsOverlay.this,
+                return new SofiaTrafficHtmlResult(context, uiHandler, StationsOverlay.this,
                         stationCode, stationLabel,
                         showRemainingTime());
             }

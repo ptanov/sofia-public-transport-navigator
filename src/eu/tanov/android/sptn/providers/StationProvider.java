@@ -22,7 +22,7 @@ import android.util.Log;
  */
 public class StationProvider extends ContentProvider {
 	private static final int DATABASE_VERSION = 4;
-	public static final int STATIONS_LIMIT = 30;
+	public static final int STATIONS_LIMIT = 10;
 	private static final String STATIONS_LIMIT_STRING = Integer.toString(STATIONS_LIMIT);
 
     private static final int STATIONS = 1;

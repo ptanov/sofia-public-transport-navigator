@@ -6,12 +6,16 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
@@ -35,11 +39,70 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 import eu.tanov.android.sptn.map.StationsOverlay;
+import eu.tanov.android.sptn.providers.BusStopUpdater;
 import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.util.LocaleHelper;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class LocationView extends MapActivity {
+    private final class UpdateBusStopsAsyncTask extends AsyncTask<Void, Void, Boolean> {
+        private final BusStopUpdater updater;
+
+        private UpdateBusStopsAsyncTask(BusStopUpdater updater) {
+            this.updater = updater;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return updater.update();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                Toast.makeText(LocationView.this, R.string.update_busstop_toast_update_success, Toast.LENGTH_LONG)
+                        .show();
+            } else {
+                Toast.makeText(LocationView.this, R.string.update_busstop_toast_update_failure, Toast.LENGTH_LONG)
+                        .show();
+            }
+        }
+    }
+
+    private final class CheckForUpdateAsyncTask extends AsyncTask<Void, Void, Boolean> {
+        private final BusStopUpdater updater = new BusStopUpdater(LocationView.this);
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return updater.isUpdateAvailable();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (!result) {
+                return;
+            }
+            if (isWifiConnected()) {
+                // do not ask user when there is WIFI
+                new UpdateBusStopsAsyncTask(updater).execute();
+            } else {
+                new AlertDialog.Builder(LocationView.this)
+                        .setTitle(R.string.update_busstop_dialog_dataconnection_title).setCancelable(true)
+                        .setMessage(R.string.update_busstop_dialog_dataconnection_text)
+                        .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                                new UpdateBusStopsAsyncTask(updater).execute();
+                            }
+                        }).setNegativeButton(R.string.buttonCancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
+            }
+        }
+    }
+
     private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_10 = "whatsNewShowVersion1_10_startupScreenFavorities";
     private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_10 = true;
 
@@ -87,7 +150,7 @@ public class LocationView extends MapActivity {
     private boolean progressPlaceStationsDisplayed = false;
     private boolean progressQueryStationsDisplayed = false;
     private boolean estimatesDialogVisible = false;
-    
+
     private String userLocale;
 
     private MapView map;
@@ -130,10 +193,18 @@ public class LocationView extends MapActivity {
         overlays.add(myLocationOverlay);
         overlays.add(stationsOverlay);
 
-
         notifyForChangesInNewVersions();
 
         selectStartupScreen();
+        
+        new CheckForUpdateAsyncTask().execute();
+    }
+
+    private boolean isWifiConnected() {
+        final ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        return wifi.isConnected();
     }
 
     private void saveMapLastLocation() {
@@ -147,6 +218,7 @@ public class LocationView extends MapActivity {
         editor.putInt(PREFERENCE_KEY_LAST_LOCATION_ZOOM, map.getZoomLevel());
         editor.commit();
     }
+
     private void initializeMapLocation() {
 
         final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -154,11 +226,11 @@ public class LocationView extends MapActivity {
         final int lat = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6, LOCATION_SOFIA_LATITUDE_E6);
         final int lon = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6, LOCATION_SOFIA_LONGITUDE_E6);
         final int zoom = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_ZOOM, ZOOM_DEFAULT);
-        
+
         final GeoPoint location = new GeoPoint(lat, lon);
         map.getController().animateTo(location);
         map.getController().setZoom(zoom);
-        
+
         stationsOverlay.placeStations(MapHelper.toCoordinate(location.getLatitudeE6()),
                 MapHelper.toCoordinate(location.getLongitudeE6()), false);
     }
@@ -173,8 +245,7 @@ public class LocationView extends MapActivity {
             editor.commit();
 
             new AlertDialog.Builder(this).setTitle(R.string.versionChanges_1_10_startupScreen_title)
-                    .setCancelable(true)
-                    .setMessage(R.string.versionChanges_1_10_startupScreen_text)
+                    .setCancelable(true).setMessage(R.string.versionChanges_1_10_startupScreen_text)
                     .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.dismiss();
@@ -189,8 +260,7 @@ public class LocationView extends MapActivity {
             editor.commit();
 
             new AlertDialog.Builder(this).setTitle(R.string.versionChanges_1_17_startupScreen_title)
-                    .setCancelable(true)
-                    .setMessage(R.string.versionChanges_1_17_startupScreen_text)
+                    .setCancelable(true).setMessage(R.string.versionChanges_1_17_startupScreen_text)
                     .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.dismiss();
@@ -210,8 +280,7 @@ public class LocationView extends MapActivity {
             message.setText(Html.fromHtml(getResources().getString(R.string.versionChanges_1_20_startupScreen_text)));
 
             new AlertDialog.Builder(this).setTitle(R.string.versionChanges_1_20_startupScreen_title)
-                    .setCancelable(true)
-                    .setView(message)
+                    .setCancelable(true).setView(message)
                     .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.dismiss();
@@ -340,12 +409,12 @@ public class LocationView extends MapActivity {
         Toast.makeText(this, R.string.settings_changeLocale_restart, Toast.LENGTH_LONG).show();
 
         final Intent intent = getIntent();
-//        overridePendingTransition(0, 0);
+        // overridePendingTransition(0, 0);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         finish();
 
-//        overridePendingTransition(0, 0);
+        // overridePendingTransition(0, 0);
         startActivity(intent);
     }
 
@@ -388,21 +457,21 @@ public class LocationView extends MapActivity {
 
     private void askForBusStopId() {
         final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER /*| InputType.TYPE_NUMBER_VARIATION_NORMAL*/);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER /* | InputType.TYPE_NUMBER_VARIATION_NORMAL */);
 
         final LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(input);
-        
+
         final RadioGroup group = new RadioGroup(this);
         linearLayout.addView(group);
 
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         final String selectedProvider = preferences.getString(PREFERENCE_KEY_DEFAULT_PROVIDER,
                 InitStations.PROVIDER_SOFIATRAFFIC);
-        
+
         final List<RadioButton> radios = new LinkedList<RadioButton>();
-        for (String provider: InitStations.PROVIDERS) {
+        for (String provider : InitStations.PROVIDERS) {
             final RadioButton radio = new RadioButton(this);
             radio.setText(provider);
             radio.setId(radios.size());
@@ -412,31 +481,30 @@ public class LocationView extends MapActivity {
             radios.add(radio);
             group.addView(radio);
         }
-        
+
         final ScrollView scrollView = new ScrollView(this);
         scrollView.addView(linearLayout);
 
-        new AlertDialog.Builder(this)
-        .setTitle(R.string.searchByBusStopId_dialogTitle)
-        .setMessage(R.string.searchByBusStopId_dialogContent)
-        .setView(scrollView)
-        .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                
-                final String defaultProvider = saveDefaultProvider(preferences, radios);
-                
-                String value = input.getText().toString(); 
-                while(value.startsWith("0")) {
-                    value = value.substring(1);
-                }
-                if (value.length() == 0 || value.replaceAll("\\d+","").length() > 0) {
-                    Toast.makeText(LocationView.this, R.string.searchByBusStopId_dialog_badBusStopID, Toast.LENGTH_LONG).show();
-                    askForBusStopId();
-                } else {
-                    stationsOverlay.showStation(defaultProvider, value, true);
-                }
-            }
-        }).show();        
+        new AlertDialog.Builder(this).setTitle(R.string.searchByBusStopId_dialogTitle)
+                .setMessage(R.string.searchByBusStopId_dialogContent).setView(scrollView)
+                .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        final String defaultProvider = saveDefaultProvider(preferences, radios);
+
+                        String value = input.getText().toString();
+                        while (value.startsWith("0")) {
+                            value = value.substring(1);
+                        }
+                        if (value.length() == 0 || value.replaceAll("\\d+", "").length() > 0) {
+                            Toast.makeText(LocationView.this, R.string.searchByBusStopId_dialog_badBusStopID,
+                                    Toast.LENGTH_LONG).show();
+                            askForBusStopId();
+                        } else {
+                            stationsOverlay.showStation(defaultProvider, value, true);
+                        }
+                    }
+                }).show();
     }
 
     protected String saveDefaultProvider(SharedPreferences preferences, List<RadioButton> radios) {

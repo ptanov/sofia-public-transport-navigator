@@ -10,7 +10,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
@@ -19,12 +18,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 
 public class InitStations {
     private static final String ENCODING = "UTF8";
-	private final Context context;
 
     public static final String PROVIDER_SOFIATRAFFIC = "sofiatraffic.bg";
     public static final String PROVIDER_VARNATRAFFIC = "varnatraffic.com";
@@ -140,19 +137,15 @@ public class InitStations {
 		}
 	}
 
-	public InitStations(Context context) {
-		this.context = context;
-	}
+    public void createStations(SQLiteDatabase db, String tableName, InputStream sumcStream, InputStream varnaStream)
+            throws IOException, SAXException {
+        db.delete(tableName, null, null);
+        createSUMCStations(db, tableName, sumcStream);
+        createVarnaStations(db, tableName, varnaStream);
+    }
 
-	public void createStations(SQLiteDatabase db, String tableName) throws IOException, SAXException {
-	    createSUMCStations(db, tableName);
-	    createVarnaStations(db, tableName);
-	}
-
-	private void createVarnaStations(SQLiteDatabase db, String tableName) throws JsonParseException, JsonMappingException, IOException {
+	private void createVarnaStations(SQLiteDatabase db, String tableName, InputStream openRawResource) throws JsonParseException, JsonMappingException, IOException {
 	    final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-        final InputStream openRawResource = context.getResources()
-                .openRawResource(R.raw.coordinates_varnatraffic);
 
         final BusStopVarnaTraffic[] all = OBJECT_MAPPER.readValue(openRawResource, BusStopVarnaTraffic[].class);
         final String FORMAT_SQL_INSERT = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, '%s')";
@@ -171,7 +164,7 @@ public class InitStations {
         }
 	}
 
-    private void createSUMCStations(SQLiteDatabase db, String tableName) throws IOException, SAXException {
+    private void createSUMCStations(SQLiteDatabase db, String tableName, InputStream openRawResource) throws IOException, SAXException {
         initParser();
 
         final XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -180,14 +173,10 @@ public class InitStations {
         xr.setContentHandler(handler);
         xr.setErrorHandler(handler);
 
-        final InputStream openRawResource = context.getResources()
-                .openRawResource(R.raw.coordinates);
-
         final InputSource inputSource = new InputSource(openRawResource);
         inputSource.setEncoding(ENCODING);
         
         xr.parse(inputSource);
-        db.setTransactionSuccessful();
     }
 
     private void initParser() {

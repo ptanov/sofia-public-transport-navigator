@@ -2,8 +2,9 @@
 <resources>
 <string name="aboutDialog_title">Спирките в София (версия 1.21)</string>
     
-    <string name="app_name">Градски транспорт, София</string>
+<string name="app_name">Градски транспорт, София</string>
 <string name="buttonOk">ОК</string>
+<string name="buttonCancel">Отказ</string>
 <string name="error_retrieveEstimates_generic" formatted="false">Няма Интернет свързаност? Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
 <string name="error_retrieveEstimates_noInfo" formatted="false">&lt;b&gt;В момента СКГТ не предоставя информация за спирка &amp;quot;%s&amp;quot; (код: %s), моля опитайте пак по-късно.&lt;/b&gt;</string>
 <string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
@@ -100,5 +101,11 @@
 <string name="settings_commonUserLocaleEnglish_title">Use English language</string>
 <string name="settings_commonUserLocaleEnglish_summary">(или български език)</string>
 <string name="settings_changeLocale_restart">Restarting in order to apply new language</string>
+
+<string name="update_busstop_toast_update_success">Бяха изтеглени данни за нови спирки</string>
+<string name="update_busstop_toast_update_failure">Възникна проблем при изтеглянето на данните за новите спирки</string>
+
+<string name="update_busstop_dialog_dataconnection_title">Нови спирки</string>
+<string name="update_busstop_dialog_dataconnection_text">Желаете ли да обновите информацията за местоположението на спирките? Ще бъде използван трафик от плана Ви за мобилни данни. Можете да го направите и по-късно, когато ползвате WIFI.</string>
 
 </resources>

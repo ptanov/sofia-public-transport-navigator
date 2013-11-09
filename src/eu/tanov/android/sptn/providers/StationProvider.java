@@ -1,6 +1,9 @@
 package eu.tanov.android.sptn.providers;
 
+import java.io.InputStream;
 import java.util.HashMap;
+
+import eu.tanov.android.sptn.R;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -74,10 +77,12 @@ public class StationProvider extends ContentProvider {
     private static class DatabaseHelper extends SQLiteOpenHelper {
     	
         private final InitStations initializer;
+        private final Context context;
 
 		public DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
-            this.initializer = new InitStations(context);
+            this.initializer = new InitStations();
+            this.context = context;
         }
 
         @Override
@@ -91,14 +96,8 @@ public class StationProvider extends ContentProvider {
                     + Station.PROVIDER + " VARCHAR(50)"
                     + ");");
             
-            db.beginTransaction();
-            try {
-                initializer.createStations(db, STATIONS_TABLE_NAME);
-			} catch (Exception e) {
-				Log.e(TAG, "failed to create stations", e);
-            } finally {
-                db.endTransaction();
-            }
+            reloadBusStops(db, initializer, context.getResources().openRawResource(R.raw.coordinates), context
+                    .getResources().openRawResource(R.raw.coordinates_varnatraffic));
         }
 
 		@Override
@@ -116,6 +115,26 @@ public class StationProvider extends ContentProvider {
     public boolean onCreate() {
         dbHelper = new DatabaseHelper(getContext());
         return true;
+    }
+
+    public static boolean reloadBusStops(Context context, InputStream sumcStream, InputStream varnaStream) {
+        return reloadBusStops(new DatabaseHelper(context).getWritableDatabase(), new InitStations(), sumcStream, varnaStream);
+    }
+
+    private static boolean reloadBusStops(SQLiteDatabase db, InitStations initializer, InputStream sumcStream,
+            InputStream varnaStream) {
+        db.beginTransaction();
+        try {
+            initializer.createStations(db, STATIONS_TABLE_NAME, sumcStream, varnaStream);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "failed to create stations", e);
+            return false;
+        } finally {
+            db.endTransaction();
+        }
+        return true;
+
     }
 
     @Override

@@ -39,6 +39,7 @@
 <string name="remainingTime_format_minutesAndHours" formatted="false">~%dh.%dm.</string>
 
 <string name="varnatraffic_estimates_table_header" formatted="false"><![CDATA[<thead><tr><th>#</th><th>est.</th><th>dist.</th><th>schedule</th></tr></thead>]]></string>
+<string name="varnatraffic_schedule_table_header" formatted="false"><![CDATA[<thead><tr><th>#</th><th>schedule</th></tr></thead>]]></string>
 <string name="varnatraffic_alreadyLeft" >missed</string>
 <string name="varnatraffic_noData" >No data</string>
 

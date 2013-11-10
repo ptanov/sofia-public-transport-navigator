@@ -42,6 +42,7 @@
 <string name="remainingTime_format_minutesAndHours" formatted="false">~%dч.%dм.</string>
 
 <string name="varnatraffic_estimates_table_header" formatted="false"><![CDATA[<thead><tr><th>№</th><th>след</th><th>на</th><th>разп.</th></tr></thead>]]></string>
+<string name="varnatraffic_schedule_table_header" formatted="false"><![CDATA[<thead><tr><th>№</th><th>разписание</th></tr></thead>]]></string>
 <string name="varnatraffic_alreadyLeft" >заминал</string>
 <string name="varnatraffic_noData" >Няма данни</string>
 

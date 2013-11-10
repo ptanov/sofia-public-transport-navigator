@@ -4,6 +4,8 @@ import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.util.Log;
 
@@ -96,8 +98,23 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @SuppressWarnings("unused")
+    private static class ScheduleData {
+        private String text;
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @SuppressWarnings("unused")
     private static class Response {
         private DeviceData[] liveData;
+        private Map<String, ScheduleData[]> schedule;
 
         public DeviceData[] getLiveData() {
             return liveData;
@@ -105,6 +122,14 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
         public void setLiveData(DeviceData[] liveData) {
             this.liveData = liveData;
+        }
+
+        public Map<String, ScheduleData[]> getSchedule() {
+            return schedule;
+        }
+
+        public void setSchedule(Map<String, ScheduleData[]> schedule) {
+            this.schedule = schedule;
         }
 
     }
@@ -133,19 +158,50 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
             result.append(context.getString(R.string.varnatraffic_noData));
         } else {
             result.append("<table border='0'>").append(context.getString(R.string.varnatraffic_estimates_table_header))
-            .append("<tbody>");
-            
+                    .append("<tbody>");
+
             for (DeviceData next : all.getLiveData()) {
                 result.append(String
                         .format("<tr><td><a href='http://varnatraffic.com/Line/Index/%s'>%s</a></td><td>%s</td><td>%s</td><td style='white-space: nowrap;'>%s<span class='bus-delay bus-delay-%s'>%s</span></td></tr>",
                                 next.getLine(), next.getLine(), next.getArriveIn() == null ? context.getResources()
                                         .getString(R.string.varnatraffic_alreadyLeft) : next.getArriveIn(), next
                                         .getDistanceLeft(), next.getArriveTime(), isGreenDelay(next) ? "green" : "red",
-                                                next.getDelay() == null ? "" : next.getDelay()));
+                                next.getDelay() == null ? "" : next.getDelay()));
             }
             result.append("</tbody></table>");
         }
-        return result.toString() + context.getString(R.string.legal_varnatraffic_html);
+        return result.toString() + context.getString(R.string.legal_varnatraffic_html) + createSchedule(all)
+                + context.getString(R.string.legal_varnatraffic_html);
+    }
+
+    private String createSchedule(Response all) {
+        final StringBuilder result = new StringBuilder();
+        if (all.getSchedule() == null || all.getSchedule().size() == 0) {
+            result.append(context.getString(R.string.varnatraffic_noData));
+        } else {
+            result.append("<table border='0'>").append(context.getString(R.string.varnatraffic_schedule_table_header))
+                    .append("<tbody>");
+
+            for (Entry<String, ScheduleData[]> next : all.getSchedule().entrySet()) {
+                result.append(String.format(
+                        "<tr><td><a href='http://varnatraffic.com/Line/Index/%s'>%s</a></td><td>%s</td></tr>",
+                        next.getKey(), next.getKey(), getSchedule(next.getValue())));
+            }
+            result.append("</tbody></table>");
+        }
+        return result.toString();
+    }
+
+    private String getSchedule(ScheduleData[] value) {
+        final StringBuilder result = new StringBuilder();
+
+        for (ScheduleData scheduleData : value) {
+            if (result.length() > 0) {
+                result.append(", ");
+            }
+            result.append(scheduleData.getText());
+        }
+        return result.toString();
     }
 
     private boolean isGreenDelay(DeviceData data) {

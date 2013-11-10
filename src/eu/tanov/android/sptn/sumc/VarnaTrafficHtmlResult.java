@@ -1,5 +1,7 @@
 package eu.tanov.android.sptn.sumc;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import android.util.Log;
@@ -11,29 +13,28 @@ import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.providers.InitStations;
+import eu.tanov.android.sptn.providers.InitStations.PositionVarnaTraffic;
 
 public class VarnaTrafficHtmlResult extends HtmlResult {
     private static final String TAG = "VarnaTrafficHtmlResult";
 
-
     private static final String STATION_URL = "http://varnatraffic.com/Ajax/FindStationDevices?stationId=";
 
-
+    private Response all;
 
     public VarnaTrafficHtmlResult(LocationView context, StationsOverlay overlay, String stationCode, String stationLabel) {
-        super(context, overlay, InitStations.PROVIDER_VARNATRAFFIC, stationCode, stationLabel);
+        super(context, overlay, InitStations.PROVIDER_VARNATRAFFIC, "552", stationLabel);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    @SuppressWarnings("unused")
-    private static class DeviceData {
+    public static class DeviceData {
         private int device;
         private int line;
         private String arriveTime;
         private String delay;
         private String arriveIn;
         private String distanceLeft;
-
+        private PositionVarnaTraffic position;
 
         public int getDevice() {
             return device;
@@ -78,9 +79,17 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         public String getDistanceLeft() {
             return distanceLeft;
         }
-        
+
         public void setDistanceLeft(String distanceLeft) {
             this.distanceLeft = distanceLeft;
+        }
+
+        public PositionVarnaTraffic getPosition() {
+            return position;
+        }
+
+        public void setPosition(PositionVarnaTraffic position) {
+            this.position = position;
         }
     }
 
@@ -101,16 +110,15 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
     @Override
     public void query() {
-        final Response all;
         try {
-            
+
             Log.i(TAG, "fetching: " + STATION_URL + stationCode);
 
-            all = new ObjectMapper().readValue(new java.net.URL(
-                    STATION_URL + stationCode).openConnection()
+            all = new ObjectMapper().readValue(new java.net.URL(STATION_URL + stationCode).openConnection()
                     .getInputStream(), Response.class);
         } catch (Exception e) {
-            throw new IllegalStateException("could not get estimations (null) for " + stationCode + ". " + stationLabel, e);
+            throw new IllegalStateException(
+                    "could not get estimations (null) for " + stationCode + ". " + stationLabel, e);
         }
         date = new Date();
 
@@ -119,8 +127,9 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
     private String createBody(Response all) {
         final StringBuilder result = new StringBuilder();
-        result.append("<table border='1'>").append(context.getString(R.string.varnatraffic_estimates_table_header)).append("<tbody>");
-                        
+        result.append("<table border='1'>").append(context.getString(R.string.varnatraffic_estimates_table_header))
+                .append("<tbody>");
+
         for (DeviceData next : all.getLiveData()) {
             result.append(String
                     .format("<tr><td><a href='http://varnatraffic.com/Line/Index/%s'>%s</a></td><td>%s</td><td>%s</td><td style='white-space: nowrap;'>%s<span class='bus-delay bus-delay-%s'>%s</span></td></tr>",
@@ -130,6 +139,7 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         result.append("</tbody></table>");
         return result.toString() + context.getString(R.string.legal_varnatraffic_html);
     }
+
     private boolean isGreenDelay(DeviceData data) {
         if (data.getDelay() != null && data.getDelay().startsWith("-")) {
             return true;
@@ -137,5 +147,13 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         return false;
     }
 
-
+    @Override
+    public void showResult() {
+        super.showResult();
+        if (all != null) {
+            context.getBusesOverlay().showBusses(Arrays.asList(all.getLiveData()));
+        } else {
+            context.getBusesOverlay().showBusses(Collections.<DeviceData>emptyList());
+        }
+    }
 }

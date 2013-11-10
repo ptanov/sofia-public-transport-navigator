@@ -30,7 +30,7 @@ public class InitStations {
 
 	//TODO move to external file
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private static class PositionVarnaTraffic {
+    public static class PositionVarnaTraffic {
         private double lat;
         private double lon;
 
@@ -38,7 +38,6 @@ public class InitStations {
             return lat;
         }
 
-        @SuppressWarnings("unused")
         public void setLat(double lat) {
             this.lat = lat;
         }
@@ -47,7 +46,6 @@ public class InitStations {
             return lon;
         }
 
-        @SuppressWarnings("unused")
         public void setLon(double lon) {
             this.lon = lon;
         }

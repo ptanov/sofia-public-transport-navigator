@@ -42,6 +42,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
+import eu.tanov.android.sptn.map.BusesOverlay;
 import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.providers.BusStopUpdater;
 import eu.tanov.android.sptn.providers.InitStations;
@@ -156,6 +157,7 @@ public class LocationView extends MapActivity {
 
     private MyLocationOverlay myLocationOverlay;
     private StationsOverlay stationsOverlay;
+    private BusesOverlay busesOverlay;
     private boolean progressPlaceStationsDisplayed = false;
     private boolean progressQueryStationsDisplayed = false;
     private boolean estimatesDialogVisible = false;
@@ -199,7 +201,10 @@ public class LocationView extends MapActivity {
         };
         setCompassSettings();
 
+        busesOverlay = new BusesOverlay(this, map);
+
         overlays.add(myLocationOverlay);
+        overlays.add(busesOverlay);
         overlays.add(stationsOverlay);
 
         notifyForChangesInNewVersions();
@@ -662,5 +667,9 @@ public class LocationView extends MapActivity {
         super.onStop();
         EasyTracker.getInstance(this).activityStop(this);
         FlurryAgent.onEndSession(this);
+    }
+    
+    public BusesOverlay getBusesOverlay() {
+        return busesOverlay;
     }
 }

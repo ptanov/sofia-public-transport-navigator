@@ -1,5 +1,6 @@
 package eu.tanov.android.sptn.sumc;
 
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -114,8 +115,9 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
             Log.i(TAG, "fetching: " + STATION_URL + stationCode);
 
-            all = new ObjectMapper().readValue(new java.net.URL(STATION_URL + stationCode).openConnection()
-                    .getInputStream(), Response.class);
+            final URLConnection openConnection = new java.net.URL(STATION_URL + stationCode).openConnection();
+            openConnection.setUseCaches(false);
+            all = new ObjectMapper().readValue(openConnection.getInputStream(), Response.class);
         } catch (Exception e) {
             throw new IllegalStateException(
                     "could not get estimations (null) for " + stationCode + ". " + stationLabel, e);
@@ -127,18 +129,22 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
     private String createBody(Response all) {
         final StringBuilder result = new StringBuilder();
-        result.append("<table border='0'>").append(context.getString(R.string.varnatraffic_estimates_table_header))
-                .append("<tbody>");
-
-        for (DeviceData next : all.getLiveData()) {
-            result.append(String
-                    .format("<tr><td><a href='http://varnatraffic.com/Line/Index/%s'>%s</a></td><td>%s</td><td>%s</td><td style='white-space: nowrap;'>%s<span class='bus-delay bus-delay-%s'>%s</span></td></tr>",
-                            next.getLine(), next.getLine(), next.getArriveIn() == null ? context.getResources()
-                                    .getString(R.string.varnatraffic_alreadyLeft) : next.getArriveIn(), next
-                                    .getDistanceLeft(), next.getArriveTime(), isGreenDelay(next) ? "green" : "red",
-                            next.getDelay() == null ? "" : next.getDelay()));
+        if (all.getLiveData() == null || all.getLiveData().length == 0) {
+            result.append(context.getString(R.string.varnatraffic_noData));
+        } else {
+            result.append("<table border='0'>").append(context.getString(R.string.varnatraffic_estimates_table_header))
+            .append("<tbody>");
+            
+            for (DeviceData next : all.getLiveData()) {
+                result.append(String
+                        .format("<tr><td><a href='http://varnatraffic.com/Line/Index/%s'>%s</a></td><td>%s</td><td>%s</td><td style='white-space: nowrap;'>%s<span class='bus-delay bus-delay-%s'>%s</span></td></tr>",
+                                next.getLine(), next.getLine(), next.getArriveIn() == null ? context.getResources()
+                                        .getString(R.string.varnatraffic_alreadyLeft) : next.getArriveIn(), next
+                                        .getDistanceLeft(), next.getArriveTime(), isGreenDelay(next) ? "green" : "red",
+                                                next.getDelay() == null ? "" : next.getDelay()));
+            }
+            result.append("</tbody></table>");
         }
-        result.append("</tbody></table>");
         return result.toString() + context.getString(R.string.legal_varnatraffic_html);
     }
 

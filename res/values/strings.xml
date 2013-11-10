@@ -43,6 +43,7 @@
 
 <string name="varnatraffic_estimates_table_header" formatted="false"><![CDATA[<thead><tr><th>№</th><th>след</th><th>на</th><th>разп.</th></tr></thead>]]></string>
 <string name="varnatraffic_alreadyLeft" >заминал</string>
+<string name="varnatraffic_noData" >Няма данни</string>
 
 
 <string name="settings_category_map">Карта</string>

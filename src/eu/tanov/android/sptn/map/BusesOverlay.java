@@ -22,15 +22,17 @@ import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult.DeviceData;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class BusesOverlay extends ItemizedOverlay<OverlayItem> {
-    private static final int FONT_SIZE = 12;
-    private static final int TITLE_MARGIN = 3;
+    private static final int FONT_SIZE = 13;
+    private static final int TITLE_MARGIN = 4;
 
     private MapView map;
     private List<OverlayItem> items = Collections.emptyList();
     private final int markerHeight;
+    private final Context context;
 
     public BusesOverlay(Context context, MapView map) {
         super(boundCenterBottom(context.getResources().getDrawable(R.drawable.bus)));
+        this.context = context;
         markerHeight = ((BitmapDrawable) context.getResources().getDrawable(R.drawable.bus)).getBitmap().getHeight();
 
         this.map = map;
@@ -44,8 +46,10 @@ public class BusesOverlay extends ItemizedOverlay<OverlayItem> {
             if (next.getPosition() != null) {
                 final GeoPoint point = new GeoPoint(MapHelper.toE6(next.getPosition().getLat()), MapHelper.toE6(next
                         .getPosition().getLon()));
-                this.items.add(new OverlayItem(point, String.format("%s (%s, %s)", next.getLine(), next.getArriveIn(), next.getDistanceLeft()),
-                        next.getArriveIn()));
+                this.items.add(new OverlayItem(point, String.format("%s (%s, %s)", next.getLine(),
+                        next.getArriveIn() == null ? context.getResources()
+                                .getString(R.string.varnatraffic_alreadyLeft) : next.getArriveIn(), next
+                                .getDistanceLeft()), next.getArriveIn()));
             }
         }
 

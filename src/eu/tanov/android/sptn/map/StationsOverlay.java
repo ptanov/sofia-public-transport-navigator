@@ -279,7 +279,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                 // for future improving, now bus stops entered in SEARCH by busstop id can be unknown to our DB
                 throw new IllegalStateException("Unknown code: " + code);
             } else {
-                station = new OverlayItem(new GeoPoint(0, 0), code, code);
+                station = new OverlayItem(new GeoPoint(0, 0), code, provider + BUSSTOP_PROVIDER_LABEL_SEPARATOR + code);
             }
         } else {
             if (animateTo) {

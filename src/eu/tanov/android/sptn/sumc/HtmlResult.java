@@ -43,7 +43,10 @@ public abstract class HtmlResult implements EstimatesResolver {
     }
 
     @Override
-    public void showResult() {
+    public void showResult(boolean onlyBuses) {
+        if (onlyBuses) {
+            return;
+        }
         context.estimatesDialogDisplayed();
         final WebView browser = new WebView(context);
         browser.loadDataWithBaseURL(null, htmlData, MIME_TYPE, ENCODING, null);

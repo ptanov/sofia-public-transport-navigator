@@ -1,6 +1,7 @@
 package eu.tanov.android.sptn.map;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -25,6 +26,7 @@ import eu.tanov.android.sptn.providers.StationProvider.Station;
 import eu.tanov.android.sptn.sumc.EstimatesResolver;
 import eu.tanov.android.sptn.sumc.SofiaTrafficHtmlResult;
 import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult;
+import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult.DeviceData;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
@@ -42,6 +44,8 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     private final Handler uiHandler = new Handler();
 
     private final MapView map;
+
+    private OverlayItem showBusesOverlayItem;
 
 
     private static final String[] PROJECTION = new String[] { Station._ID, // 0
@@ -149,12 +153,14 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
     public class EstimatesQuery extends Thread {
 
         private final OverlayItem overlayItem;
+        private final boolean showOnlyBuses;
 
-        public EstimatesQuery(OverlayItem overlayItem) {
+        public EstimatesQuery(OverlayItem overlayItem, boolean showOnlyBuses) {
             if (overlayItem == null) {
                 throw new IllegalArgumentException("overlay item is null");
             }
             this.overlayItem = overlayItem;
+            this.showOnlyBuses = showOnlyBuses;
         }
 
         private EstimatesResolver createResolver(String busStopSource, String stationCode, String stationLabel) {
@@ -177,12 +183,14 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
             final String busStopSource = snippets[0];
             try {
                 final EstimatesResolver resolver = createResolver(busStopSource, stationCode, stationLabel);
-                
+                if (resolver.hasBusSupport()) {
+                    StationsOverlay.this.showBusesOverlayItem = this.overlayItem;
+                }
                 // long operation
                 resolver.query();
 
                 // in UI thread
-                showEstimates(resolver);
+                showEstimates(resolver, showOnlyBuses);
             } catch (Exception e) {
                 Log.e(TAG, "could not get estimations for " + stationCode + ". " + stationLabel, e);
                 // being safe (Throwable!?) ;)
@@ -286,12 +294,18 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                 map.getController().animateTo(station.getPoint());
             }
         }
-        showStation(station);
+        showStation(station, false);
     }
 
-    protected void showStation(OverlayItem station) {
-        final EstimatesQuery query = new EstimatesQuery(station);
-        context.showProgressQueryStation();
+    protected void showStation(OverlayItem station, boolean showOnlyBuses) {
+        if (!showOnlyBuses) {
+            context.getBusesOverlay().showBusses(Collections.<DeviceData>emptyList());
+        }
+        showBusesOverlayItem = null;
+        final EstimatesQuery query = new EstimatesQuery(station, showOnlyBuses);
+        if (!showOnlyBuses) {
+            context.showProgressQueryStation();
+        }
         query.start();
     }
 
@@ -307,7 +321,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
 
     @Override
     protected boolean onTap(int stationIndex) {
-        showStation(stations.get(stationIndex));
+        showStation(stations.get(stationIndex), false);
 
         return true;
     }
@@ -349,14 +363,23 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
         });
     }
 
-    private void showEstimates(final EstimatesResolver resolver) {
+    private void showEstimates(final EstimatesResolver resolver, final boolean showOnlyBuses) {
         uiHandler.post(new Runnable() {
             @Override
             public void run() {
-                resolver.showResult();
+                resolver.showResult(showOnlyBuses);
                 context.hideProgressQueryStation();
             }
         });
     }
 
+    public OverlayItem getShowBusesOverlayItem() {
+        return showBusesOverlayItem;
+    }
+    
+    public void showBuses() {
+        if (showBusesOverlayItem != null) {
+            showStation(showBusesOverlayItem, true);
+        }
+    }
 }

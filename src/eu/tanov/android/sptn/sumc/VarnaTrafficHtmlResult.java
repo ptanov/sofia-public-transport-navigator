@@ -23,7 +23,7 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
     private Response all;
 
     public VarnaTrafficHtmlResult(LocationView context, StationsOverlay overlay, String stationCode, String stationLabel) {
-        super(context, overlay, InitStations.PROVIDER_VARNATRAFFIC, "552", stationLabel);
+        super(context, overlay, InitStations.PROVIDER_VARNATRAFFIC, stationCode, stationLabel);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -148,12 +148,17 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
     }
 
     @Override
-    public void showResult() {
-        super.showResult();
+    public void showResult(boolean onlyBuses) {
+        super.showResult(onlyBuses);
         if (all != null) {
             context.getBusesOverlay().showBusses(Arrays.asList(all.getLiveData()));
         } else {
-            context.getBusesOverlay().showBusses(Collections.<DeviceData>emptyList());
+            context.getBusesOverlay().showBusses(Collections.<DeviceData> emptyList());
         }
+    }
+
+    @Override
+    public boolean hasBusSupport() {
+        return true;
     }
 }

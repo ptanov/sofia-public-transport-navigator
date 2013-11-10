@@ -2,6 +2,8 @@ package eu.tanov.android.sptn;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -165,6 +167,7 @@ public class LocationView extends MapActivity {
     private String userLocale;
 
     private MapView map;
+    private Timer timer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -318,12 +321,36 @@ public class LocationView extends MapActivity {
             myLocationOverlay.disableMyLocation();
             myLocationOverlay.disableCompass();
         }
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+
     }
 
     private void enableLocationUpdates() {
         if (myLocationOverlay != null && !estimatesDialogVisible) {
             myLocationOverlay.enableMyLocation();
             setCompassSettings();
+            //TODO very bad code, but there is no time:
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            if (stationsOverlay != null && stationsOverlay.getShowBusesOverlayItem() != null) {
+                timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                stationsOverlay.showBuses();
+                            }
+                        });
+                    }
+                }, 1000, 1000);
+            }
         }
     }
 

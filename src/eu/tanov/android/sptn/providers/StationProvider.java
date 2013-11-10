@@ -28,7 +28,7 @@ public class StationProvider extends ContentProvider {
 	public static final int STATIONS_LIMIT = 1;
 	private static final String STATIONS_LIMIT_STRING = Integer.toString(STATIONS_LIMIT);
 
-    private static final int STATIONS = 1;
+    private static final int STATIONS = 10;
     private static final int STATION_ID = 2;
 
 	private static final String TAG = "StationProvider";

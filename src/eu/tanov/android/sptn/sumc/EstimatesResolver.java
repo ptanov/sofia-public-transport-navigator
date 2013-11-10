@@ -4,5 +4,7 @@ public interface EstimatesResolver {
 
 	public void query();
 	
-	public void showResult();
+	public void showResult(boolean onlyBuses);
+	
+	public boolean hasBusSupport();
 }

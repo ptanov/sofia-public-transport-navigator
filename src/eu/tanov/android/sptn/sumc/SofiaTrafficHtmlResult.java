@@ -190,4 +190,8 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 		}
 	}
 
+	@Override
+	public boolean hasBusSupport() {
+	    return false;
+	}
 }

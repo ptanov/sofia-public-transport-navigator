@@ -24,6 +24,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -485,7 +486,7 @@ public class LocationView extends MapActivity {
         final ScrollView scrollView = new ScrollView(this);
         scrollView.addView(linearLayout);
 
-        new AlertDialog.Builder(this).setTitle(R.string.searchByBusStopId_dialogTitle)
+        final AlertDialog dialog = new AlertDialog.Builder(this).setTitle(R.string.searchByBusStopId_dialogTitle)
                 .setMessage(R.string.searchByBusStopId_dialogContent).setView(scrollView)
                 .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -504,7 +505,10 @@ public class LocationView extends MapActivity {
                             stationsOverlay.showStation(defaultProvider, value, true);
                         }
                     }
-                }).show();
+                }).create();
+        input.requestFocus();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
     }
 
     protected String saveDefaultProvider(SharedPreferences preferences, List<RadioButton> radios) {

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import eu.tanov.android.sptn.LocationView;
+import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.providers.InitStations;
 
@@ -29,7 +30,10 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         private int device;
         private int line;
         private String arriveTime;
+        private String delay;
         private String arriveIn;
+        private String distanceLeft;
+
 
         public int getDevice() {
             return device;
@@ -63,6 +67,21 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
             this.arriveIn = arriveIn;
         }
 
+        public String getDelay() {
+            return delay;
+        }
+
+        public void setDelay(String delay) {
+            this.delay = delay;
+        }
+
+        public String getDistanceLeft() {
+            return distanceLeft;
+        }
+        
+        public void setDistanceLeft(String distanceLeft) {
+            this.distanceLeft = distanceLeft;
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -99,11 +118,23 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
     }
 
     private String createBody(Response all) {
-        final StringBuilder result = new StringBuilder();;
+        final StringBuilder result = new StringBuilder();
+        result.append("<table border='1'>").append(context.getString(R.string.varnatraffic_estimates_table_header)).append("<tbody>");
+                        
         for (DeviceData next : all.getLiveData()) {
-            result.append(next.line+ ":"+next.arriveIn+"<br />");
+            result.append(String
+                    .format("<tr><td><a href='http://varnatraffic.com/Line/Index/%s'>%s</a></td><td>%s</td><td>%s</td><td style='white-space: nowrap;'>%s<span class='bus-delay bus-delay-%s'>%s</span></td></tr>",
+                            next.getLine(), next.getLine(), next.arriveIn, next.getDistanceLeft(),
+                            next.getArriveTime(), isGreenDelay(next) ? "green" : "red", next.getDelay()));
         }
-        return result.toString();
+        result.append("</tbody></table>");
+        return result.toString() + context.getString(R.string.legal_varnatraffic_html);
+    }
+    private boolean isGreenDelay(DeviceData data) {
+        if (data.getDelay() != null && data.getDelay().startsWith("-")) {
+            return true;
+        }
+        return false;
     }
 
 

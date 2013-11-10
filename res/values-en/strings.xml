@@ -37,6 +37,9 @@
 <string name="format_estimates_dialog_title" formatted="false">%s: %s (%s)</string>
 <string name="remainingTime_format_onlyMinutes" formatted="false">~%dm.</string>
 <string name="remainingTime_format_minutesAndHours" formatted="false">~%dh.%dm.</string>
+
+<string name="varnatraffic_estimates_table_header" formatted="false"><![CDATA[<thead><tr><th>#</th><th>est.</th><th>dist.</th><th>schedule</th></tr></thead>]]></string>
+
 <string name="settings_category_map">Map</string>
 <string name="settings_mapCompass_title">Compass</string>
 <string name="settings_mapCompass_summary">Show compass in upper left corner</string>

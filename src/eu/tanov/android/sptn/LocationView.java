@@ -122,8 +122,8 @@ public class LocationView extends MapActivity {
     // private static final String PREFERENCE_KEY_MAP_STREET_VALUE = "mapStreetView";
     // private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE = true;
 
-    private static final String PREFERENCE_KEY_MAP_TRAFFIC = "mapTraffic";
-    private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC = false;
+    private static final String PREFERENCE_KEY_MAP_TRAFFIC = "mapTrafficEnabled";
+    private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC = true;
 
     private static final String PREFERENCE_KEY_MAP_COMPASS = "mapCompass";
     private static final boolean PREFERENCE_DEFAULT_VALUE_MAP_COMPASS = false;

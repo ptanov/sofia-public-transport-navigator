@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="aboutDialog_title">Спирките в София (версия 1.21)</string>
+<string name="aboutDialog_title">Градски транспорт, България (версия 1.21)</string>
     
-<string name="app_name">Градски транспорт, София</string>
+<string name="app_name">Градски транспорт, България</string>
 <string name="buttonOk">ОК</string>
 <string name="buttonCancel">Отказ</string>
 <string name="error_retrieveEstimates_generic" formatted="false">Няма Интернет свързаност? Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
@@ -18,7 +18,7 @@
 <string name="menu_settings">Настройки</string>
 <string name="menu_help">Помощ</string>
 
-<string name="aboutDialog_content">Показва времената на пристигане на превозните средства на градския транспорт в София.\n\nПроектът е с отворен код, за повече информация: http://sofia-public-transport-navigator.googlecode.com</string>
+<string name="aboutDialog_content">Показва времената на пристигане на превозните средства на градския транспорт в София и Варна.\n\nПроектът е с отворен код, за повече информация: http://sofia-public-transport-navigator.googlecode.com</string>
 <string name="aboutDialog_market">Ако приложението Ви е от полза може да гласувате за него тук: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
 <string name="aboutDialog_legal">\nАвтор: Пламен Танов\n\nДанните за времената на пристигане се извличат от http://m.sofiatraffic.bg и http://varnatraffic.com\n\nИзползвате програмата на собствена отговорност. Използвайки програмата споделяте анонимно статистика.</string>
     
@@ -29,7 +29,6 @@
 <string name="settings_mapSatellite_title">Сателитна карта</string>
 <string name="settings_mapStreetView_title">Улици</string>
 <string name="settings_mapTraffic_title">Трафик</string>
-<string name="settings_mapTraffic_summary">*Към момента тази информация не е налична за София</string>
 <string name="settings_showRemainingTime_title">Оставащо време</string>
 <string name="settings_showRemainingTime_summary">(или час на пристигане)</string>
 
@@ -37,6 +36,7 @@
 <string name="settings_disableStatistics_summary">(споделяйки анонимна статистика за ползването на приложението)</string>
 
 <string name="legal_sumc_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(взети от m.sumc.bg)&lt;/p&gt;</string>
+<string name="legal_varnatraffic_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(взети от varnatraffic.com)&lt;/p&gt;</string>
 <string name="format_estimates_dialog_title" formatted="false">%s: %s (%s)</string>
 <string name="remainingTime_format_onlyMinutes" formatted="false">~%dм.</string>
 <string name="remainingTime_format_minutesAndHours" formatted="false">~%dч.%dм.</string>
@@ -83,7 +83,7 @@
 <string name="versionChanges_1_09_favorities_title">Как да работим с избрани спирки</string>
 <string name="versionChanges_1_10_startupScreen_text" formatted="false">От [MENU&gt;Настройки&gt;\'Избрани спирки\' за начален екран] можете да укажете списъкът с избрани спирки да се показва при стартиране на приложението (вместо картата)</string>
 <string name="versionChanges_1_10_startupScreen_title">Избор на начален екран</string>
-<string name="versionChanges_1_17_startupScreen_text" formatted="false">От [MENU&gt;Задръствания/маршрути] може да видите задръстванията в София и да намерите маршрут с градския транспорт (използва се Tix.bg)</string>
+<string name="versionChanges_1_17_startupScreen_text" formatted="false">От [MENU&gt;Задръствания/маршрути] може да видите задръстванията в София  и да намерите маршрут с градския транспорт (използва се Tix.bg)</string>
 <string name="versionChanges_1_17_startupScreen_title">Задръствания/маршрути (Tix.bg)</string>
 <string name="versionChanges_1_20_startupScreen_text" formatted="false">От [MENU&gt;По номер на спирка] имате възможност да видите времената на пристигане на превозните средства по въведен номер на спирка (специални благодарности на Дено за идеята ;) ).\nАко приложението Ви е от полза може да гласувате за него тук: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
 <string name="versionChanges_1_20_startupScreen_title">Търсене по номер на спирка</string>

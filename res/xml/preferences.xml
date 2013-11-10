@@ -25,7 +25,7 @@
 			android:defaultValue="true" />
 		<CheckBoxPreference android:key="mapTrafficEnabled"
 			android:title="@string/settings_mapTraffic_title"
-			android:defaultValue="true" android:summary="@string/settings_mapTraffic_summary" />
+			android:defaultValue="true" />
 		<CheckBoxPreference android:key="mapCompass"
 			android:title="@string/settings_mapCompass_title"
 			android:defaultValue="true" android:summary="@string/settings_mapCompass_summary" />

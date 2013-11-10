@@ -157,7 +157,7 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         if (all.getLiveData() == null || all.getLiveData().length == 0) {
             result.append(context.getString(R.string.varnatraffic_noData));
         } else {
-            result.append("<table border='0'>").append(context.getString(R.string.varnatraffic_estimates_table_header))
+            result.append("<table border='1'>").append(context.getString(R.string.varnatraffic_estimates_table_header))
                     .append("<tbody>");
 
             for (DeviceData next : all.getLiveData()) {
@@ -179,7 +179,7 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         if (all.getSchedule() == null || all.getSchedule().size() == 0) {
             result.append(context.getString(R.string.varnatraffic_noData));
         } else {
-            result.append("<table border='0'>").append(context.getString(R.string.varnatraffic_schedule_table_header))
+            result.append("<table border='1'>").append(context.getString(R.string.varnatraffic_schedule_table_header))
                     .append("<tbody>");
 
             for (Entry<String, ScheduleData[]> next : all.getSchedule().entrySet()) {

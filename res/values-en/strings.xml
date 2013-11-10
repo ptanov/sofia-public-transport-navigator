@@ -17,8 +17,8 @@
 
 <string name="aboutDialog_content">Schedule information for Sofia Public Transport.\n\nThe project is open source, for more information: http://sofia-public-transport-navigator.googlecode.com</string>
 <string name="aboutDialog_market">If you like the application please vote: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
-<string name="aboutDialog_legal">\nAuthor: Plamen Tanov\n\nInformation is available from http://m.sofiatraffic.bg\n\nThe software is provided “AS IS”, without warranty of any kind.</string>
-    
+<string name="aboutDialog_legal">\nAuthor: Plamen Tanov\n\nInformation is available from http://m.sofiatraffic.bg and http://varnatraffic.com\n\nThe software is provided “AS IS”, without warranty of any kind. You are sharing anonimous statistics when using the application.</string>
+
 <string name="helpDialog_title">Help</string>
 <string name="helpDialog_content">Tap on map or use your current location.\nThen select bus stop for schedule information.</string>
 
@@ -29,6 +29,9 @@
 <string name="settings_mapTraffic_summary">*Traffic info is not available for Sofia</string>
 <string name="settings_showRemainingTime_title">Remaining time</string>
 <string name="settings_showRemainingTime_summary">(or arrival time)</string>
+
+<string name="settings_disableStatistics_title">Help developing the application</string>
+<string name="settings_disableStatistics_summary">(sharing anonymous information about the use of the application)</string>
 
 <string name="legal_sumc_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(from m.sumc.bg)&lt;/p&gt;</string>
 <string name="format_estimates_dialog_title" formatted="false">%s: %s (%s)</string>

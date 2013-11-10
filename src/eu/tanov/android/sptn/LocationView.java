@@ -33,6 +33,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -46,6 +49,8 @@ import eu.tanov.android.sptn.util.LocaleHelper;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class LocationView extends MapActivity {
+    public static final String FLIRRY_ID = "7S33XB55J3RXDK4HBJNP";
+
     private final class UpdateBusStopsAsyncTask extends AsyncTask<Void, Void, Boolean> {
         private final BusStopUpdater updater;
 
@@ -132,6 +137,9 @@ public class LocationView extends MapActivity {
     private static final String PREFERENCE_KEY_STARTUP_SCREEN_FAVORITIES = "commonStartupScreenFavorities";
     private static final boolean PREFERENCE_DEFAULT_VALUE_STARTUP_SCREEN_FAVORITIES = false;
     private static final String PREFERENCE_KEY_DEFAULT_PROVIDER = "defaultProvider";
+
+    public static final String PREFERENCE_KEY_STATISTICS_DISABLE = "disableStatistics";
+    public static final boolean PREFERENCE_DEFAULT_VALUE_STATISTICS_DISABLE = false;
 
     private static final String PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6 = "lastLocationLatitudeE6";
     private static final String PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6 = "lastLocationLongitudeE6";
@@ -375,6 +383,11 @@ public class LocationView extends MapActivity {
         }
     }
 
+    private void enableDisableStatistics() {
+        final boolean disable = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+                PREFERENCE_KEY_STATISTICS_DISABLE, PREFERENCE_DEFAULT_VALUE_STATISTICS_DISABLE);
+        GoogleAnalytics.getInstance(getApplicationContext()).setAppOptOut(disable);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -384,7 +397,7 @@ public class LocationView extends MapActivity {
                 restartActivity();
                 return;
             }
-
+            enableDisableStatistics();
             setMapSettings();
             break;
         case REQUEST_CODE_FAVORITIES:
@@ -632,4 +645,22 @@ public class LocationView extends MapActivity {
         showDialog(DIALOG_ID_PROGRESS_QUERY_STATION);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        enableDisableStatistics();
+        EasyTracker.getInstance(this).activityStart(this);
+        
+        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+                PREFERENCE_KEY_STATISTICS_DISABLE, PREFERENCE_DEFAULT_VALUE_STATISTICS_DISABLE)) {
+            FlurryAgent.onStartSession(this, FLIRRY_ID);
+        }
+    }
+    
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);
+        FlurryAgent.onEndSession(this);
+    }
 }

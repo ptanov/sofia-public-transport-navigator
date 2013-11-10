@@ -93,5 +93,9 @@
 				android:summary="@string/settings_whatsNewShowVersion1_20_searchByBusStopId_summary" />
 			
 		</PreferenceScreen>
+		<CheckBoxPreference android:key="disableStatistics"
+			android:title="@string/settings_disableStatistics_title"
+			android:defaultValue="true" android:summary="@string/settings_disableStatistics_summary" />
+				
 	</PreferenceCategory>
 </PreferenceScreen>

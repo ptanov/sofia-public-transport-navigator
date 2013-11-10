@@ -3,6 +3,9 @@ package eu.tanov.android.sptn;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.flurry.android.FlurryAgent;
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -154,4 +157,21 @@ public class FavoritiesActivity extends ListActivity {
 		}
 		finish();
 	}
+	
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EasyTracker.getInstance(this).activityStart(this);
+        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+                LocationView.PREFERENCE_KEY_STATISTICS_DISABLE, LocationView.PREFERENCE_DEFAULT_VALUE_STATISTICS_DISABLE)) {
+            FlurryAgent.onStartSession(this, LocationView.FLIRRY_ID);
+        }
+    }
+    
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);
+        FlurryAgent.onEndSession(this);
+    }
 }

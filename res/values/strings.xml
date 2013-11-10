@@ -20,7 +20,7 @@
 
 <string name="aboutDialog_content">Показва времената на пристигане на превозните средства на градския транспорт в София.\n\nПроектът е с отворен код, за повече информация: http://sofia-public-transport-navigator.googlecode.com</string>
 <string name="aboutDialog_market">Ако приложението Ви е от полза може да гласувате за него тук: &lt;a href=&quot;market://details?id=eu.tanov.android.sptn&quot;&gt;Android market&lt;/a&gt;</string>
-<string name="aboutDialog_legal">\nАвтор: Пламен Танов\n\nДанните за времената на пристигане се извличат от http://m.sofiatraffic.bg\n\nИзползвате програмата на собствена отговорност.</string>
+<string name="aboutDialog_legal">\nАвтор: Пламен Танов\n\nДанните за времената на пристигане се извличат от http://m.sofiatraffic.bg и http://varnatraffic.com\n\nИзползвате програмата на собствена отговорност. Използвайки програмата споделяте анонимно статистика.</string>
     
 <string name="helpDialog_title">Помощ</string>
 <string name="helpDialog_content">Изберете точка на картата или използвайте вашите текущи координати.\nСлед това изберете спирка и вижте времената на пристигане.\nМоже да натиснете върху номера на линията (тя е ЛИНК) за да видите разписанието й.</string>
@@ -32,6 +32,9 @@
 <string name="settings_mapTraffic_summary">*Към момента тази информация не е налична за София</string>
 <string name="settings_showRemainingTime_title">Оставащо време</string>
 <string name="settings_showRemainingTime_summary">(или час на пристигане)</string>
+
+<string name="settings_disableStatistics_title">Помагай за развиването на приложението</string>
+<string name="settings_disableStatistics_summary">(споделяйки анонимна статистика за ползването на приложението)</string>
 
 <string name="legal_sumc_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(взети от m.sumc.bg)&lt;/p&gt;</string>
 <string name="format_estimates_dialog_title" formatted="false">%s: %s (%s)</string>

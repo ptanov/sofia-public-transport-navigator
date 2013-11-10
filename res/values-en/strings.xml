@@ -101,18 +101,19 @@
 <string name="searchByBusStopId_dialogContent">Please enter Bus Stop ID</string>
 <string name="searchByBusStopId_dialog_badBusStopID">Bad Bus Stop ID, please enter digits</string>
 
+<string name="update_busstop_toast_update_success">Information for the new bus stops has been downloaded</string>
+<string name="update_busstop_toast_update_failure">Error occurred while downloading information for the new bus stops</string>
+
+<string name="update_busstop_dialog_dataconnection_title">New bus stops</string>
+<string name="update_busstop_dialog_dataconnection_text">Do you want to update the information about bus stops coordinates? Mobile data connection will be used to download the information and charges may occure. You can do this later when you are connected to WIFI.</string>
+
 <!-- should not be translated -->
-<string name="app_name">Градски транспорт, София</string>
+<string name="app_name">Градски транспорт, България</string>
 <string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
 <string name="error_retrieveEstimates_matching_noBusStop">Няма намерена информация</string>
 <string name="settings_commonUserLocaleEnglish_title">Use English language</string>
 <string name="settings_commonUserLocaleEnglish_summary">(или български език)</string>
 <string name="settings_changeLocale_restart">Restarting in order to apply new language</string>
 
-<string name="update_busstop_toast_update_success">Information for the new bus stops has been downloaded</string>
-<string name="update_busstop_toast_update_failure">Error occurred while downloading information for the new bus stops</string>
-
-<string name="update_busstop_dialog_dataconnection_title">New bus stops</string>
-<string name="update_busstop_dialog_dataconnection_text">Do you want to update the information about bus stops coordinates? Mobile data connection will be used to download the information and charges may occure. You can do this later when you are connected to WIFI.</string>
 
 </resources>

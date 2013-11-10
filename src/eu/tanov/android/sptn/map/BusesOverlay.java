@@ -22,8 +22,8 @@ import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult.DeviceData;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class BusesOverlay extends ItemizedOverlay<OverlayItem> {
-    private static final int FONT_SIZE = 13;
-    private static final int TITLE_MARGIN = 4;
+    private static final int FONT_SIZE = 18;
+    private static final int TITLE_MARGIN = 2;
 
     private MapView map;
     private List<OverlayItem> items = Collections.emptyList();

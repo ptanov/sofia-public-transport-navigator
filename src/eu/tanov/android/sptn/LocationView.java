@@ -207,8 +207,8 @@ public class LocationView extends MapActivity {
         busesOverlay = new BusesOverlay(this, map);
 
         overlays.add(myLocationOverlay);
-        overlays.add(busesOverlay);
         overlays.add(stationsOverlay);
+        overlays.add(busesOverlay);
 
         notifyForChangesInNewVersions();
 
@@ -321,11 +321,13 @@ public class LocationView extends MapActivity {
             myLocationOverlay.disableMyLocation();
             myLocationOverlay.disableCompass();
         }
+        stopTimer();
+    }
+    private void stopTimer() {
         if (timer != null) {
             timer.cancel();
             timer = null;
         }
-
     }
 
     private void enableLocationUpdates() {
@@ -333,10 +335,7 @@ public class LocationView extends MapActivity {
             myLocationOverlay.enableMyLocation();
             setCompassSettings();
             //TODO very bad code, but there is no time:
-            if (timer != null) {
-                timer.cancel();
-                timer = null;
-            }
+            stopTimer();
             if (stationsOverlay != null && stationsOverlay.getShowBusesOverlayItem() != null) {
                 timer = new Timer();
                 timer.scheduleAtFixedRate(new TimerTask() {
@@ -345,6 +344,10 @@ public class LocationView extends MapActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (stationsOverlay == null || stationsOverlay.getShowBusesOverlayItem() == null) {
+                                    stopTimer();
+                                    return;
+                                }
                                 stationsOverlay.showBuses();
                             }
                         });

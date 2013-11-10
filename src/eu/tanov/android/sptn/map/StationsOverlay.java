@@ -177,25 +177,35 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
         }
         @Override
         public void run() {
-            final String stationCode = overlayItem.getTitle();
-            final String[] snippets = overlayItem.getSnippet().split(BUSSTOP_PROVIDER_LABEL_SEPARATOR, 2);
-            final String stationLabel = snippets[1];
-            final String busStopSource = snippets[0];
             try {
-                final EstimatesResolver resolver = createResolver(busStopSource, stationCode, stationLabel);
-                if (resolver.hasBusSupport()) {
-                    StationsOverlay.this.showBusesOverlayItem = this.overlayItem;
-                }
-                // long operation
-                resolver.query();
+                final String stationCode = overlayItem.getTitle();
+                final String[] snippets = overlayItem.getSnippet().split(BUSSTOP_PROVIDER_LABEL_SEPARATOR, 2);
+                final String stationLabel = snippets[1];
+                final String busStopSource = snippets[0];
+                try {
+                    final EstimatesResolver resolver = createResolver(busStopSource, stationCode, stationLabel);
+                    if (resolver.hasBusSupport()) {
+                        StationsOverlay.this.showBusesOverlayItem = this.overlayItem;
+                    }
+                    // long operation
+                    resolver.query();
 
-                // in UI thread
-                showEstimates(resolver, showOnlyBuses);
-            } catch (Exception e) {
-                Log.e(TAG, "could not get estimations for " + stationCode + ". " + stationLabel, e);
-                // being safe (Throwable!?) ;)
-                showErrorMessage(stationLabel, stationCode);
-                
+                    // in UI thread
+                    showEstimates(resolver, showOnlyBuses);
+                } catch (Exception e) {
+                    Log.e(TAG, "could not get estimations for " + stationCode + ". " + stationLabel, e);
+                    // being safe (Throwable!?) ;)
+                    showErrorMessage(stationLabel, stationCode);
+
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            context.hideProgressQueryStation();
+                        }
+                    });
+                }
+
+            } finally {
                 uiHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -203,8 +213,6 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                     }
                 });
             }
-
-            return;
         }
 
     }

@@ -375,6 +375,9 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
         uiHandler.post(new Runnable() {
             @Override
             public void run() {
+                if (context.isFetchingCancelled()) {
+                    return;
+                }
                 resolver.showResult(showOnlyBuses);
                 context.hideProgressQueryStation();
             }

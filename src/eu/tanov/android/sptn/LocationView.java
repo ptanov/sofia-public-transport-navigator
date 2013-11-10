@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -168,6 +169,7 @@ public class LocationView extends MapActivity {
 
     private MapView map;
     private Timer timer;
+    private boolean fetchingCancelled = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -614,8 +616,14 @@ public class LocationView extends MapActivity {
             progressQueryStations.setTitle(R.string.progressDialog_title);
             progressQueryStations.setMessage(getResources().getString(R.string.progressDialog_message_estimating));
             progressQueryStations.setIndeterminate(true);
-            progressQueryStations.setCancelable(false);
-
+            progressQueryStations.setCancelable(true);
+            progressQueryStations.setOnCancelListener(new OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    fetchingCancelled = true;
+                }
+            });
+            fetchingCancelled = false;
             return progressQueryStations;
         }
         default:
@@ -701,5 +709,9 @@ public class LocationView extends MapActivity {
     
     public BusesOverlay getBusesOverlay() {
         return busesOverlay;
+    }
+
+    public boolean isFetchingCancelled() {
+        return fetchingCancelled;
     }
 }

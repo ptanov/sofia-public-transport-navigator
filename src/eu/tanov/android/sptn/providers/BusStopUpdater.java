@@ -25,6 +25,9 @@ public class BusStopUpdater {
     private static final String DOWNLOAD_URL_VARNATRAFFIC = "https://sofia-public-transport-navigator.googlecode.com/hg/res/raw/coordinates_varnatraffic.json";
     private static final String FILENAME_VARNATRAFFIC = "coordinates_varnatraffic.json";
 
+    private static final String ORIGINAL_TAGS_SOFIATRAFFIC = "\"a99125cb671781088e37f5f9e4372bfae16c9291/res/raw/coordinates.xml\"";
+    private static final String ORIGINAL_TAGS_VARNATRAFFIC = "\"8cf930a56ea6cc6a7d51d425d51c4f005e6b34eb/res/raw/coordinates_varnatraffic.json\"";
+
     private final Context context;
     private static boolean updatingInProgress = false;
 
@@ -96,12 +99,8 @@ public class BusStopUpdater {
         }
         try {
             final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-            final String previousTag = preferences.getString(PREFERENCE_KEY_BUSSTOP_TAGS, null);
-            if (previousTag == null) {
-                // init first time
-                setTags(getTag(DOWNLOAD_URL_SOFIATRAFFIC), getTag(DOWNLOAD_URL_VARNATRAFFIC));
-                return false;
-            }
+            final String previousTag = preferences.getString(PREFERENCE_KEY_BUSSTOP_TAGS,
+                    generateAllTags(ORIGINAL_TAGS_SOFIATRAFFIC, ORIGINAL_TAGS_VARNATRAFFIC));
             return (!previousTag.equals(generateAllTags(getTag(DOWNLOAD_URL_SOFIATRAFFIC),
                     getTag(DOWNLOAD_URL_VARNATRAFFIC))));
         } catch (Exception e) {

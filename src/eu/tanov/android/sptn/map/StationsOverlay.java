@@ -27,6 +27,7 @@ import eu.tanov.android.sptn.sumc.EstimatesResolver;
 import eu.tanov.android.sptn.sumc.SofiaTrafficHtmlResult;
 import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult;
 import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult.DeviceData;
+import eu.tanov.android.sptn.util.ActivityTracker;
 import eu.tanov.android.sptn.util.MapHelper;
 
 public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
@@ -193,6 +194,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
                     // in UI thread
                     showEstimates(resolver, showOnlyBuses);
                 } catch (Exception e) {
+                    ActivityTracker.errorStation(context, busStopSource, stationCode);
                     Log.e(TAG, "could not get estimations for " + stationCode + ". " + stationLabel, e);
                     // being safe (Throwable!?) ;)
                     showErrorMessage(stationLabel, stationCode);

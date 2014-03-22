@@ -17,6 +17,7 @@ import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.providers.InitStations.PositionVarnaTraffic;
+import eu.tanov.android.sptn.util.ActivityTracker;
 
 public class VarnaTrafficHtmlResult extends HtmlResult {
     private static final String TAG = "VarnaTrafficHtmlResult";
@@ -143,6 +144,8 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
             final URLConnection openConnection = new java.net.URL(STATION_URL + stationCode).openConnection();
             openConnection.setUseCaches(false);
             all = new ObjectMapper().readValue(openConnection.getInputStream(), Response.class);
+            
+            ActivityTracker.queriedVarna(context, stationCode);
         } catch (Exception e) {
             throw new IllegalStateException(
                     "could not get estimations (null) for " + stationCode + ". " + stationLabel, e);

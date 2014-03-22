@@ -101,14 +101,21 @@ public class BusStopUpdater {
             final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
             final String previousTag = preferences.getString(PREFERENCE_KEY_BUSSTOP_TAGS,
                     generateAllTags(ORIGINAL_TAGS_SOFIATRAFFIC, ORIGINAL_TAGS_VARNATRAFFIC));
-            return (!previousTag.equals(generateAllTags(getTag(DOWNLOAD_URL_SOFIATRAFFIC),
-                    getTag(DOWNLOAD_URL_VARNATRAFFIC))));
+            final String currentSofiaTrafficTag = getTag(DOWNLOAD_URL_SOFIATRAFFIC);
+            if (currentSofiaTrafficTag == null) {
+                return false;
+            }
+            final String currentVarnaTrafficTag = getTag(DOWNLOAD_URL_VARNATRAFFIC);
+            if (currentVarnaTrafficTag == null) {
+                return false;
+            }
+            return (!previousTag.equals(generateAllTags(currentSofiaTrafficTag, currentVarnaTrafficTag)));
         } catch (Exception e) {
             Log.e(TAG, "could not check for update", e);
             return false;
         }
     }
-
+    
     private File getFile(String filename) {
         return new File(context.getFilesDir(), filename);
     }

@@ -11,6 +11,8 @@ import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.providers.InitStations;
+import eu.tanov.android.sptn.sumc.Browser.VechileType;
+import eu.tanov.android.sptn.util.ActivityTracker;
 import eu.tanov.android.sptn.util.TimeHelper;
 
 public class SofiaTrafficHtmlResult extends HtmlResult {
@@ -54,7 +56,7 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 
 	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_09 = "whatsNewShowVersion1_09_estimates";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09 = true;
-    private static final String HTML_HEADER = "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><style type=\"text/css\">body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} td.number {width:30px;text-align:right;}table {width:100%;}div.arr_info_1 td.number {background-color:#ea0000;}div.arr_info_2 td.number {background-color:#0066aa;}div.arr_info_3 td.number {background-color:#feab10;}.number a:link {color:#FFFFFF;font-weight: bold;}.number a:visited {color:#FFFFFF;font-weight: bold;}.number a:hover {color:#FFFFFF;font-weight: bold;}.number a:active {color:#FFFFFF;font-weight: bold;}.direction {font-size: 2pt;text-align:right;}.estimates a {font-weight: bold;}.arr_title_1 b{color:#ea0000;border-bottom:1px solid #ea0000;}.arr_title_2 b{color:#0066aa;border-bottom:1px solid #0066aa;}.arr_title_3 b{color:#feab10;border-bottom:1px solid #feab10;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid #ddd;}.errorText {color: #f00;}.legal{font-size: 50%;text-align:right;}</style></head>";
+    private static final String HTML_HEADER = "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><style type=\"text/css\">body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} td.number {width:30px;text-align:right;}table {width:100%;}div.arr_info_1 td.number {background-color:#ea0000;}div.arr_info_2 td.number {background-color:#0066aa;}div.arr_info_0 td.number {background-color:#feab10;}.number a:link {color:#FFFFFF;font-weight: bold;}.number a:visited {color:#FFFFFF;font-weight: bold;}.number a:hover {color:#FFFFFF;font-weight: bold;}.number a:active {color:#FFFFFF;font-weight: bold;}.direction {font-size: 2pt;text-align:right;}.estimates a {font-weight: bold;}.arr_title_1 b{color:#ea0000;border-bottom:1px solid #ea0000;}.arr_title_2 b{color:#0066aa;border-bottom:1px solid #0066aa;}.arr_title_0 b{color:#feab10;border-bottom:1px solid #feab10;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid #ddd;}.errorText {color: #f00;}.legal{font-size: 50%;text-align:right;}</style></head>";
 
 	private final boolean showRemainingTime;
 
@@ -89,25 +91,43 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 	@Override
 	public void query() {
 		final Browser browser = new Browser();
-		final String response = browser.queryStation(context, uiHandler, stationCode);
-		if (response == null) {
-			throw new IllegalStateException("could not get estimations (null) for " + stationCode + ". " + stationLabel);
-		}
-
+        final String responseBus = browser.queryStation(context, uiHandler, stationCode, VechileType.BUS);
+        if (responseBus == null) {
+            throw new IllegalStateException("us: could not get estimations (null) for " + stationCode + ". " + stationLabel);
+        }
+        final String responseTrolley = browser.queryStation(context, uiHandler, stationCode, VechileType.TROLLEY);
+        if (responseTrolley == null) {
+            throw new IllegalStateException("trolley: could not get estimations (null) for " + stationCode + ". " + stationLabel);
+        }
+        final String responseTram = browser.queryStation(context, uiHandler, stationCode, VechileType.TRAM);
+        if (responseTram == null) {
+            throw new IllegalStateException("tram: could not get estimations (null) for " + stationCode + ". " + stationLabel);
+        }
+        ActivityTracker.queriedSofia(context, stationCode);
 		// servers of sumc does not have ntp synchronization and their time is wrong
 		// date = responseHandler.getDate();
 		date = new Date();
-		htmlData = HTML_START + HTML_HEADER + createBody(response) + HTML_END;
+
+		if (hasAtLeastOneWithInfo(responseBus, responseTrolley, responseTram)) {
+		    htmlData = HTML_START + HTML_HEADER + createBody(responseBus) + createBody(responseTrolley) + createBody(responseTram) + HTML_END;
+		} else {
+            htmlData = HTML_START + HTML_HEADER + context.getResources().getString(R.string.error_retrieveEstimates_noInfo, stationLabel, stationCode) + HTML_END;
+		}
 	}
 
-	private String createBody(String response) {
+	private boolean hasAtLeastOneWithInfo(String responseBus, String responseTrolley, String responseTram) {
+	    final String noInfo = context.getResources().getString(R.string.error_retrieveEstimates_matching_noInfo);
+        return !(responseBus.contains(noInfo) && responseTrolley.contains(noInfo) && responseTram.contains(noInfo));
+    }
+
+    private String createBody(String response) {
 		final int startOfBody = response.indexOf(BODY_START);
 		final int endOfBody = response.indexOf(BODY_END, startOfBody);
 
 		if (startOfBody == -1 || endOfBody == -1) {
 			// error
 			if (response.contains(context.getResources().getString(R.string.error_retrieveEstimates_matching_noInfo))) {
-				return context.getResources().getString(R.string.error_retrieveEstimates_noInfo, stationLabel, stationCode);
+				return "";
 			} else if (response.contains(context.getResources().getString(R.string.error_retrieveEstimates_matching_noBusStop))) {
 				return context.getResources().getString(R.string.error_retrieveEstimates_noBusStop, stationLabel, stationCode);
 			}

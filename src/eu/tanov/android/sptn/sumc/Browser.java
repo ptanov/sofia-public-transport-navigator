@@ -41,10 +41,14 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import eu.tanov.android.sptn.R;
+import eu.tanov.android.sptn.util.ActivityTracker;
 
 //FIXME very very bad code, but no time...
 public class Browser {
 
+    protected enum VechileType {
+        TRAM, BUS, TROLLEY
+    }
     private static final String CAPTCHA_START = "<img src=\"/captcha/";
     private static final char CAPTCHA_END = '"';
     private static final String QUERY_BUS_STOP_ID = "q";
@@ -63,6 +67,8 @@ public class Browser {
      */
     private static final String URL = "http://m.sofiatraffic.bg/vt";
     private static final String REQUIRES_CAPTCHA = "Въведете символите от изображението";
+    private static final String HAS_RESULT = "Информация към";
+    private static final String NO_INFO = "В момента нямаме информация. Моля, опитайте по-късно.";
     private static final String CAPTCHA_IMAGE = "http://m.sofiatraffic.bg/captcha/%s";
 
     private static final Object wait = new int[0];
@@ -73,7 +79,7 @@ public class Browser {
     private static final String PREFERENCES_COOKIE_VALUE = "value";
     private static String result = null;
 
-    public String queryStation(Context context, Handler uiHandler, String stationCode) {
+    public String queryStation(Context context, Handler uiHandler, String stationCode, VechileType type) {
         // XXX do not create client every time, use HTTP1.1 keep-alive!
         final DefaultHttpClient client = new DefaultHttpClient();
 
@@ -82,10 +88,15 @@ public class Browser {
         String result = null;
         try {
             do {
-                final HttpPost request = createRequest(context, uiHandler, client, stationCode, result);
+                final HttpPost request = createRequest(context, uiHandler, client, stationCode, result, type);
                 result = client.execute(request, new BasicResponseHandler());
                 saveCookiesToPreferences(context, client);
-            } while (result.contains(REQUIRES_CAPTCHA));
+            } while (!result.contains(HAS_RESULT) && !result.contains(NO_INFO));
+            
+            if (result.contains(NO_INFO)) {
+                result = context.getResources().getString(R.string.error_retrieveEstimates_matching_noInfo);
+            }
+            
         } catch (Exception e) {
             Log.e(TAG, "Could not get data for station " + stationCode, e);
         } finally {
@@ -132,7 +143,7 @@ public class Browser {
     }
 
     private static HttpPost createRequest(Context context, Handler uiHandler, HttpClient client, String stationCode,
-            String previous) {
+            String previous, VechileType type) {
         try {
             String captchaText = null;
             String captchaId = null;
@@ -155,7 +166,7 @@ public class Browser {
             // final String queryO = getAttributeValue(parametersResult, oStart + START_QUERY_O.length());
             // final String queryGo = getAttributeValue(parametersResult,
             // parametersResult.indexOf(START_QUERY_GO, oStart + START_QUERY_O.length()) + START_QUERY_GO.length());
-            return createRequest(stationCode, captchaText, captchaId);
+            return createRequest(stationCode, captchaText, captchaId, type);
         } catch (Exception e) {
             Log.e(TAG, "Could not get data for parameters for station: " + stationCode, e);
             return null;
@@ -193,6 +204,7 @@ public class Browser {
                 dialogBuilder.setCancelable(true)
                         .setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                ActivityTracker.sofiaCaptchaSuccess(context);
                                 result = input.getText().toString();
 
                                 synchronized (wait) {
@@ -206,6 +218,7 @@ public class Browser {
                 dialogBuilder.setOnCancelListener(new OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface arg0) {
+                        ActivityTracker.sofiaCaptchaCancel(context);
                         result = null;
                         synchronized (wait) {
                             wait.notifyAll();
@@ -285,8 +298,8 @@ public class Browser {
         return previous.substring(captchaStart + CAPTCHA_START.length(), captchaEnd);
     }
 
-    private static HttpPost createRequest(String stationCode, String captchaText, String captchaId) {
-        final HttpPost result = new HttpPost(URL);
+    private static HttpPost createRequest(String stationCode, String captchaText, String captchaId, VechileType type) {
+        final HttpPost result = new HttpPost(URL+"?vehicleTypeId="+type.ordinal());
         result.addHeader("User-Agent", USER_AGENT);
         result.addHeader("Referer", REFERER);
         // Issue 85:
@@ -304,7 +317,7 @@ public class Browser {
 
     private static List<BasicNameValuePair> parameters(String stationCode, String captchaText, String captchaId) {
         final List<BasicNameValuePair> result = new ArrayList<BasicNameValuePair>(5);
-        result.addAll(Arrays.asList(new BasicNameValuePair(QUERY_BUS_STOP_ID, "000000" + stationCode),
+        result.addAll(Arrays.asList(new BasicNameValuePair(QUERY_BUS_STOP_ID, toSumcCode(stationCode)),
                 new BasicNameValuePair(QUERY_O, "1"), new BasicNameValuePair(QUERY_GO, "1")));
 
         if (captchaText != null && captchaId != null) {
@@ -312,5 +325,10 @@ public class Browser {
             result.add(new BasicNameValuePair(QUERY_CAPTCHA_TEXT, captchaText));
         }
         return result;
+    }
+
+    private static String toSumcCode(String stationCode) {
+        stationCode = "000000" + stationCode;
+        return stationCode.substring(stationCode.length() - 4);
     }
 }

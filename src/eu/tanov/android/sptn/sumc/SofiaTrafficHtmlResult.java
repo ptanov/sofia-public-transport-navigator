@@ -1,6 +1,9 @@
 package eu.tanov.android.sptn.sumc;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -38,6 +41,9 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 	private static final String BODY_START = "<div class=\"arrivals\">";
 	// XXX this is not good end mark, but it is quick fix!
 	private static final String BODY_END = "\n</div>";
+
+    private static final String VECHILE_TYPE_LINK_MARKER = "vehicleTypeId=";
+    private static final String VECHILE_TYPE_TITLE_MARKER = "class=\"arr_title_";
 
 
 	/**
@@ -91,33 +97,50 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 	@Override
 	public void query() {
 		final Browser browser = new Browser();
-        final String responseBus = browser.queryStation(context, uiHandler, stationCode, VechileType.BUS);
-        if (responseBus == null) {
-            throw new IllegalStateException("us: could not get estimations (null) for " + stationCode + ". " + stationLabel);
+		final List<String> responses = new LinkedList<String>();
+        final String responseDefault = browser.queryStation(context, uiHandler, stationCode, null);
+        if (responseDefault == null) {
+            throw new IllegalStateException("default: could not get estimations (null) for " + stationCode + ". " + stationLabel);
         }
-        final String responseTrolley = browser.queryStation(context, uiHandler, stationCode, VechileType.TROLLEY);
-        if (responseTrolley == null) {
-            throw new IllegalStateException("trolley: could not get estimations (null) for " + stationCode + ". " + stationLabel);
-        }
-        final String responseTram = browser.queryStation(context, uiHandler, stationCode, VechileType.TRAM);
-        if (responseTram == null) {
-            throw new IllegalStateException("tram: could not get estimations (null) for " + stationCode + ". " + stationLabel);
+        final List<VechileType> additionalTypes = getAdditionalTypes(responseDefault);
+        responses.add(responseDefault);
+        
+        for (VechileType vechileType : additionalTypes) {
+            final String responseNext = browser.queryStation(context, uiHandler, stationCode, vechileType);
+            if (responseNext == null) {
+                throw new IllegalStateException(vechileType+": could not get estimations (null) for " + stationCode + ". " + stationLabel);
+            }
+            responses.add(responseNext);
         }
         ActivityTracker.queriedSofia(context, stationCode);
 		// servers of sumc does not have ntp synchronization and their time is wrong
 		// date = responseHandler.getDate();
 		date = new Date();
 
-		if (hasAtLeastOneWithInfo(responseBus, responseTrolley, responseTram)) {
-		    htmlData = HTML_START + HTML_HEADER + createBody(responseBus) + createBody(responseTrolley) + createBody(responseTram) + HTML_END;
+		if (hasAtLeastOneWithInfo(responses)) {
+	        ActivityTracker.queriedSofia(context, stationCode);
+	        final StringBuilder htmlDataBuilder = new StringBuilder(HTML_HEADER.length() + 5000);
+	        htmlDataBuilder.append(HTML_START).append(HTML_HEADER);
+	        for (String next : responses) {
+	            htmlDataBuilder.append(createBody(next));
+            }
+	        htmlDataBuilder.append(HTML_END);
+
+		    htmlData = htmlDataBuilder.toString();
 		} else {
+	        ActivityTracker.queriedSofiaNoInfo(context, stationCode);
             htmlData = HTML_START + HTML_HEADER + context.getResources().getString(R.string.error_retrieveEstimates_noInfo, stationLabel, stationCode) + HTML_END;
 		}
 	}
 
-	private boolean hasAtLeastOneWithInfo(String responseBus, String responseTrolley, String responseTram) {
+    private boolean hasAtLeastOneWithInfo(List<String> responses) {
 	    final String noInfo = context.getResources().getString(R.string.error_retrieveEstimates_matching_noInfo);
-        return !(responseBus.contains(noInfo) && responseTrolley.contains(noInfo) && responseTram.contains(noInfo));
+	    for (String next : responses) {
+            if (!next.contains(noInfo)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String createBody(String response) {
@@ -214,4 +237,55 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 	public boolean hasBusSupport() {
 	    return false;
 	}
+	
+	//additional types
+    private static VechileType getVechileType(char c) {
+
+        final int index = Character.getNumericValue(c);
+        if (index < 0 || index >= VechileType.values().length) {
+            return null;
+        }
+        return VechileType.values()[index];
+    }
+
+    private static VechileType getFetchedType(String response) {
+        int indexOf = response.indexOf(VECHILE_TYPE_TITLE_MARKER);
+        if (indexOf == -1) {
+            return null;
+        }
+        indexOf += VECHILE_TYPE_TITLE_MARKER.length();
+        if (indexOf < response.length()) {
+            return getVechileType(response.charAt(indexOf));
+        } else {
+            return null;
+        }
+    }
+
+    private static List<VechileType> getAdditionalTypes(String response) {
+        final VechileType fetchedType = getFetchedType(response);
+        if (fetchedType == null) {
+            return Collections.emptyList();
+        }
+        // enum set can be used
+        final List<VechileType> result = new LinkedList<VechileType>();
+        int i = 0;
+        while (i < response.length()) {
+            i = response.indexOf(VECHILE_TYPE_LINK_MARKER, i);
+
+            if (i == -1) {
+                return result;
+            }
+            i += VECHILE_TYPE_LINK_MARKER.length();
+            if (i >= response.length()) {
+                return result;
+            }
+            final VechileType vechileType = getVechileType(response.charAt(i));
+            if (vechileType != fetchedType && !result.contains(vechileType)) {
+                result.add(vechileType);
+            }
+        }
+        return result;
+    }
+
+
 }

@@ -299,7 +299,8 @@ public class Browser {
     }
 
     private static HttpPost createRequest(String stationCode, String captchaText, String captchaId, VechileType type) {
-        final HttpPost result = new HttpPost(URL+"?vehicleTypeId="+type.ordinal());
+        final String urlSuffix = (type == null)?"":("?vehicleTypeId="+type.ordinal());
+        final HttpPost result = new HttpPost(URL+urlSuffix);
         result.addHeader("User-Agent", USER_AGENT);
         result.addHeader("Referer", REFERER);
         // Issue 85:

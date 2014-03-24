@@ -123,6 +123,9 @@ public class BusStopUpdater {
     private InputStream openFile(String filename) throws FileNotFoundException {
         return new FileInputStream(getFile(filename));
     }
-
+    
+    public Context getContext() {
+        return context;
+    }
 
 }

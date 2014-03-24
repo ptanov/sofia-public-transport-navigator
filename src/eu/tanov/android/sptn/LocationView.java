@@ -49,6 +49,7 @@ import eu.tanov.android.sptn.map.BusesOverlay;
 import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.providers.BusStopUpdater;
 import eu.tanov.android.sptn.providers.InitStations;
+import eu.tanov.android.sptn.util.ActivityTracker;
 import eu.tanov.android.sptn.util.LocaleHelper;
 import eu.tanov.android.sptn.util.MapHelper;
 
@@ -70,9 +71,13 @@ public class LocationView extends MapActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
+                ActivityTracker.busStopsUpdatedSuccess(updater.getContext());
+
                 Toast.makeText(LocationView.this, R.string.update_busstop_toast_update_success, Toast.LENGTH_LONG)
                         .show();
             } else {
+                ActivityTracker.busStopsUpdatedError(updater.getContext());
+
                 Toast.makeText(LocationView.this, R.string.update_busstop_toast_update_failure, Toast.LENGTH_LONG)
                         .show();
             }
@@ -106,6 +111,7 @@ public class LocationView extends MapActivity {
                             }
                         }).setNegativeButton(R.string.buttonCancel, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                ActivityTracker.busStopsUpdateCancel(LocationView.this);
                                 dialog.dismiss();
                             }
                         }).create().show();

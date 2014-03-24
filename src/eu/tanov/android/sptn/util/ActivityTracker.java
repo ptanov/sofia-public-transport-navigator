@@ -8,6 +8,7 @@ import com.flurry.android.FlurryAgent;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 
+import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.providers.InitStations;
 
 public class ActivityTracker {
@@ -104,6 +105,65 @@ public class ActivityTracker {
                          null)
             .build()
         );
+    }
+
+    public static void queriedSofiaNoInfo(LocationView context, String stationCode) {
+        FlurryAgent.logEvent("queriedSofiaNoInfo", Collections.singletonMap("stationCode", stationCode));
+        final EasyTracker easyTracker = EasyTracker.getInstance(context);
+        if (easyTracker == null) {
+            return;
+        }
+        easyTracker.send(MapBuilder.createEvent("busstopretrieving",
+                         "queriedSofiaNoInfo",
+                         stationCode,
+                         null)
+            .build()
+        );
+    }
+
+    public static void busStopsUpdateCancel(Context context) {
+        FlurryAgent.logEvent("busStopsUpdateCancel");
+        final EasyTracker easyTracker = EasyTracker.getInstance(context);
+        if (easyTracker == null) {
+            return;
+        }
+        easyTracker.send(MapBuilder.createEvent("busstopupdate",
+                         "busStopsUpdateCancel",
+                         "busStopsUpdateCancel",
+                         null)
+            .build()
+        );
+        
+    }
+
+    public static void busStopsUpdatedSuccess(Context context) {
+        FlurryAgent.logEvent("busStopsUpdatedSuccess");
+        final EasyTracker easyTracker = EasyTracker.getInstance(context);
+        if (easyTracker == null) {
+            return;
+        }
+        easyTracker.send(MapBuilder.createEvent("busstopupdate",
+                         "busStopsUpdatedSuccess",
+                         "busStopsUpdatedSuccess",
+                         null)
+            .build()
+        );
+        
+    }
+
+    public static void busStopsUpdatedError(Context context) {
+        FlurryAgent.logEvent("busStopsUpdatedError");
+        final EasyTracker easyTracker = EasyTracker.getInstance(context);
+        if (easyTracker == null) {
+            return;
+        }
+        easyTracker.send(MapBuilder.createEvent("busstopupdate",
+                         "busStopsUpdatedError",
+                         "busStopsUpdatedError",
+                         null)
+            .build()
+        );
+        
     }
 
 }

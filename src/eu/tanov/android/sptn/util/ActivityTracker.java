@@ -166,4 +166,18 @@ public class ActivityTracker {
         
     }
 
+    public static void couldNotScaleImage(Context context, String message) {
+        FlurryAgent.logEvent("couldNotScaleImage", Collections.singletonMap("message", message));
+        final EasyTracker easyTracker = EasyTracker.getInstance(context);
+        if (easyTracker == null) {
+            return;
+        }
+        easyTracker.send(MapBuilder.createEvent("busstopretrieving",
+                         "couldNotScaleImage",
+                         message,
+                         null)
+            .build()
+        );
+    }
+
 }

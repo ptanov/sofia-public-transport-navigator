@@ -23,6 +23,8 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 
+import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -34,7 +36,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -79,7 +83,7 @@ public class Browser {
     private static final String PREFERENCES_COOKIE_VALUE = "value";
     private static String result = null;
 
-    public String queryStation(Context context, Handler uiHandler, String stationCode, VechileType type) {
+    public String queryStation(Activity context, Handler uiHandler, String stationCode, VechileType type) {
         // XXX do not create client every time, use HTTP1.1 keep-alive!
         final DefaultHttpClient client = new DefaultHttpClient();
 
@@ -142,7 +146,7 @@ public class Browser {
         }
     }
 
-    private static HttpPost createRequest(Context context, Handler uiHandler, HttpClient client, String stationCode,
+    private static HttpPost createRequest(Activity context, Handler uiHandler, HttpClient client, String stationCode,
             String previous, VechileType type) {
         try {
             String captchaText = null;
@@ -173,7 +177,7 @@ public class Browser {
         }
     }
 
-    private static String getCaptchaText(final Context context, Handler uiHandler, final Bitmap captchaImage) {
+    private static String getCaptchaText(final Activity context, Handler uiHandler, final Bitmap captchaImage) {
 
         uiHandler.post(new Runnable() {
             @Override
@@ -190,8 +194,15 @@ public class Browser {
                 final ImageView image = new ImageView(context);
                 image.setId(3);
                 image.setImageBitmap(captchaImage);
-                panel.addView(image);
-
+//                try {
+//                    image.getLayoutParams().height *= 3;
+//                    image.getLayoutParams().width *= 3;
+//                } catch (Exception e) {
+//                    Log.e(TAG, "Could not scale image", e);
+//                    ActivityTracker.couldNotScaleImage(context, e.getMessage());
+//                }
+                panel.addView(image, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+                fixImageSize(image);
                 final EditText input = new EditText(context);
                 input.setId(2);
                 input.setSingleLine();
@@ -227,6 +238,21 @@ public class Browser {
                 });
                 dialogBuilder.create().show();
             }
+
+            private void fixImageSize(ImageView image) {
+                try {
+                    Display display = context.getWindowManager().getDefaultDisplay();
+                    DisplayMetrics outMetrics = new DisplayMetrics();
+                    display.getMetrics(outMetrics);
+                    float scWidth = outMetrics.widthPixels * 0.8f;
+                    image.getLayoutParams().width = (int) scWidth;
+                    image.getLayoutParams().height = (int) (scWidth / 3f);
+                } catch (Exception e) {
+                    Log.e(TAG, "Could not scale image", e);
+                    ActivityTracker.couldNotScaleImage(context, e.getMessage());
+                }
+            }
+
         });
 
         return waitForResult();

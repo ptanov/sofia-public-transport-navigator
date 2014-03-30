@@ -2,8 +2,10 @@ package eu.tanov.android.sptn.sumc;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -94,25 +96,40 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 				PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09);
 	}
 
-	@Override
-	public void query() {
-		final Browser browser = new Browser();
-		final List<String> responses = new LinkedList<String>();
+    private List<String> getResponses() {
+        final Browser browser = new Browser();
+        final List<String> responses = new LinkedList<String>();
         final String responseDefault = browser.queryStation(context, uiHandler, stationCode, null);
         if (responseDefault == null) {
-            throw new IllegalStateException("default: could not get estimations (null) for " + stationCode + ". " + stationLabel);
+            throw new IllegalStateException("default: could not get estimations (null) for " + stationCode + ". "
+                    + stationLabel);
         }
-        final List<VechileType> additionalTypes = getAdditionalTypes(responseDefault);
+        final VechileType typeDefault = getFetchedType(responseDefault);
+        final Set<VechileType> types = new HashSet<VechileType>(3);
+        if (typeDefault != null) {
+            types.add(typeDefault);
+        }
+        final List<VechileType> additionalTypes = getAdditionalTypes(responseDefault, typeDefault);
         responses.add(responseDefault);
-        
+
         for (VechileType vechileType : additionalTypes) {
             final String responseNext = browser.queryStation(context, uiHandler, stationCode, vechileType);
             if (responseNext == null) {
-                throw new IllegalStateException(vechileType+": could not get estimations (null) for " + stationCode + ". " + stationLabel);
+                throw new IllegalStateException(vechileType + ": could not get estimations (null) for " + stationCode
+                        + ". " + stationLabel);
             }
-            responses.add(responseNext);
+            final VechileType nextType = getFetchedType(responseNext);
+            if (nextType != null && !types.contains(nextType)) {
+                //exclude already added types
+                responses.add(responseNext);
+            }
         }
-        ActivityTracker.queriedSofia(context, stationCode);
+
+        return responses;
+    }
+	@Override
+	public void query() {
+	    final List<String> responses = getResponses();
 		// servers of sumc does not have ntp synchronization and their time is wrong
 		// date = responseHandler.getDate();
 		date = new Date();
@@ -261,8 +278,7 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
         }
     }
 
-    private static List<VechileType> getAdditionalTypes(String response) {
-        final VechileType fetchedType = getFetchedType(response);
+    private static List<VechileType> getAdditionalTypes(String response, VechileType fetchedType) {
         if (fetchedType == null) {
             return Collections.emptyList();
         }

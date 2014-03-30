@@ -81,6 +81,7 @@ public class Browser {
     private static final String PREFERENCES_COOKIE_DOMAIN = "domain";
     private static final String PREFERENCES_COOKIE_PATH = "path";
     private static final String PREFERENCES_COOKIE_VALUE = "value";
+    private static final String VECHILE_TYPE_PARAMETER_NAME = "vehicleTypeId";
     private static String result = null;
 
     public String queryStation(Activity context, Handler uiHandler, String stationCode, VechileType type) {
@@ -325,7 +326,12 @@ public class Browser {
     }
 
     private static HttpPost createRequest(String stationCode, String captchaText, String captchaId, VechileType type) {
-        final String urlSuffix = (type == null)?"":("?vehicleTypeId="+type.ordinal());
+        String urlSuffix = String.format("?%s=%s&%s=%s&%s=%s", QUERY_BUS_STOP_ID, toSumcCode(stationCode),
+                QUERY_O, "1", QUERY_GO, "1");
+        if (type != null) {
+            urlSuffix += ("&"+VECHILE_TYPE_PARAMETER_NAME+"="+type.ordinal());
+        }
+        
         final HttpPost result = new HttpPost(URL+urlSuffix);
         result.addHeader("User-Agent", USER_AGENT);
         result.addHeader("Referer", REFERER);
@@ -333,7 +339,7 @@ public class Browser {
         // result.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
         try {
             final UrlEncodedFormEntity entity = new UrlEncodedFormEntity(
-                    parameters(stationCode, captchaText, captchaId));
+                    parameters(stationCode, captchaText, captchaId, type));
             result.setEntity(entity);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Not supported default encoding?", e);
@@ -342,11 +348,15 @@ public class Browser {
         return result;
     }
 
-    private static List<BasicNameValuePair> parameters(String stationCode, String captchaText, String captchaId) {
-        final List<BasicNameValuePair> result = new ArrayList<BasicNameValuePair>(5);
+    private static List<BasicNameValuePair> parameters(String stationCode, String captchaText, String captchaId, VechileType type) {
+        final List<BasicNameValuePair> result = new ArrayList<BasicNameValuePair>(6);
         result.addAll(Arrays.asList(new BasicNameValuePair(QUERY_BUS_STOP_ID, toSumcCode(stationCode)),
                 new BasicNameValuePair(QUERY_O, "1"), new BasicNameValuePair(QUERY_GO, "1")));
 
+        if (type != null) {
+            result.add(new BasicNameValuePair(VECHILE_TYPE_PARAMETER_NAME, Integer.toString(type.ordinal())));
+        }
+        
         if (captchaText != null && captchaId != null) {
             result.add(new BasicNameValuePair(QUERY_CAPTCHA_ID, captchaId));
             result.add(new BasicNameValuePair(QUERY_CAPTCHA_TEXT, captchaText));

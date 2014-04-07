@@ -44,7 +44,7 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 	// XXX this is not good end mark, but it is quick fix!
 	private static final String BODY_END = "\n</div>";
 
-    private static final String VECHILE_TYPE_LINK_MARKER = "vehicleTypeId=";
+    private static final String VECHILE_TYPE_LINK_MARKER = "name=\"vehicleTypeId\" value=\"";
     private static final String VECHILE_TYPE_TITLE_MARKER = "class=\"arr_title_";
 
 

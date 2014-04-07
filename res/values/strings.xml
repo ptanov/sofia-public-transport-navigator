@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="aboutDialog_title">Градски транспорт, България (версия 1.24)</string>
+<string name="aboutDialog_title">Градски транспорт, България (версия 1.25)</string>
     
 <string name="app_name">Градски транспорт, България</string>
 <string name="buttonOk">ОК</string>

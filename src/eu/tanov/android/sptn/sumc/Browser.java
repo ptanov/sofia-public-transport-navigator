@@ -55,7 +55,7 @@ public class Browser {
     }
     private static final String CAPTCHA_START = "<img src=\"/captcha/";
     private static final char CAPTCHA_END = '"';
-    private static final String QUERY_BUS_STOP_ID = "stop";
+    private static final String QUERY_BUS_STOP_ID = "stopCode";
     private static final String QUERY_O = "o";
     private static final String QUERY_GO = "go";
     private static final String QUERY_CAPTCHA_TEXT = "sc";

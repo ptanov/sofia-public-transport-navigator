@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -50,6 +52,16 @@ import eu.tanov.android.sptn.util.ActivityTracker;
 //FIXME very very bad code, but no time...
 public class Browser {
 
+    private static class InputData {
+        private final String name;
+        private final String value;
+        private final String type;
+        public InputData(String name, String value, String type) {
+            this.name = name;
+            this.value = value;
+            this.type = type == null?null:type.toLowerCase();
+        }
+    }
     protected enum VechileType {
         TRAM, BUS, TROLLEY
     }
@@ -74,6 +86,10 @@ public class Browser {
     private static final String HAS_RESULT = "Информация към";
     private static final String NO_INFO = "В момента нямаме информация. Моля, опитайте по-късно.";
     private static final String CAPTCHA_IMAGE = "http://m.sofiatraffic.bg/captcha/%s";
+    private static final String FORM_INPUT = "<input";
+    private static final String FORM_INPUT_NAME = "name=";
+    private static final String FORM_INPUT_TYPE = "type=";
+    private static final String FORM_INPUT_VALUE = "value=";
 
     private static final Object wait = new int[0];
     private static final String SHARED_PREFERENCES_NAME_SUMC_COOKIES = "sumc_cookies";
@@ -83,6 +99,7 @@ public class Browser {
     private static final String PREFERENCES_COOKIE_VALUE = "value";
     private static final String VECHILE_TYPE_PARAMETER_NAME = "vehicleTypeId";
     private static String result = null;
+    private String previousResponse;
 
     public String queryStation(Activity context, Handler uiHandler, String stationCode, VechileType type) {
         // XXX do not create client every time, use HTTP1.1 keep-alive!
@@ -93,8 +110,9 @@ public class Browser {
         String result = null;
         try {
             do {
-                final HttpPost request = createRequest(context, uiHandler, client, stationCode, result, type);
+                final HttpPost request = createRequest(context, uiHandler, client, stationCode, previousResponse, type);
                 result = client.execute(request, new BasicResponseHandler());
+                previousResponse = result;
                 saveCookiesToPreferences(context, client);
             } while (!result.contains(HAS_RESULT) && !result.contains(NO_INFO));
             
@@ -171,7 +189,7 @@ public class Browser {
             // final String queryO = getAttributeValue(parametersResult, oStart + START_QUERY_O.length());
             // final String queryGo = getAttributeValue(parametersResult,
             // parametersResult.indexOf(START_QUERY_GO, oStart + START_QUERY_O.length()) + START_QUERY_GO.length());
-            return createRequest(stationCode, captchaText, captchaId, type);
+            return createRequest(stationCode, captchaText, captchaId, type, previous);
         } catch (Exception e) {
             Log.e(TAG, "Could not get data for parameters for station: " + stationCode, e);
             return null;
@@ -325,8 +343,9 @@ public class Browser {
         return previous.substring(captchaStart + CAPTCHA_START.length(), captchaEnd);
     }
 
-    private static HttpPost createRequest(String stationCode, String captchaText, String captchaId, VechileType type) {
-        String urlSuffix = String.format("?%s=%s&%s=%s&%s=%s", QUERY_BUS_STOP_ID, toSumcCode(stationCode),
+    private static HttpPost createRequest(String stationCode, String captchaText, String captchaId, VechileType type, String previous) {
+        stationCode = toSumcCode(stationCode);
+        String urlSuffix = String.format("?%s=%s&%s=%s&%s=%s", QUERY_BUS_STOP_ID, stationCode,
                 QUERY_O, "1", QUERY_GO, "1");
         if (type != null) {
             urlSuffix += ("&"+VECHILE_TYPE_PARAMETER_NAME+"="+type.ordinal());
@@ -339,7 +358,7 @@ public class Browser {
         // result.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
         try {
             final UrlEncodedFormEntity entity = new UrlEncodedFormEntity(
-                    parameters(stationCode, captchaText, captchaId, type));
+                    parameters(stationCode, captchaText, captchaId, type, previous));
             result.setEntity(entity);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Not supported default encoding?", e);
@@ -347,19 +366,106 @@ public class Browser {
 
         return result;
     }
-
-    private static List<BasicNameValuePair> parameters(String stationCode, String captchaText, String captchaId, VechileType type) {
-        final List<BasicNameValuePair> result = new ArrayList<BasicNameValuePair>(6);
-        result.addAll(Arrays.asList(new BasicNameValuePair(QUERY_BUS_STOP_ID, toSumcCode(stationCode)),
-                new BasicNameValuePair(QUERY_O, "1"), new BasicNameValuePair(QUERY_GO, "1")));
-
-        if (type != null) {
-            result.add(new BasicNameValuePair(VECHILE_TYPE_PARAMETER_NAME, Integer.toString(type.ordinal())));
+    private static BasicNameValuePair createParameter(Map<String, String> parametersMapping, String key, String value) {
+        String mappedKey = parametersMapping.get(key);
+        if (mappedKey == null) {
+            mappedKey = key;
         }
+        return new BasicNameValuePair(mappedKey, value);
+    }
+    private static List<BasicNameValuePair> parameters(String stationCode, String captchaText, String captchaId, VechileType type, String previous) {
+        final List<BasicNameValuePair> result = new ArrayList<BasicNameValuePair>(6);
+        if (previous != null) {
+            final Map<String, String> parametersMapping = getParametersMapping(previous, stationCode, captchaText, captchaId);
+            for (Entry<String, String> next : parametersMapping.entrySet()) {
+                result.add(new BasicNameValuePair(next.getKey(), next.getValue()));
+            }
+            if (type != null) {
+                result.add(createParameter(parametersMapping, VECHILE_TYPE_PARAMETER_NAME, Integer.toString(type.ordinal())));
+            }
+        }
+        return result;
+    }
+
+    private static String getForm(String previous) {
+        final int formStart = previous.indexOf("<form");
+        if (formStart == -1) {
+            return null;
+        }
+        final int formEnd = previous.indexOf("</form", formStart);
+        if (formEnd == -1) {
+            return null;
+        }
+        return previous.substring(formStart, formEnd);
+    }
+    private static String getParameterValue(String form, int index, int length) {
+        final int start = index + length;
+        if ((index == -1) || (start+1 >= form.length())) {
+            return "";
+        }
+        final char startChar = form.charAt(start);
+        int end = form.indexOf(startChar, start+1);
+        if (end == -1) {
+            return "";
+        }
+        return form.substring(start+1, end);
+    }
+
+    private static InputData getInput(String form, int index) {
+        if (index == -1) {
+            return null;
+        }
+        final int end = form.indexOf(">", index);
+        if (end == -1) {
+            return null;
+        }
+        final int nameIndex = form.indexOf(FORM_INPUT_NAME, index);
+        if (nameIndex == -1 || nameIndex >= end) {
+            return null;
+        }
+        final int typeIndex = form.indexOf(FORM_INPUT_TYPE, index);
+        final int valueIndex = form.indexOf(FORM_INPUT_VALUE, index);
         
-        if (captchaText != null && captchaId != null) {
-            result.add(new BasicNameValuePair(QUERY_CAPTCHA_ID, captchaId));
-            result.add(new BasicNameValuePair(QUERY_CAPTCHA_TEXT, captchaText));
+        return new InputData(getParameterValue(form, nameIndex, FORM_INPUT_NAME.length()),
+                getParameterValue(form, valueIndex>=end?-1:valueIndex, FORM_INPUT_VALUE.length()),
+                getParameterValue(form, typeIndex>=end?-1:typeIndex, FORM_INPUT_TYPE.length()));
+    }
+    private static boolean isCaptchaText(Map<String, String> result, InputData input, boolean isCodeFound) {
+        if ("text".equals(input.type) && isCodeFound) {
+            return true;
+        }
+        return false;
+    }
+    private static boolean isStationCode(Map<String, String> result, InputData input, boolean isCodeFound) {
+        if ("text".equals(input.type) && !isCodeFound) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Very bad code (this method and all called methods), but no time... 
+     */
+    private static Map<String, String> getParametersMapping(String previous, String stationCode, String captchaText, String captchaId) {
+        boolean isCodeFound = false;
+        final Map<String, String> result = new HashMap<String, String>();
+        final String form = getForm(previous);
+        if (form != null) {
+            int indexOf = 0;
+            while(indexOf != -1) {
+                indexOf = form.indexOf(FORM_INPUT, indexOf + 1);
+                final InputData input = getInput(form, indexOf);
+                if (input == null) {
+                    continue;
+                }
+                if ("hidden".equals(input.type)) {
+                    result.put(input.name, input.value);
+                } else if (isCaptchaText(result, input, isCodeFound)) {
+                    result.put(input.name, captchaText);
+                } else if (isStationCode(result, input, isCodeFound)) {
+                    isCodeFound = true;
+                    result.put(input.name, stationCode);
+                }
+            }
         }
         return result;
     }

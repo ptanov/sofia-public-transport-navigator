@@ -32,7 +32,7 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DeviceData {
-        private int device;
+        private String device;
         private int line;
         private String arriveTime;
         private String delay;
@@ -40,11 +40,11 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         private String distanceLeft;
         private PositionVarnaTraffic position;
 
-        public int getDevice() {
+        public String getDevice() {
             return device;
         }
 
-        public void setDevice(int device) {
+        public void setDevice(String device) {
             this.device = device;
         }
 
@@ -144,7 +144,7 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
             final URLConnection openConnection = new java.net.URL(STATION_URL + stationCode).openConnection();
             openConnection.setUseCaches(false);
             all = new ObjectMapper().readValue(openConnection.getInputStream(), Response.class);
-            
+
             ActivityTracker.queriedVarna(context, stationCode);
         } catch (Exception e) {
             throw new IllegalStateException(

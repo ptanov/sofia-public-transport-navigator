@@ -25,8 +25,8 @@ public class BusStopUpdater {
     private static final String DOWNLOAD_URL_VARNATRAFFIC = "https://sofia-public-transport-navigator.googlecode.com/hg/res/raw/coordinates_varnatraffic.json";
     private static final String FILENAME_VARNATRAFFIC = "coordinates_varnatraffic.json";
 
-    private static final String ORIGINAL_TAGS_SOFIATRAFFIC = "\"a99125cb671781088e37f5f9e4372bfae16c9291/res/raw/coordinates.xml\"";
-    private static final String ORIGINAL_TAGS_VARNATRAFFIC = "\"8cf930a56ea6cc6a7d51d425d51c4f005e6b34eb/res/raw/coordinates_varnatraffic.json\"";
+    private static final String ORIGINAL_TAGS_SOFIATRAFFIC = "\"4f0326aaac231d51c60e5ed6f28be2cfa261a404/res/raw/coordinates.xml\"";
+    private static final String ORIGINAL_TAGS_VARNATRAFFIC = "\"f19bfeefbb9a4fce5297f24cb7c76504654d20a7/res/raw/coordinates_varnatraffic.json\"";
 
     private final Context context;
     private static boolean updatingInProgress = false;
@@ -115,7 +115,7 @@ public class BusStopUpdater {
             return false;
         }
     }
-    
+
     private File getFile(String filename) {
         return new File(context.getFilesDir(), filename);
     }
@@ -123,7 +123,7 @@ public class BusStopUpdater {
     private InputStream openFile(String filename) throws FileNotFoundException {
         return new FileInputStream(getFile(filename));
     }
-    
+
     public Context getContext() {
         return context;
     }

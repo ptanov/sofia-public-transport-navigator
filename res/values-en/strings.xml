@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="aboutDialog_title">Bulgarian Public Transport (version 1.28)</string>
+<string name="aboutDialog_title">Bulgarian Public Transport (version 1.29)</string>
     
 <string name="buttonOk">OK</string>
 <string name="buttonCancel">Cancel</string>

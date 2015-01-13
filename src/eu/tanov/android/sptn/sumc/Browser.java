@@ -377,12 +377,15 @@ public class Browser {
         final List<BasicNameValuePair> result = new ArrayList<BasicNameValuePair>(6);
         if (previous != null) {
             final Map<String, String> parametersMapping = getParametersMapping(previous, stationCode, captchaText, captchaId);
+            
+            parametersMapping.put("submit", "Провери");
             for (Entry<String, String> next : parametersMapping.entrySet()) {
                 result.add(new BasicNameValuePair(next.getKey(), next.getValue()));
             }
             if (type != null) {
                 result.add(createParameter(parametersMapping, VECHILE_TYPE_PARAMETER_NAME, Integer.toString(type.ordinal())));
             }
+            
         }
         return result;
     }

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.text.format.DateFormat;
@@ -26,11 +27,11 @@ public abstract class HtmlResult implements EstimatesResolver {
     protected final String stationCode;
     protected final String stationLabel;
 
-    protected final LocationView context;
+    protected final Context context;
     protected String htmlData;
     protected Date date;
 
-    protected final StationsOverlay overlay;
+    private final StationsOverlay overlay;
     protected final String provider;
 
     public HtmlResult(LocationView context, StationsOverlay overlay, String provider, String stationCode,
@@ -47,7 +48,10 @@ public abstract class HtmlResult implements EstimatesResolver {
         if (onlyBuses) {
             return;
         }
-        context.estimatesDialogDisplayed();
+        if (!(context instanceof LocationView)) {
+            return;
+        }
+        ((LocationView)context).estimatesDialogDisplayed();
         final WebView browser = new WebView(context);
         browser.loadDataWithBaseURL(null, htmlData, MIME_TYPE, ENCODING, null);
 
@@ -57,7 +61,7 @@ public abstract class HtmlResult implements EstimatesResolver {
 
         dialogBuilder.setCancelable(true).setPositiveButton(R.string.buttonOk, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                context.estimatesDialogClosed();
+                ((LocationView)context).estimatesDialogClosed();
                 dialog.dismiss();
             }
         }).setView(browser);
@@ -65,7 +69,7 @@ public abstract class HtmlResult implements EstimatesResolver {
         dialogBuilder.setOnCancelListener(new OnCancelListener() {
             @Override
             public void onCancel(DialogInterface arg0) {
-                context.estimatesDialogClosed();
+                ((LocationView)context).estimatesDialogClosed();
             }
         });
         handleFavorities(dialogBuilder);
@@ -88,7 +92,7 @@ public abstract class HtmlResult implements EstimatesResolver {
             // add to favorite
             dialogBuilder.setNegativeButton(R.string.buttonAddToFavorities, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    context.estimatesDialogClosed();
+                    ((LocationView)context).estimatesDialogClosed();
 
                     favoritiesService.add(new BusStopItem(provider, 0, stationCode, stationLabel));
                     final String message = context.getResources().getString(R.string.info_addedToFavorities,

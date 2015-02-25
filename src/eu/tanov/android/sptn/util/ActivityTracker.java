@@ -8,7 +8,6 @@ import com.flurry.android.FlurryAgent;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 
-import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.providers.InitStations;
 
 public class ActivityTracker {
@@ -107,7 +106,7 @@ public class ActivityTracker {
         );
     }
 
-    public static void queriedSofiaNoInfo(LocationView context, String stationCode) {
+    public static void queriedSofiaNoInfo(Context context, String stationCode) {
         FlurryAgent.logEvent("queriedSofiaNoInfo", Collections.singletonMap("stationCode", stationCode));
         final EasyTracker easyTracker = EasyTracker.getInstance(context);
         if (easyTracker == null) {

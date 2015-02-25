@@ -101,7 +101,7 @@ public class Browser {
     private static String result = null;
     private String previousResponse;
 
-    public String queryStation(Activity context, Handler uiHandler, String stationCode, VechileType type) {
+    public String queryStation(Context context, Handler uiHandler, String stationCode, VechileType type) {
         // XXX do not create client every time, use HTTP1.1 keep-alive!
         final DefaultHttpClient client = new DefaultHttpClient();
 
@@ -165,7 +165,7 @@ public class Browser {
         }
     }
 
-    private static HttpPost createRequest(Activity context, Handler uiHandler, HttpClient client, String stationCode,
+    private static HttpPost createRequest(Context context, Handler uiHandler, HttpClient client, String stationCode,
             String previous, VechileType type) {
         try {
             String captchaText = null;
@@ -174,9 +174,12 @@ public class Browser {
             if (previous != null) {
                 captchaId = getCaptchaId(previous);
                 if (captchaId != null) {
+                    if (!(context instanceof Activity)) {
+                        throw new Exception("In background - captcha check");
+                    }
                     final Bitmap captchaImage = getCaptchaImage(client, captchaId);
                     if (captchaImage != null) {
-                        captchaText = getCaptchaText(context, uiHandler, captchaImage);
+                        captchaText = getCaptchaText((Activity)context, uiHandler, captchaImage);
                     }
                 }
             }

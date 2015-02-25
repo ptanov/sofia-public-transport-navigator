@@ -217,10 +217,14 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
     @Override
     public void showResult(boolean onlyBuses) {
         super.showResult(onlyBuses);
+        if (!(context instanceof LocationView)) {
+            return;
+        }
+
         if (all != null) {
-            context.getBusesOverlay().showBusses(Arrays.asList(all.getLiveData()));
+            ((LocationView)context).getBusesOverlay().showBusses(Arrays.asList(all.getLiveData()));
         } else {
-            context.getBusesOverlay().showBusses(Collections.<DeviceData> emptyList());
+            ((LocationView)context).getBusesOverlay().showBusses(Collections.<DeviceData> emptyList());
         }
     }
 

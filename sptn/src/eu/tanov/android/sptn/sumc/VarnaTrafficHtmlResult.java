@@ -4,8 +4,6 @@ import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import android.util.Log;
 
@@ -110,12 +108,32 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
             this.text = text;
         }
     }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @SuppressWarnings("unused")
+    private static class ScheduleMap{
+        private String line;
+        private ScheduleData[] data;
+        public String getLine() {
+            return line;
+        }
+        public void setLine(String line) {
+            this.line = line;
+        }
+        public ScheduleData[] getData() {
+            return data;
+        }
+        public void setData(ScheduleData[] data) {
+            this.data = data;
+        }
+        
+        
 
+    }
     @JsonIgnoreProperties(ignoreUnknown = true)
     @SuppressWarnings("unused")
     private static class Response {
         private DeviceData[] liveData;
-        private Map<String, ScheduleData[]> schedule;
+        private ScheduleMap[] schedule;
 
         public DeviceData[] getLiveData() {
             return liveData;
@@ -125,11 +143,11 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
             this.liveData = liveData;
         }
 
-        public Map<String, ScheduleData[]> getSchedule() {
+        public ScheduleMap[] getSchedule() {
             return schedule;
         }
 
-        public void setSchedule(Map<String, ScheduleData[]> schedule) {
+        public void setSchedule(ScheduleMap[] schedule) {
             this.schedule = schedule;
         }
 
@@ -179,16 +197,16 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
     private String createSchedule(Response all) {
         final StringBuilder result = new StringBuilder();
-        if (all.getSchedule() == null || all.getSchedule().size() == 0) {
+        if (all.getSchedule() == null || all.getSchedule().length == 0) {
             result.append(context.getString(R.string.varnatraffic_noData));
         } else {
             result.append("<table border='1'>").append(context.getString(R.string.varnatraffic_schedule_table_header))
                     .append("<tbody>");
 
-            for (Entry<String, ScheduleData[]> next : all.getSchedule().entrySet()) {
+            for (ScheduleMap next : all.getSchedule()) {
                 result.append(String.format(
                         "<tr><td><a href='http://varnatraffic.com/Line/Index/%s'>%s</a></td><td>%s</td></tr>",
-                        next.getKey(), next.getKey(), getSchedule(next.getValue())));
+                        next.getLine(), next.getLine(), getSchedule(next.getData())));
             }
             result.append("</tbody></table>");
         }

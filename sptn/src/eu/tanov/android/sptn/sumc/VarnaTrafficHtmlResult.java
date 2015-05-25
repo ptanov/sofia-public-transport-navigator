@@ -32,6 +32,7 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
     public static class DeviceData {
         private String device;
         private int line;
+        private int[] allLines;
         private String arriveTime;
         private String delay;
         private String arriveIn;
@@ -92,6 +93,12 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
         public void setPosition(PositionVarnaTraffic position) {
             this.position = position;
+        }
+        public int[] getAllLines() {
+            return allLines;
+        }
+        public void setAllLines(int[] allLines) {
+            this.allLines = allLines;
         }
     }
 
@@ -182,9 +189,10 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
                     .append("<tbody>");
 
             for (DeviceData next : all.getLiveData()) {
+                
                 result.append(String
-                        .format("<tr><td><a href='http://varnatraffic.com/Line/Index/%s'>%s</a></td><td>%s</td><td>%s</td><td style='white-space: nowrap;'>%s<span class='bus-delay bus-delay-%s'>%s</span></td></tr>",
-                                next.getLine(), next.getLine(), next.getArriveIn() == null ? context.getResources()
+                        .format("<tr><td>%s</td><td>%s</td><td>%s</td><td style='white-space: nowrap;'>%s<span class='bus-delay bus-delay-%s'>%s</span></td></tr>",
+                                getLinks(next), next.getArriveIn() == null ? context.getResources()
                                         .getString(R.string.varnatraffic_alreadyLeft) : next.getArriveIn(), next
                                         .getDistanceLeft(), next.getArriveTime(), isGreenDelay(next) ? "green" : "red",
                                 next.getDelay() == null ? "" : next.getDelay()));
@@ -193,6 +201,27 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         }
         return result.toString() + context.getString(R.string.legal_varnatraffic_html) + createSchedule(all)
                 + context.getString(R.string.legal_varnatraffic_html);
+    }
+
+    private String getLinks(DeviceData data) {
+        final StringBuilder result = new StringBuilder(100);
+        boolean included = false;
+        for (int next : data.getAllLines()) {
+            if (result.length()!=0) {
+                result.append(", ");
+            }
+            result.append(String.format("<a href='http://varnatraffic.com/Line/Index/%s'>%s</a>", next, next));
+            if (next == data.getLine()) {
+                included = true;
+            }
+        }
+        if (!included) {
+            if (result.length()!=0) {
+                result.append(", ");
+            }
+            result.append(String.format("<a href='http://varnatraffic.com/Line/Index/%s'>%s</a>", data.getLine(), data.getLine()));
+        }
+        return result.toString();
     }
 
     private String createSchedule(Response all) {

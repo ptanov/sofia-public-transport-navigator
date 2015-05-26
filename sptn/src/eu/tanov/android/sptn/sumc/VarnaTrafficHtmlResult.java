@@ -205,20 +205,14 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
 
     private String getLinks(DeviceData data) {
         final StringBuilder result = new StringBuilder(100);
-        boolean included = false;
         for (int next : data.getAllLines()) {
             if (result.length()!=0) {
                 result.append(", ");
             }
             result.append(String.format("<a href='http://varnatraffic.com/Line/Index/%s'>%s</a>", next, next));
-            if (next == data.getLine()) {
-                included = true;
-            }
         }
-        if (!included) {
-            if (result.length()!=0) {
-                result.append(", ");
-            }
+        // or data.getAllLines().length == 0
+        if (result.length()==0) {
             result.append(String.format("<a href='http://varnatraffic.com/Line/Index/%s'>%s</a>", data.getLine(), data.getLine()));
         }
         return result.toString();

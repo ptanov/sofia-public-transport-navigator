@@ -17,11 +17,12 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import eu.tanov.android.bptcommon.VarnaTrafficHtmlResult;
+import eu.tanov.android.bptcommon.interfaces.IBusesOverlay;
 import eu.tanov.android.sptn.R;
-import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult.DeviceData;
 import eu.tanov.android.sptn.util.MapHelper;
 
-public class BusesOverlay extends ItemizedOverlay<OverlayItem> {
+public class BusesOverlay extends ItemizedOverlay<OverlayItem> implements IBusesOverlay {
     private static final int FONT_SIZE = 18;
     private static final int TITLE_MARGIN = 2;
 
@@ -40,9 +41,9 @@ public class BusesOverlay extends ItemizedOverlay<OverlayItem> {
         populateFixed();
     }
 
-    public void showBusses(List<DeviceData> buses) {
+    public void showBusses(List<VarnaTrafficHtmlResult.DeviceData> buses) {
         this.items = new ArrayList<OverlayItem>(buses.size());
-        for (DeviceData next : buses) {
+        for (VarnaTrafficHtmlResult.DeviceData next : buses) {
             if (next.getPosition() != null) {
                 final GeoPoint point = new GeoPoint(MapHelper.toE6(next.getPosition().getLat()), MapHelper.toE6(next
                         .getPosition().getLon()));

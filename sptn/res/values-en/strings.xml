@@ -2,11 +2,8 @@
 <resources>
 <string name="aboutDialog_title">Bulgarian Public Transport (version 1.33)</string>
     
-<string name="buttonOk">OK</string>
 <string name="buttonCancel">Cancel</string>
 <string name="error_retrieveEstimates_generic" formatted="false">No Internet connection? Error retrieving schedule information for bus stop %s (%s)</string>
-<string name="error_retrieveEstimates_noInfo" formatted="false">&lt;b&gt;Currently SUMC does not provide schedule for bus stop &amp;quot;%s&amp;quot; (code: %s), please try again later.&lt;/b&gt;</string>
-<string name="error_retrieveEstimates_noBusStop" formatted="false">&lt;b&gt;Bus stop %s (%s) does not exist any more.&lt;/b&gt;</string>
 
 <string name="progressDialog_message_estimating">Processing data</string>
 <string name="progressDialog_message_stations">Searching…</string>
@@ -32,16 +29,7 @@
 <string name="settings_disableStatistics_title">Help developing the application</string>
 <string name="settings_disableStatistics_summary">(sharing anonymous information about the use of the application)</string>
 
-<string name="legal_sumc_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(from m.sumc.bg)&lt;/p&gt;</string>
-<string name="legal_varnatraffic_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(from varnatraffic.com)&lt;/p&gt;</string>
-<string name="format_estimates_dialog_title" formatted="false">%s: %s (%s)</string>
-<string name="remainingTime_format_onlyMinutes" formatted="false">~%dm.</string>
-<string name="remainingTime_format_minutesAndHours" formatted="false">~%dh.%dm.</string>
 
-<string name="varnatraffic_estimates_table_header" formatted="false"><![CDATA[<thead><tr><th>#</th><th>est.</th><th>dist.</th><th>schedule</th></tr></thead>]]></string>
-<string name="varnatraffic_schedule_table_header" formatted="false"><![CDATA[<thead><tr><th>#</th><th>schedule</th></tr></thead>]]></string>
-<string name="varnatraffic_alreadyLeft" >missed</string>
-<string name="varnatraffic_noData" >No data</string>
 
 <string name="settings_category_map">Map</string>
 <string name="settings_mapCompass_title">Compass</string>
@@ -78,10 +66,7 @@
 <string name="menu_favoroties_remove">Remove</string>
 <string name="info_removedFromFavorities" formatted="false">Removed from favorities: %s (%s)</string>
 
-<string name="buttonAddToFavorities">Add Favorite</string>
-<string name="info_addedToFavorities" formatted="false">Added to favorities: %s (%s)</string>
 <string name="menu_favoroties_rename">Rename</string>
-<string name="buttonRefreshEstimates">Refresh</string>
 <string name="versionChanges_1_09_favorities_text">Tap on desired bus stop for schedule information. Tap and hold on desired bus stop for more actions (renaming, moving or removing).</string>
 <string name="versionChanges_1_09_favorities_title">Using favorities</string>
 <string name="versionChanges_1_10_startupScreen_text" formatted="false">You can switch between startup screens from [MENU&gt;Settings&gt;\'Favorities\' for startup screen] - either map or favorities</string>
@@ -93,7 +78,6 @@
 <string name="settings_category_common">Common</string>
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Favorities\' for startup screen</string>
 <string name="settings_commonStartupScreenFavorities_summary">Favorities or map</string>
-<string name="favorities_null_label">Unnamed - tap and hold to rename</string>
 <string name="captcha_dialog_title">Captcha</string>
 <string name="captcha_dialog_label">SUMC uses captcha to protect PUBLIC information :( \n\nPlease enter text from the image (only first time):</string>
 <string name="menu_tixbg">Traffic jams/routes</string>
@@ -112,8 +96,6 @@
 
 <!-- should not be translated -->
 <string name="app_name">Градски транспорт, България</string>
-<string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
-<string name="error_retrieveEstimates_matching_noBusStop">Няма намерена информация</string>
 <string name="settings_commonUserLocaleEnglish_title">Use English language</string>
 <string name="settings_commonUserLocaleEnglish_summary">(или български език)</string>
 <string name="settings_changeLocale_restart">Restarting in order to apply new language</string>

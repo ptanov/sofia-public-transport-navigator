@@ -3,9 +3,6 @@ package eu.tanov.android.sptn;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.flurry.android.FlurryAgent;
-import com.google.analytics.tracking.android.EasyTracker;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -24,8 +21,12 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import eu.tanov.android.sptn.favorities.BusStopItem;
-import eu.tanov.android.sptn.favorities.FavoritiesService;
+
+import com.flurry.android.FlurryAgent;
+import com.google.analytics.tracking.android.EasyTracker;
+
+import eu.tanov.android.bptcommon.favorities.BusStopItem;
+import eu.tanov.android.bptcommon.favorities.FavoritiesService;
 import eu.tanov.android.sptn.util.LocaleHelper;
 
 public class FavoritiesActivity extends ListActivity {
@@ -74,7 +75,7 @@ public class FavoritiesActivity extends ListActivity {
 
 	private FavoritiesService getFavoritiesService() {
 		// XXX how to pass this service across whole application?
-		return new FavoritiesService(this);
+		return new FavoritiesService(this, R.string.favorities_null_label);
 	}
 
 	private void refreshContent() {

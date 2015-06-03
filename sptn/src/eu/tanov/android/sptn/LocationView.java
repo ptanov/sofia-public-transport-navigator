@@ -45,15 +45,17 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
+import eu.tanov.android.bptcommon.favorities.FavoritiesService;
+import eu.tanov.android.bptcommon.interfaces.ILocationView;
+import eu.tanov.android.bptcommon.utils.ActivityTracker;
 import eu.tanov.android.sptn.map.BusesOverlay;
 import eu.tanov.android.sptn.map.StationsOverlay;
 import eu.tanov.android.sptn.providers.BusStopUpdater;
 import eu.tanov.android.sptn.providers.InitStations;
-import eu.tanov.android.sptn.util.ActivityTracker;
 import eu.tanov.android.sptn.util.LocaleHelper;
 import eu.tanov.android.sptn.util.MapHelper;
 
-public class LocationView extends MapActivity {
+public class LocationView extends MapActivity implements ILocationView {
     public static final String FLIRRY_ID = "7S33XB55J3RXDK4HBJNP";
 
     private final class UpdateBusStopsAsyncTask extends AsyncTask<Void, Void, Boolean> {
@@ -316,6 +318,9 @@ public class LocationView extends MapActivity {
     }
 
     private void selectStartupScreen() {
+        if (showStation(getIntent(), true)) {
+            return;
+        }
         final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         final boolean startupScreenFavorities = settings.getBoolean(PREFERENCE_KEY_STARTUP_SCREEN_FAVORITIES,
                 PREFERENCE_DEFAULT_VALUE_STARTUP_SCREEN_FAVORITIES);
@@ -447,19 +452,27 @@ public class LocationView extends MapActivity {
             if (resultCode != RESULT_OK) {
                 return;
             }
-            final String code = data.getStringExtra(FavoritiesActivity.EXTRA_CODE_NAME);
-            final String provider = data.getStringExtra(FavoritiesActivity.EXTRA_PROVIDER_NAME);
-            if (code == null || provider == null) {
-                throw new IllegalStateException("No code provided");
-            }
-            map.getController().setZoom(ZOOM_DEFAULT);
-
-            stationsOverlay.showStation(provider, code, true);
+            showStation(data, false);
             break;
 
         default:
             break;
         }
+    }
+
+    private boolean showStation(Intent data, boolean optionalParameters) {
+        final String code = data.getStringExtra(FavoritiesActivity.EXTRA_CODE_NAME);
+        final String provider = data.getStringExtra(FavoritiesActivity.EXTRA_PROVIDER_NAME);
+        if (code == null || provider == null) {
+            if (optionalParameters) {
+                return false;
+            }
+            throw new IllegalStateException("No code provided");
+        }
+        map.getController().setZoom(ZOOM_DEFAULT);
+
+        stationsOverlay.showStation(provider, code, true);
+        return true;
     }
 
     private void restartActivity() {
@@ -525,7 +538,7 @@ public class LocationView extends MapActivity {
 
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         final String selectedProvider = preferences.getString(PREFERENCE_KEY_DEFAULT_PROVIDER,
-                InitStations.PROVIDER_SOFIATRAFFIC);
+                FavoritiesService.PROVIDER_SOFIATRAFFIC);
 
         final List<RadioButton> radios = new LinkedList<RadioButton>();
         for (String provider : InitStations.PROVIDERS) {

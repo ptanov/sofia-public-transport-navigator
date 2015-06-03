@@ -1,0 +1,24 @@
+<resources>
+
+	<string name="app_name">Градски транспорт, България</string>
+
+	<string name="format_estimates_dialog_title" formatted="false">%s: %s (%s)</string>
+	<string name="buttonOk">ОК</string>
+	<string name="buttonRefreshEstimates">Обнови</string>
+	<string name="buttonAddToFavorities">В избрани</string>
+	<string name="favorities_null_label">Без име - натисни и задръж за преименуване</string>
+	<string name="remainingTime_format_onlyMinutes" formatted="false">~%dм.</string>
+	<string name="remainingTime_format_minutesAndHours" formatted="false">~%dч.%dм.</string>
+	<string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
+	<string name="error_retrieveEstimates_matching_noBusStop">Няма намерена информация</string>
+	<string name="legal_sumc_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(взети от m.sumc.bg)&lt;/p&gt;</string>
+	<string name="varnatraffic_noData" >Няма данни</string>
+	<string name="varnatraffic_estimates_table_header" formatted="false"><![CDATA[<thead><tr><th>№</th><th>след</th><th>на</th><th>разп.</th></tr></thead>]]></string>
+	<string name="varnatraffic_alreadyLeft" >заминал</string>
+	<string name="legal_varnatraffic_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(взети от varnatraffic.com)&lt;/p&gt;</string>
+	<string name="varnatraffic_schedule_table_header" formatted="false"><![CDATA[<thead><tr><th>№</th><th>разписание</th></tr></thead>]]></string>
+	<string name="error_retrieveEstimates_noBusStop" formatted="false">&lt;b&gt;Спирката %s (%s) вече не съществува.&lt;/b&gt;</string>
+	<string name="error_retrieveEstimates_noInfo" formatted="false">&lt;b&gt;В момента СКГТ не предоставя информация за спирка &amp;quot;%s&amp;quot; (код: %s), моля опитайте пак по-късно.&lt;/b&gt;</string>
+	<string name="info_addedToFavorities" formatted="false">Спирката е успешно добавена в избрани: %s (%s)</string>
+	
+</resources>

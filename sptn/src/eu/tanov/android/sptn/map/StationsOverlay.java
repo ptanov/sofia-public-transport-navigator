@@ -18,19 +18,22 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import eu.tanov.android.bptcommon.EstimatesResolver;
+import eu.tanov.android.bptcommon.SofiaTrafficHtmlResult;
+import eu.tanov.android.bptcommon.VarnaTrafficHtmlResult;
+import eu.tanov.android.bptcommon.VarnaTrafficHtmlResult.DeviceData;
+import eu.tanov.android.bptcommon.favorities.FavoritiesService;
+import eu.tanov.android.bptcommon.interfaces.IStationsOverlay;
+import eu.tanov.android.bptcommon.utils.ActivityTracker;
 import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.R;
 import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.providers.StationProvider;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
-import eu.tanov.android.sptn.sumc.EstimatesResolver;
-import eu.tanov.android.sptn.sumc.SofiaTrafficHtmlResult;
-import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult;
-import eu.tanov.android.sptn.sumc.VarnaTrafficHtmlResult.DeviceData;
-import eu.tanov.android.sptn.util.ActivityTracker;
+import eu.tanov.android.sptn.sumc.BrowserWithCaptchaSupport;
 import eu.tanov.android.sptn.util.MapHelper;
 
-public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
+public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements IStationsOverlay {
     private static final String TAG = "StationsOverlay";
 
     private static final String BUSSTOP_PROVIDER_LABEL_SEPARATOR = ":";
@@ -165,12 +168,12 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> {
         }
 
         private EstimatesResolver createResolver(String busStopSource, String stationCode, String stationLabel) {
-            if (InitStations.PROVIDER_SOFIATRAFFIC.equals(busStopSource)) {
+            if (FavoritiesService.PROVIDER_SOFIATRAFFIC.equals(busStopSource)) {
                 return new SofiaTrafficHtmlResult(context, uiHandler, StationsOverlay.this,
                         stationCode, stationLabel,
-                        showRemainingTime());
+                        showRemainingTime(), new BrowserWithCaptchaSupport(R.string.error_retrieveEstimates_matching_noInfo));
             }
-            if (InitStations.PROVIDER_VARNATRAFFIC.equals(busStopSource)) {
+            if (FavoritiesService.PROVIDER_VARNATRAFFIC.equals(busStopSource)) {
                 return new VarnaTrafficHtmlResult(context, StationsOverlay.this, stationCode, stationLabel);
             }
 

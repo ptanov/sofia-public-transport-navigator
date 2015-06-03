@@ -3,13 +3,8 @@
 <string name="aboutDialog_title">Градски транспорт, България (версия 1.33)</string>
     
 <string name="app_name">Градски транспорт, България</string>
-<string name="buttonOk">ОК</string>
 <string name="buttonCancel">Отказ</string>
 <string name="error_retrieveEstimates_generic" formatted="false">Няма Интернет свързаност? Грешка при извличане на информация за разписанието за спирка %s (%s)</string>
-<string name="error_retrieveEstimates_noInfo" formatted="false">&lt;b&gt;В момента СКГТ не предоставя информация за спирка &amp;quot;%s&amp;quot; (код: %s), моля опитайте пак по-късно.&lt;/b&gt;</string>
-<string name="error_retrieveEstimates_matching_noInfo">Няма информация</string>
-<string name="error_retrieveEstimates_noBusStop" formatted="false">&lt;b&gt;Спирката %s (%s) вече не съществува.&lt;/b&gt;</string>
-<string name="error_retrieveEstimates_matching_noBusStop">Няма намерена информация</string>
 
 <string name="progressDialog_message_estimating">Извличане на времена на пристигане</string>
 <string name="progressDialog_message_stations">Търсене на спирки</string>
@@ -35,16 +30,7 @@
 <string name="settings_disableStatistics_title">Помагай за развиването на приложението</string>
 <string name="settings_disableStatistics_summary">(споделяйки анонимна статистика за ползването на приложението)</string>
 
-<string name="legal_sumc_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(взети от m.sumc.bg)&lt;/p&gt;</string>
-<string name="legal_varnatraffic_html" formatted="false">&lt;p class=&quot;legal&quot;&gt;(взети от varnatraffic.com)&lt;/p&gt;</string>
-<string name="format_estimates_dialog_title" formatted="false">%s: %s (%s)</string>
-<string name="remainingTime_format_onlyMinutes" formatted="false">~%dм.</string>
-<string name="remainingTime_format_minutesAndHours" formatted="false">~%dч.%dм.</string>
 
-<string name="varnatraffic_estimates_table_header" formatted="false"><![CDATA[<thead><tr><th>№</th><th>след</th><th>на</th><th>разп.</th></tr></thead>]]></string>
-<string name="varnatraffic_schedule_table_header" formatted="false"><![CDATA[<thead><tr><th>№</th><th>разписание</th></tr></thead>]]></string>
-<string name="varnatraffic_alreadyLeft" >заминал</string>
-<string name="varnatraffic_noData" >Няма данни</string>
 
 
 <string name="settings_category_map">Карта</string>
@@ -82,10 +68,7 @@
 <string name="menu_favoroties_remove">Премахни от избрани</string>
 <string name="info_removedFromFavorities" formatted="false">Спирката е премахната от избрани: %s (%s)</string>
 
-<string name="buttonAddToFavorities">В избрани</string>
-<string name="info_addedToFavorities" formatted="false">Спирката е успешно добавена в избрани: %s (%s)</string>
 <string name="menu_favoroties_rename">Преименувай</string>
-<string name="buttonRefreshEstimates">Обнови</string>
 <string name="versionChanges_1_09_favorities_text">За времената на пристигане натиснете върху избраната спирка, за други действия (преименуване, местене, изтриване) задръжте върху съответната спирка и използвайте желаната опция от менюто.</string>
 <string name="versionChanges_1_09_favorities_title">Как да работим с избрани спирки</string>
 <string name="versionChanges_1_10_startupScreen_text" formatted="false">От [MENU&gt;Настройки&gt;\'Избрани спирки\' за начален екран] можете да укажете списъкът с избрани спирки да се показва при стартиране на приложението (вместо картата)</string>
@@ -97,7 +80,6 @@
 <string name="settings_category_common">Общи</string>
 <string name="settings_commonStartupScreenFavorities_title" formatted="false">\'Избрани спирки\' за начален екран</string>
 <string name="settings_commonStartupScreenFavorities_summary">Екран с избрани спирки или карта</string>
-<string name="favorities_null_label">Без име - натисни и задръж за преименуване</string>
 <string name="captcha_dialog_title">Captcha</string>
 <string name="captcha_dialog_label">СКГТ явно не иска да популяризира градския транспорт като улесни пътниците и за това са сложили CAPTCHA. Нека бъдат живи и здрави!\nАко това не Ви харесва може да се обадите на телефоните им или да им напишете писмо и по този начин заедно да променим това отношение. Благодаря предварително!\n\nМоля, въведете текста от изображението:</string>
 <string name="menu_tixbg">Задръствания/маршрути</string>

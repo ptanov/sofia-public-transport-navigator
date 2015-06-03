@@ -18,39 +18,17 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import eu.tanov.android.bptcommon.favorities.FavoritiesService;
+import eu.tanov.android.bptcommon.providers.PositionVarnaTraffic;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 
 public class InitStations {
     private static final String ENCODING = "UTF8";
 
-    public static final String PROVIDER_SOFIATRAFFIC = "sofiatraffic.bg";
-    public static final String PROVIDER_VARNATRAFFIC = "varnatraffic.com";
-
-    public static final String[] PROVIDERS = new String[] { PROVIDER_SOFIATRAFFIC, PROVIDER_VARNATRAFFIC };
+    public static final String[] PROVIDERS = new String[] { FavoritiesService.PROVIDER_SOFIATRAFFIC, 
+        FavoritiesService.PROVIDER_VARNATRAFFIC };
 
 	//TODO move to external file
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class PositionVarnaTraffic {
-        private double lat;
-        private double lon;
-
-        public double getLat() {
-            return lat;
-        }
-
-        public void setLat(double lat) {
-            this.lat = lat;
-        }
-
-        public double getLon() {
-            return lon;
-        }
-
-        public void setLon(double lon) {
-            this.lon = lon;
-        }
-
-    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class BusStopVarnaTraffic {
@@ -108,7 +86,7 @@ public class InitStations {
 			
 			insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
 					this.tableName, Station.CODE, Station.LAT,
-					Station.LON, Station.LABEL, Station.PROVIDER, PROVIDER_SOFIATRAFFIC)
+					Station.LON, Station.LABEL, Station.PROVIDER, FavoritiesService.PROVIDER_SOFIATRAFFIC)
 			);
 		}
 
@@ -150,7 +128,7 @@ public class InitStations {
         
         final SQLiteStatement insertStatement = db.compileStatement(String.format(FORMAT_SQL_INSERT,
                 tableName, Station.CODE, Station.LAT,
-                Station.LON, Station.LABEL, Station.PROVIDER, PROVIDER_VARNATRAFFIC)
+                Station.LON, Station.LABEL, Station.PROVIDER, FavoritiesService.PROVIDER_VARNATRAFFIC)
         );
         
         for (BusStopVarnaTraffic busStopVarnaTraffic : all) {

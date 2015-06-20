@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -85,7 +86,7 @@ public class Browser {
     private String previousResponse;
     private final int error_retrieveEstimates_matching_noInfo;
     
-    protected Browser(int error_retrieveEstimates_matching_noInfo) {
+    public Browser(int error_retrieveEstimates_matching_noInfo) {
         this.error_retrieveEstimates_matching_noInfo = error_retrieveEstimates_matching_noInfo;
     }
 

@@ -6,5 +6,7 @@ public interface EstimatesResolver {
 	
 	public void showResult(boolean onlyBuses);
 	
+	public String getResultAsString();
+	
 	public boolean hasBusSupport();
 }

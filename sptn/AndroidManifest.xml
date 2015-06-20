@@ -35,6 +35,14 @@
             android:authorities="eu.tanov.android.StationProvider" />
 	    <activity android:name="PreferencesActivity"></activity>
 	    <activity android:name="FavoritiesActivity"></activity>
+		<service android:name=".notifications.ScheduledService" >
+		    
+			<intent-filter>
+				<action android:name="eu.tanov.android.sptn.ACTION_FETCH" />
+			</intent-filter>
+		    
+		</service>	    
+	    
 	</application>
 
 </manifest> 

@@ -65,6 +65,9 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09 = true;
     private static final String HTML_HEADER = "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><style type=\"text/css\">body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} td.number {width:30px;text-align:right;}table {width:100%;}div.arr_info_1 td.number {background-color:#ea0000;}div.arr_info_2 td.number {background-color:#0066aa;}div.arr_info_0 td.number {background-color:#feab10;}.number a:link {color:#FFFFFF;font-weight: bold;}.number a:visited {color:#FFFFFF;font-weight: bold;}.number a:hover {color:#FFFFFF;font-weight: bold;}.number a:active {color:#FFFFFF;font-weight: bold;}.direction {font-size: 2pt;text-align:right;}.estimates a {font-weight: bold;}.arr_title_1 b{color:#ea0000;border-bottom:1px solid #ea0000;}.arr_title_2 b{color:#0066aa;border-bottom:1px solid #0066aa;}.arr_title_0 b{color:#feab10;border-bottom:1px solid #feab10;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid #ddd;}.errorText {color: #f00;}.legal{font-size: 50%;text-align:right;}</style></head>";
 
+    private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
+    private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
+
 	private final boolean showRemainingTime;
 
 	private final String formatMinutesAndHours;
@@ -76,12 +79,12 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
     private final Handler uiHandler;
     private final Browser browser;
 
-	public SofiaTrafficHtmlResult(Context context, Handler uiHandler, IStationsOverlay overlay, String stationCode, String stationLabel, boolean showRemainingTime,
+	public SofiaTrafficHtmlResult(Context context, Handler uiHandler, IStationsOverlay overlay, String stationCode, String stationLabel,
 	        Browser browser) {
         super(context, overlay, FavoritiesService.PROVIDER_SOFIATRAFFIC, stationCode, stationLabel);
         this.browser = browser;
 		this.uiHandler = uiHandler;
-		this.showRemainingTime = showRemainingTime;
+		this.showRemainingTime = isShowRemainingTime();
 
 		this.formatOnlyMinutes = this.context.getString(R.string.remainingTime_format_onlyMinutes);
 		this.formatMinutesAndHours = this.context.getString(R.string.remainingTime_format_minutesAndHours);
@@ -97,6 +100,17 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 				PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09);
 	}
 
+    /**
+     * or hour of arriving
+     * 
+     * @return
+     */
+    private boolean isShowRemainingTime() {
+        final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        return settings.getBoolean(PREFERENCE_KEY_SHOW_REMAINING_TIME, PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME);
+    }
+
+    
     private List<String> getResponses() {
         final List<String> responses = new LinkedList<String>();
         final String responseDefault = browser.queryStation(context, uiHandler, stationCode, null);
@@ -144,9 +158,20 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 	        htmlDataBuilder.append(HTML_END);
 
 		    htmlData = htmlDataBuilder.toString();
+		    
+		    final StringBuilder textDataBuilder = new StringBuilder();
+		    for (String next : responses) {
+		        if (textDataBuilder.length() > 0) {
+		            textDataBuilder.append("\n");
+		        }
+                textDataBuilder.append(createTextBody(next));
+            }
+
+            textData = textDataBuilder.toString();
 		} else {
 	        ActivityTracker.queriedSofiaNoInfo(context, stationCode);
             htmlData = HTML_START + HTML_HEADER + context.getResources().getString(R.string.error_retrieveEstimates_noInfo, stationLabel, stationCode) + HTML_END;
+            textData = context.getResources().getString(R.string.error_retrieveEstimates_noInfo, stationLabel, stationCode);
 		}
 	}
 
@@ -161,23 +186,41 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
     }
 
     private String createBody(String response) {
-		final int startOfBody = response.indexOf(BODY_START);
-		final int endOfBody = response.indexOf(BODY_END, startOfBody);
+        final int startOfBody = response.indexOf(BODY_START);
+        final int endOfBody = response.indexOf(BODY_END, startOfBody);
 
-		if (startOfBody == -1 || endOfBody == -1) {
-			// error
-			if (response.contains(context.getResources().getString(R.string.error_retrieveEstimates_matching_noInfo))) {
-				return "";
-			} else if (response.contains(context.getResources().getString(R.string.error_retrieveEstimates_matching_noBusStop))) {
-				return context.getResources().getString(R.string.error_retrieveEstimates_noBusStop, stationLabel, stationCode);
-			}
-			throw new IllegalStateException("Unknown error with " + response);
-		}
-		final String body = response.substring(startOfBody, endOfBody + BODY_END.length());
-		final String fixedBody = fixBody(body);
+        if (startOfBody == -1 || endOfBody == -1) {
+            // error
+            if (response.contains(context.getResources().getString(R.string.error_retrieveEstimates_matching_noInfo))) {
+                return "";
+            } else if (response.contains(context.getResources().getString(R.string.error_retrieveEstimates_matching_noBusStop))) {
+                return context.getResources().getString(R.string.error_retrieveEstimates_noBusStop, stationLabel, stationCode);
+            }
+            throw new IllegalStateException("Unknown error with " + response);
+        }
+        final String body = response.substring(startOfBody, endOfBody + BODY_END.length());
+        final String fixedBody = fixBody(body);
 
-		return fixedBody + context.getString(R.string.legal_sumc_html);
-	}
+        return fixedBody + context.getString(R.string.legal_sumc_html);
+    }
+    private String createTextBody(String response) {
+        final int startOfBody = response.indexOf(BODY_START);
+        final int endOfBody = response.indexOf(BODY_END, startOfBody);
+
+        if (startOfBody == -1 || endOfBody == -1) {
+            // error
+            if (response.contains(context.getResources().getString(R.string.error_retrieveEstimates_matching_noInfo))) {
+                return "";
+            } else if (response.contains(context.getResources().getString(R.string.error_retrieveEstimates_matching_noBusStop))) {
+                return context.getResources().getString(R.string.error_retrieveEstimates_noBusStop, stationLabel, stationCode);
+            }
+            throw new IllegalStateException("Unknown error with " + response);
+        }
+        final String body = response.substring(startOfBody, endOfBody + BODY_END.length());
+        final String fixedBody = fixTextBody(body);
+
+        return fixedBody;
+    }
 
 	// XXX bad code, improve:
 	private String fixBody(final String body) {
@@ -213,6 +256,46 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 
 		return result.toString();
 	}
+    private String fixTextBody(final String body) {
+        final StringBuilder result = new StringBuilder(body.length() * 2);
+
+        int end = 0;
+        int start = body.indexOf(INFO_BEGIN, end);
+        while (start != -1) {
+            start += INFO_BEGIN_LENGTH;
+            // just copy not remaining time data
+            result.append(body.substring(end, start).replaceAll("<[^>]+>", "").trim()).append("\n");
+
+            end = body.indexOf(INFO_END, start);
+            if (end != -1) {
+                try {
+                    final String[] split = body.substring(start, end).split(INFO_SPLITTER, INFO_SPLIT_SIZE);
+                    if (split.length != INFO_SPLIT_SIZE) {
+                        throw new IllegalStateException("different split size: " + split.length);
+                    }
+
+                    result.append(formatTextSplitted(split));
+                } catch (Exception e) {
+                    Log.e(TAG, "error while converting: " + body.substring(start, end), e);
+                    // this is not remaining time - just copy:
+                    result.append(body, start, end);
+                }
+            }
+
+            start = body.indexOf(INFO_BEGIN, end);
+        }
+        return result.toString();
+    }
+    /**
+     * XXX bad code - many IFs... reduce them...
+     */
+    private String formatTextSplitted(String[] split) {
+        if (showRemainingTime) {
+            split[5] = TimeHelper.toRemainingTimes(date, split[5].trim(), formatOnlyMinutes, formatMinutesAndHours);
+        }
+
+        return split[3] + " - " + split[5];
+    }
 
 	/**
 	 * XXX bad code - many IFs... reduce them...

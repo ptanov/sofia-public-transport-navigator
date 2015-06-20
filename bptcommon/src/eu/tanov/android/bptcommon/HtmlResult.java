@@ -28,6 +28,7 @@ public abstract class HtmlResult implements EstimatesResolver {
 
     protected final Context context;
     protected String htmlData;
+    protected String textData;
     protected Date date;
 
     private final IStationsOverlay overlay;
@@ -42,6 +43,12 @@ public abstract class HtmlResult implements EstimatesResolver {
         this.provider = provider;
     }
 
+
+    @Override
+    public String getResultAsString() {
+        return textData;
+    }
+    
     @Override
     public void showResult(boolean onlyBuses) {
         if (onlyBuses) {

@@ -178,6 +178,7 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         date = new Date();
 
         htmlData = HTML_START + HTML_HEADER + createBody(all) + HTML_END;
+        textData = createTextBody(all);
     }
 
     private String createBody(Response all) {
@@ -203,6 +204,27 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
                 + context.getString(R.string.legal_varnatraffic_html);
     }
 
+    private String createTextBody(Response all) {
+        final StringBuilder result = new StringBuilder();
+        if (all.getLiveData() == null || all.getLiveData().length == 0) {
+            result.append(context.getString(R.string.varnatraffic_noData));
+        } else {
+            for (DeviceData next : all.getLiveData()) {
+                if (result.length() > 0) {
+                    result.append("\n");
+                }
+                result.append(String
+                    .format("%s: %s(%s), %s; %s",
+                        getBusNames(next),
+                        next.getArriveIn() == null ? context.getResources().getString(R.string.varnatraffic_alreadyLeft) : next.getArriveIn(),
+                        next.getArriveTime(),
+                        next.getDistanceLeft(),
+                        next.getDelay() == null ? "" : next.getDelay()));
+            }
+        }
+        return result.toString();
+    }
+
     private String getLinks(DeviceData data) {
         final StringBuilder result = new StringBuilder(100);
         for (int next : data.getAllLines()) {
@@ -214,6 +236,20 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
         // or data.getAllLines().length == 0
         if (result.length()==0) {
             result.append(String.format("<a href='http://varnatraffic.com/Line/Index/%s'>%s</a>", data.getLine(), data.getLine()));
+        }
+        return result.toString();
+    }
+    private String getBusNames(DeviceData data) {
+        final StringBuilder result = new StringBuilder(100);
+        for (int next : data.getAllLines()) {
+            if (result.length()!=0) {
+                result.append(", ");
+            }
+            result.append(next);
+        }
+        // or data.getAllLines().length == 0
+        if (result.length()==0) {
+            result.append(data.getLine());
         }
         return result.toString();
     }
@@ -273,4 +309,5 @@ public class VarnaTrafficHtmlResult extends HtmlResult {
     public boolean hasBusSupport() {
         return true;
     }
+    
 }

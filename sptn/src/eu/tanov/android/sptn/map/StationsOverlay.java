@@ -170,8 +170,7 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements ISt
         private EstimatesResolver createResolver(String busStopSource, String stationCode, String stationLabel) {
             if (FavoritiesService.PROVIDER_SOFIATRAFFIC.equals(busStopSource)) {
                 return new SofiaTrafficHtmlResult(context, uiHandler, StationsOverlay.this,
-                        stationCode, stationLabel,
-                        showRemainingTime(), new BrowserWithCaptchaSupport(R.string.error_retrieveEstimates_matching_noInfo));
+                        stationCode, stationLabel, new BrowserWithCaptchaSupport(R.string.error_retrieveEstimates_matching_noInfo));
             }
             if (FavoritiesService.PROVIDER_VARNATRAFFIC.equals(busStopSource)) {
                 return new VarnaTrafficHtmlResult(context, StationsOverlay.this, stationCode, stationLabel);

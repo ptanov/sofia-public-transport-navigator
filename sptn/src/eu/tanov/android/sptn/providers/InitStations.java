@@ -12,6 +12,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -23,6 +24,7 @@ import eu.tanov.android.bptcommon.providers.PositionVarnaTraffic;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 
 public class InitStations {
+    private static final String TAG = "InitStations";
     private static final String ENCODING = "UTF8";
 
     public static final String[] PROVIDERS = new String[] { FavoritiesService.PROVIDER_SOFIATRAFFIC, 
@@ -98,6 +100,13 @@ public class InitStations {
 				final String lat = atts.getValue(ATTRIBUTE_NAME_LAT);
 				final String lon = atts.getValue(ATTRIBUTE_NAME_LON);
 				final String label = atts.getValue(ATTRIBUTE_NAME_LABEL);
+				if (code == null || code == "" ||
+				        lat == null || lat == "" ||
+				                lon == null || lon == "" ||
+				                        label == null || label == "" ) {
+		            Log.e(TAG, "InitStations: startElement: -"+code+"-"+lat+"-"+lon+"-"+label);
+		            return;
+				}
 
 				addStation(Integer.valueOf(code), Double
 						.valueOf(lat), Double.valueOf(lon), label);

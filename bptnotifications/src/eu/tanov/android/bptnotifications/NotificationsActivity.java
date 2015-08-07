@@ -1,5 +1,13 @@
 package eu.tanov.android.bptnotifications;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.List;
+
+import eu.tanov.android.bptnotifications.info.NotificationInfo;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -18,7 +26,31 @@ public class NotificationsActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
+        getAllNotifications();
         alarm();
+    }
+
+    private List<NotificationInfo> getAllNotifications() {
+        final ArrayList<NotificationInfo> result = new ArrayList<NotificationInfo>();
+        NotificationInfo notification1 = new NotificationInfo();
+        notification1.setAt(new Date());
+        notification1.setNumbers(Collections.singletonList("94"));
+        notification1.setProvider(PROVIDER_SOFIATRAFFIC);
+        notification1.setBusStop("1914");
+        notification1.setDays(EnumSet.of(NotificationInfo.DAYS.MONDAY, NotificationInfo.DAYS.TUESDAY
+                , NotificationInfo.DAYS.WEDNESDAY, NotificationInfo.DAYS.THURSDAY, NotificationInfo.DAYS.FRIDAY));
+        result.add(notification1);
+
+        
+        NotificationInfo notification2 = new NotificationInfo();
+        notification2.setAt(new Date());
+        notification2.setDays(EnumSet.of(NotificationInfo.DAYS.MONDAY, NotificationInfo.DAYS.TUESDAY
+                , NotificationInfo.DAYS.WEDNESDAY, NotificationInfo.DAYS.THURSDAY, NotificationInfo.DAYS.FRIDAY));
+        notification2.setNumbers(Collections.singletonList("98"));
+        notification2.setProvider(PROVIDER_SOFIATRAFFIC);
+        notification2.setBusStop("2039");
+        result.add(notification2);
+        return result;
     }
 
     private void alarm() {

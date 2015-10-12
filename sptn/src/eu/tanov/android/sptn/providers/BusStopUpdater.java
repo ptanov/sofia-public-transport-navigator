@@ -25,8 +25,8 @@ public class BusStopUpdater {
     private static final String DOWNLOAD_URL_VARNATRAFFIC = "https://raw.githubusercontent.com/ptanov/sofia-public-transport-navigator/master/sptn/res/raw/coordinates_varnatraffic.json";
     private static final String FILENAME_VARNATRAFFIC = "coordinates_varnatraffic.json";
     
-    private static final String ORIGINAL_TAGS_SOFIATRAFFIC = "\"b605a81e9e04fbca901339c73a03bd8f54c76a53\"";
-    private static final String ORIGINAL_TAGS_VARNATRAFFIC = "\"202c712c80b9e4b5b79f000826313a77dbed4566\"";
+    private static final String ORIGINAL_TAGS_SOFIATRAFFIC = "\"a5e575ece60fd28a0af3403cf70e2fac3e543cdc\"";
+    private static final String ORIGINAL_TAGS_VARNATRAFFIC = "\"332b4b22d19e58c5225f652f6b3a056acb21c6f5\"";
 
     private final Context context;
     private static boolean updatingInProgress = false;

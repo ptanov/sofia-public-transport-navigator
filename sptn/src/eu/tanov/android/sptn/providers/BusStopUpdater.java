@@ -19,14 +19,14 @@ public class BusStopUpdater {
     private static final String TAG = "BusStopUpdater";
 
     private static final String PREFERENCE_KEY_BUSSTOP_TAGS = "busStopCoordinatesTag";
-    private static final String DOWNLOAD_URL_SOFIATRAFFIC = "https://sofia-public-transport-navigator.googlecode.com/git/sptn/res/raw/coordinates.xml";
+    private static final String DOWNLOAD_URL_SOFIATRAFFIC = "https://raw.githubusercontent.com/ptanov/sofia-public-transport-navigator/master/sptn/res/raw/coordinates.xml";
     private static final String FILENAME_SOFIATRAFFIC = "coordinates_sofiatraffic.xml";
 
-    private static final String DOWNLOAD_URL_VARNATRAFFIC = "https://sofia-public-transport-navigator.googlecode.com/git/sptn/res/raw/coordinates_varnatraffic.json";
+    private static final String DOWNLOAD_URL_VARNATRAFFIC = "https://raw.githubusercontent.com/ptanov/sofia-public-transport-navigator/master/sptn/res/raw/coordinates_varnatraffic.json";
     private static final String FILENAME_VARNATRAFFIC = "coordinates_varnatraffic.json";
     
-    private static final String ORIGINAL_TAGS_SOFIATRAFFIC = "\"b605a81e9e04fbca901339c73a03bd8f54c76a53/sptn/res/raw/coordinates.xml\"";
-    private static final String ORIGINAL_TAGS_VARNATRAFFIC = "\"202c712c80b9e4b5b79f000826313a77dbed4566/sptn/res/raw/coordinates_varnatraffic.json\"";
+    private static final String ORIGINAL_TAGS_SOFIATRAFFIC = "\"b605a81e9e04fbca901339c73a03bd8f54c76a53\"";
+    private static final String ORIGINAL_TAGS_VARNATRAFFIC = "\"202c712c80b9e4b5b79f000826313a77dbed4566\"";
 
     private final Context context;
     private static boolean updatingInProgress = false;

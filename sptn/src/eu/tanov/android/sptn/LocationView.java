@@ -122,13 +122,13 @@ public class LocationView extends MapActivity implements ILocationView {
     }
 
     private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_10 = "whatsNewShowVersion1_10_startupScreenFavorities";
-    private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_10 = true;
+    private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_10 = false;
 
     private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_17 = "whatsNewShowVersion1_17_tixbg";
-    private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_17 = true;
+    private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_17 = false;
 
     private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_20 = "whatsNewShowVersion1_20_searchByBusStopId";
-    private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_20 = true;
+    private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_20 = false;
 
     private static final int REQUEST_CODE_SETTINGS = 1;
     private static final int REQUEST_CODE_FAVORITIES = 2;

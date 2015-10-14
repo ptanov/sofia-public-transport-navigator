@@ -5,9 +5,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,10 +29,10 @@ public class BusStopUpdater {
     private static final String TAG = "BusStopUpdater";
 
     private static final String PREFERENCE_KEY_BUSSTOP_TAGS = "busStopCoordinatesTag";
-    private static final String DOWNLOAD_URL_SOFIATRAFFIC = "https://raw.githubusercontent.com/ptanov/sofia-public-transport-navigator/master/sptn/res/raw/coordinates.xml";
+    private static final String DOWNLOAD_URL_SOFIATRAFFIC = "https://github.com/ptanov/sofia-public-transport-navigator/raw/master/sptn/res/raw/coordinates.xml";
     private static final String FILENAME_SOFIATRAFFIC = "coordinates_sofiatraffic.xml";
 
-    private static final String DOWNLOAD_URL_VARNATRAFFIC = "https://raw.githubusercontent.com/ptanov/sofia-public-transport-navigator/master/sptn/res/raw/coordinates_varnatraffic.json";
+    private static final String DOWNLOAD_URL_VARNATRAFFIC = "https://github.com/ptanov/sofia-public-transport-navigator/raw/master/sptn/res/raw/coordinates_varnatraffic.json";
     private static final String FILENAME_VARNATRAFFIC = "coordinates_varnatraffic.json";
     
     private static final String ORIGINAL_TAGS_SOFIATRAFFIC = "\"a5e575ece60fd28a0af3403cf70e2fac3e543cdc\"";
@@ -83,9 +93,40 @@ public class BusStopUpdater {
         editor.putString(PREFERENCE_KEY_BUSSTOP_TAGS, generateAllTags(sofiaTrafficTag, varnaTrafficTag));
         editor.commit();
     }
+    private void allow(HttpsURLConnection conn) throws NoSuchAlgorithmException, KeyManagementException {
+    	   final SSLContext context = SSLContext.getInstance("TLS");
+           final TrustManager[] trustAllCerts = new TrustManager[]{
+                   new X509TrustManager() {
+                       public X509Certificate[] getAcceptedIssuers() {
+                           return null;
+                       }
 
-    private String getTag(String url) throws MalformedURLException, IOException {
-        final HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                       public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+                           return;
+                       }
+
+                       public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+                           return;
+                       }
+                   }
+           };
+
+    	   context.init(null, trustAllCerts, null);
+
+    	   conn.setSSLSocketFactory(context.getSocketFactory());
+    	   conn.setHostnameVerifier(new HostnameVerifier() {
+			
+			@Override
+			public boolean verify(String hostname, SSLSession session) {
+				// TODO Auto-generated method stub
+				return true;
+			}
+		});
+    }
+
+    private String getTag(String url) throws MalformedURLException, IOException, KeyManagementException, NoSuchAlgorithmException {
+        final HttpsURLConnection conn = (HttpsURLConnection) new URL(url).openConnection();
+//        allow(conn);
         conn.setUseCaches(false);
         conn.setRequestMethod("HEAD");
         final String result = conn.getHeaderField(FileDownloader.HEADER_ETAG);

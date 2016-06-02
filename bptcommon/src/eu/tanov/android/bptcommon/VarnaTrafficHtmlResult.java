@@ -20,7 +20,7 @@ import eu.tanov.android.bptcommon.utils.ActivityTracker;
 public class VarnaTrafficHtmlResult extends HtmlResult {
     private static final String TAG = "VarnaTrafficHtmlResult";
 
-    private static final String STATION_URL = "http://varnatraffic.com/Ajax/FindStationDevices?stationId=";
+    private static final String STATION_URL = "https://varnatraffic.com/Ajax/FindStationDevices?stationId=";
 
     private Response all;
 

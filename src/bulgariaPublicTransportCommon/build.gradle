@@ -1,0 +1,27 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 15
+    buildToolsVersion "26.0.0"
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 15
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:19.1.0'
+    compile files('libs/FlurryAnalytics_3.3.0.jar')
+    compile files('libs/jackson-annotations-2.1.4.jar')
+    compile files('libs/jackson-core-2.1.4.jar')
+    compile files('libs/jackson-databind-2.1.4.jar')
+    compile files('libs/libGoogleAnalyticsServices.jar')
+}

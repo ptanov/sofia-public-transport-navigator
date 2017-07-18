@@ -1,0 +1,24 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 'Google Inc.:Google APIs:15'
+    buildToolsVersion "26.0.0"
+
+    defaultConfig {
+        applicationId "eu.tanov.android.sptn"
+        minSdkVersion 7
+        targetSdkVersion 15
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile project(':bulgariaPublicTransportCommon')
+    compile 'com.android.support:appcompat-v7:19.1.0'
+}

@@ -246,6 +246,13 @@ public class LocationView extends MapActivity implements ILocationView {
         editor.commit();
     }
 
+    public void moveToLocation(View v) {
+        final GeoPoint currentLocation = myLocationOverlay.getMyLocation();
+        if (currentLocation != null) {
+            map.getController().animateTo(currentLocation);
+            map.getController().setZoom(ZOOM_DEFAULT);
+        }
+    }
     private void initializeMapLocation() {
 
         final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);

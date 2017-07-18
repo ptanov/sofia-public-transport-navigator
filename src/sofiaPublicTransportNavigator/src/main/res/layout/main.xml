@@ -4,15 +4,34 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-    
-    <com.google.android.maps.MapView 
-    android:id="@+id/mapview1"
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent" 
-    android:state_enabled="true" 
-    android:clickable="true" 
-    android:apiKey="0jLWmUCH34mPimzvipgpFAljlh7zwj2g7cxaBEg" 
-    />
-    
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+
+
+        <com.google.android.maps.MapView
+            android:id="@+id/mapview1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:state_enabled="true"
+            android:clickable="true"
+            android:apiKey="0jLWmUCH34mPimzvipgpFAljlh7zwj2g7cxaBEg"
+            />
+
+        <ImageButton
+            android:id="@+id/sharepic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="15dp"
+
+            android:onClick="moveToLocation"
+            android:src="@android:drawable/ic_menu_mylocation" />
+    </RelativeLayout>
+
     
 </LinearLayout>

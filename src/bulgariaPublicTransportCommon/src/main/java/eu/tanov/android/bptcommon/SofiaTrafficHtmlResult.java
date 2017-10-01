@@ -113,31 +113,12 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
     
     private List<String> getResponses() {
         final List<String> responses = new LinkedList<String>();
-        final String responseDefault = browser.queryStation(context, uiHandler, stationCode, null);
+        final String responseDefault = browser.queryStation(context, uiHandler, stationCode);
         if (responseDefault == null) {
             throw new IllegalStateException("default: could not get estimations (null) for " + stationCode + ". "
                     + stationLabel);
         }
-        final VechileType typeDefault = getFetchedType(responseDefault);
-        final Set<VechileType> types = new HashSet<VechileType>(3);
-        if (typeDefault != null) {
-            types.add(typeDefault);
-        }
-        final List<VechileType> additionalTypes = getAdditionalTypes(responseDefault, typeDefault);
         responses.add(responseDefault);
-
-        for (VechileType vechileType : additionalTypes) {
-            final String responseNext = browser.queryStation(context, uiHandler, stationCode, vechileType);
-            if (responseNext == null) {
-                throw new IllegalStateException(vechileType + ": could not get estimations (null) for " + stationCode
-                        + ". " + stationLabel);
-            }
-            final VechileType nextType = getFetchedType(responseNext);
-            if (nextType != null && !types.contains(nextType)) {
-                //exclude already added types
-                responses.add(responseNext);
-            }
-        }
 
         return responses;
     }

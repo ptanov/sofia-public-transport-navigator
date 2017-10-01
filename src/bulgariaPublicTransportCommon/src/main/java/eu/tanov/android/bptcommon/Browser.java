@@ -20,11 +20,15 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import eu.tanov.android.bptcommon.utils.ActivityTracker;
 
@@ -68,9 +72,9 @@ public class Browser {
     /**
      * q=000000 in order to find only by ID (we expect that there is no label 000000)
      */
-    private static final String URL = "http://m.sofiatraffic.bg/vt";
+    private static final String URL = "http://drone.sumc.bg/api/v1/timing";
     private static final String HAS_RESULT = "Информация към";
-    private static final String NO_INFO = "В момента нямаме информация. Моля, опитайте по-късно.";
+    private static final String NO_INFO = "no data";
     private static final String CAPTCHA_IMAGE = "http://m.sofiatraffic.bg/captcha/%s";
     private static final String FORM_INPUT = "<input";
     private static final String FORM_INPUT_NAME = "name=";
@@ -90,7 +94,7 @@ public class Browser {
         this.error_retrieveEstimates_matching_noInfo = error_retrieveEstimates_matching_noInfo;
     }
 
-    public String queryStation(Context context, Handler uiHandler, String stationCode, VechileType type) {
+    public String queryStation(Context context, Handler uiHandler, String stationCode) {
         // XXX do not create client every time, use HTTP1.1 keep-alive!
         final DefaultHttpClient client = new DefaultHttpClient();
 
@@ -98,17 +102,15 @@ public class Browser {
         // Create a response handler
         String result = null;
         try {
-            do {
-                final HttpPost request = createRequest(context, uiHandler, client, stationCode, previousResponse, type);
-                result = client.execute(request, new BasicResponseHandler());
-                previousResponse = result;
-                saveCookiesToPreferences(context, client);
-            } while (!result.contains(HAS_RESULT) && !result.contains(NO_INFO));
-            
+            final HttpPost request = createRequest(context, uiHandler, client, stationCode);
+            result = client.execute(request, new BasicResponseHandler());
+            saveCookiesToPreferences(context, client);
+
             if (result.contains(NO_INFO)) {
                 result = context.getResources().getString(error_retrieveEstimates_matching_noInfo);
+            } else {
+                result = convertToOldFormat(result);
             }
-            
         } catch (Exception e) {
             Log.e(TAG, "Could not get data for station " + stationCode, e);
         } finally {
@@ -117,6 +119,31 @@ public class Browser {
         }
 
         return result;
+    }
+
+    private String convertToOldFormat(String json) throws JSONException {
+        final JSONArray responses = new JSONArray(json);
+        final StringBuilder result = new StringBuilder();
+        result.append("<html><body><div class=\"arrivals\">");
+        result.append("<table>");
+        for (int i=0; i < responses.length(); i++) {
+            final JSONObject response = responses.getJSONObject(i);
+
+
+
+
+                    result.append("<tr><td>" +
+
+                            "<div class=\"arr_info_"+response.getInt("type")+"\">"+
+                            "<a href=\""+"?"+"\">"+"<b>"+response.getString("lineName")+"</b>"+"</a>&nbsp;-&nbsp;"+response.getString("timing")+"<br />"+
+"</div>"
++
+                            "</td></tr>");
+
+        }
+        result.append("</table>");
+        result.append("\n</div></body></html>");
+        return result.toString();
     }
 
     private void saveCookiesToPreferences(Context context, DefaultHttpClient client) {
@@ -154,34 +181,9 @@ public class Browser {
         }
     }
 
-    private HttpPost createRequest(Context context, Handler uiHandler, HttpClient client, String stationCode,
-            String previous, VechileType type) {
+    private HttpPost createRequest(Context context, Handler uiHandler, HttpClient client, String stationCode) {
         try {
-            String captchaText = null;
-            String captchaId = null;
-
-            if (previous != null) {
-                captchaId = getCaptchaId(previous);
-                if (captchaId != null) {
-                    if (!(context instanceof Activity)) {
-                        throw new Exception("In background - captcha check");
-                    }
-                    final Bitmap captchaImage = getCaptchaImage(client, captchaId);
-                    if (captchaImage != null) {
-                        captchaText = getCaptchaText((Activity)context, uiHandler, captchaImage, stationCode);
-                    }
-                }
-            }
-            // final String parametersResult = client.execute(parametersRequest, responseHandler);
-            // final int busStopIdStart = parametersResult.indexOf(START_QUERY_BUS_STOP_ID);
-            // final String queryBusStopId = getAttributeValue(parametersResult,
-            // busStopIdStart + START_QUERY_BUS_STOP_ID.length());
-            // final int oStart = parametersResult.indexOf(START_QUERY_O,
-            // busStopIdStart + START_QUERY_BUS_STOP_ID.length());
-            // final String queryO = getAttributeValue(parametersResult, oStart + START_QUERY_O.length());
-            // final String queryGo = getAttributeValue(parametersResult,
-            // parametersResult.indexOf(START_QUERY_GO, oStart + START_QUERY_O.length()) + START_QUERY_GO.length());
-            return createRequest(stationCode, captchaText, captchaId, type, previous);
+            return createRequest(stationCode);
         } catch (Exception e) {
             Log.e(TAG, "Could not get data for parameters for station: " + stationCode, e);
             return null;
@@ -233,23 +235,23 @@ public class Browser {
         return previous.substring(captchaStart + CAPTCHA_START.length(), captchaEnd);
     }
 
-    private static HttpPost createRequest(String stationCode, String captchaText, String captchaId, VechileType type, String previous) {
+    private static HttpPost createRequest(String stationCode) {
         stationCode = toSumcCode(stationCode);
-        String urlSuffix = String.format("?%s=%s&%s=%s&%s=%s", QUERY_BUS_STOP_ID, stationCode,
-                QUERY_O, "1", QUERY_GO, "1");
-        if (type != null) {
-            urlSuffix += ("&"+VECHILE_TYPE_PARAMETER_NAME+"="+type.ordinal());
-        }
-        
-        final HttpPost result = new HttpPost(URL+urlSuffix);
+
+        final HttpPost result = new HttpPost(URL);
         result.addHeader("User-Agent", USER_AGENT);
         result.addHeader("Referer", REFERER);
         // Issue 85:
         // result.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
         try {
-            final UrlEncodedFormEntity entity = new UrlEncodedFormEntity(
-                    parameters(stationCode, captchaText, captchaId, type, previous));
-            result.setEntity(entity);
+
+    // poor's man solution to create json :) (but... no time)
+            final StringEntity params =new StringEntity("{\"stopCode\":\"" +
+                    stationCode +
+                    "\"}");
+            result.addHeader("content-type", "application/json");
+            result.setEntity(params);
+
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Not supported default encoding?", e);
         }
@@ -267,7 +269,7 @@ public class Browser {
         final List<BasicNameValuePair> result = new ArrayList<BasicNameValuePair>(6);
         if (previous != null) {
             final Map<String, String> parametersMapping = getParametersMapping(previous, stationCode, captchaText, captchaId);
-            
+
             parametersMapping.put("submit", "Провери");
             for (Entry<String, String> next : parametersMapping.entrySet()) {
                 result.add(new BasicNameValuePair(next.getKey(), next.getValue()));
@@ -275,7 +277,7 @@ public class Browser {
             if (type != null) {
                 result.add(createParameter(parametersMapping, VECHILE_TYPE_PARAMETER_NAME, Integer.toString(type.ordinal())));
             }
-            
+
         }
         return result;
     }

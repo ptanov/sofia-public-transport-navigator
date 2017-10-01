@@ -53,7 +53,7 @@ public class TimeHelper {
 	private static void toRemainingTime(TreeMap<Long, String> sortedTimes, Date now, String time,
 			String formatOnlyMinutes, String formatMinutesAndHours) {
 		final String[] hoursMinutes = time.split(":");
-		if (hoursMinutes.length != 2) {
+		if (hoursMinutes.length != 3) {
 			throw new IllegalArgumentException(
 					"could not split hours-minutes: " + time);
 		}
@@ -62,6 +62,7 @@ public class TimeHelper {
         calendar.setTime(now);
 		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hoursMinutes[0]));
 		calendar.set(Calendar.MINUTE, Integer.parseInt(hoursMinutes[1]));
+		calendar.set(Calendar.SECOND, Integer.parseInt(hoursMinutes[2]));
 
 		final long remainingTimeInMillis = getRemainingTimeInMillis(now, calendar);
 		if (remainingTimeInMillis < 0) {

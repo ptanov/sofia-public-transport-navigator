@@ -51,6 +51,9 @@ Open source at http://sofia-public-transport-navigator.googlecode.com
 Участва в конкурса Application Factory, организиран от Mobiltel и HTC, Sofia, Bulgaria
 
 # Versions
+### Version 1.39 (01.10.2017) ###
+  * Connected to the new API endpoint
+
 ### Version 1.38 (18.07.2017) ###
   * Added current location button
   * Fixed bus stops coordinates

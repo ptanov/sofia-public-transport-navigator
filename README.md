@@ -51,6 +51,9 @@ Open source at http://sofia-public-transport-navigator.googlecode.com
 Участва в конкурса Application Factory, организиран от Mobiltel и HTC, Sofia, Bulgaria
 
 # Versions
+### Version 1.40 (09.10.2017) ###
+  * Workaround for the SUMC madness - they are blocking us by REFERER
+
 ### Version 1.39 (01.10.2017) ###
   * Connected to the new API endpoint
 

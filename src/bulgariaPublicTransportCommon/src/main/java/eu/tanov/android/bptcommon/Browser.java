@@ -1,9 +1,13 @@
 package eu.tanov.android.bptcommon;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +46,19 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.util.Log;
 
+import static android.R.attr.direction;
+import static android.R.attr.name;
+import static android.R.attr.type;
+
 //FIXME very very bad code, but no time...
 public class Browser {
+
+    private static final Map<Integer, String> TYPE_TO_SCHEDULE = new HashMap<Integer, String>();
+    {
+        TYPE_TO_SCHEDULE.put(1, "autobus");
+        TYPE_TO_SCHEDULE.put(2, "trolleybus");
+        TYPE_TO_SCHEDULE.put(3, "tramway");
+    }
 
     private static class InputData {
         private final String name;
@@ -109,7 +124,7 @@ public class Browser {
             if (result.contains(NO_INFO)) {
                 result = context.getResources().getString(error_retrieveEstimates_matching_noInfo);
             } else {
-                result = convertToOldFormat(result);
+                result = convertToOldFormat(stationCode, result);
             }
         } catch (Exception e) {
             Log.e(TAG, "Could not get data for station " + stationCode, e);
@@ -120,8 +135,24 @@ public class Browser {
 
         return result;
     }
+    public static String getHTML(String urlToRead) throws IOException {
+        // based on https://stackoverflow.com/questions/1485708/how-do-i-do-a-http-get-in-java
+        StringBuilder result = new StringBuilder();
+        java.net.URL url = new java.net.URL(urlToRead);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String line;
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+        }
+        rd.close();
+        return result.toString();
+    }
 
-    private String convertToOldFormat(String json) throws JSONException {
+
+    private String convertToOldFormat(String stationCode, String json) throws JSONException {
+        String url = toSchedulesUrl1(stationCode);
         final JSONArray responses = new JSONArray(json);
         final StringBuilder result = new StringBuilder();
         result.append("<html><body><div class=\"arrivals\">");
@@ -135,7 +166,7 @@ public class Browser {
                     result.append("<tr><td>" +
 
                             "<div class=\"arr_info_"+response.getInt("type")+"\">"+
-                            "<a href=\""+"?"+"\">"+"<b>"+response.getString("lineName")+"</b>"+"</a>&nbsp;-&nbsp;"+response.getString("timing")+"<br />"+
+                            "<a href=\""+url+"\">"+"<b>"+response.getString("lineName")+"</b>"+"</a>&nbsp;-&nbsp;"+response.getString("timing")+"<br />"+
 "</div>"
 +
                             "</td></tr>");
@@ -145,6 +176,21 @@ public class Browser {
         result.append("\n</div></body></html>");
         return result.toString();
     }
+
+    private String toSchedulesUrl(String stationCode, int type, String name, String direction) {
+        return "/"+TYPE_TO_SCHEDULE.get(type)+"/"+name+"#sign/"+direction+"/"+toSumcCode(stationCode);
+    }
+    private String toSchedulesUrl1(String stationCode) {
+        try {
+    stationCode =toSumcCode(stationCode);
+            String json = getHTML("https://schedules.sofiatraffic.bg/server/data/stop_sign_find/" + stationCode);
+            final JSONObject responses = new JSONObject(json);
+            return "/stop/"+ responses.getString("stop_id")+"/"+responses.getString("url_name")+"#"+stationCode;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 
     private void saveCookiesToPreferences(Context context, DefaultHttpClient client) {
         final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME_SUMC_COOKIES,
@@ -240,7 +286,7 @@ public class Browser {
 
         final HttpPost result = new HttpPost(URL);
         result.addHeader("User-Agent", USER_AGENT);
-        result.addHeader("Referer", REFERER);
+//        result.addHeader("Referer", REFERER);
         // Issue 85:
         // result.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
         try {

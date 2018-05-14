@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,13 +82,14 @@ public class Browser {
 
     private static final String TAG = "SimpleBrowser";
 
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1017.2 Safari/535.19";
-    private static final String REFERER = "http://m.sofiatraffic.bg/vt/";
+    private static final String USER_AGENT = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36";
+    //"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1017.2 Safari/535.19";
+    private static final String REFERER = "https://www.sofiatraffic.bg/bg/common";
 
     /**
      * q=000000 in order to find only by ID (we expect that there is no label 000000)
      */
-    private static final String URL = "http://drone.sumc.bg/api/v1/timing";
+//    private static final String URL = "http://drone.sumc.bg/api/v1/timing";
     private static final String HAS_RESULT = "Информация към";
     private static final String NO_INFO = "no data";
     private static final String CAPTCHA_IMAGE = "http://m.sofiatraffic.bg/captcha/%s";
@@ -117,7 +119,7 @@ public class Browser {
         // Create a response handler
         String result = null;
         try {
-            final HttpPost request = createRequest(context, uiHandler, client, stationCode);
+            final HttpGet request = createRequest(context, uiHandler, client, stationCode);
             result = client.execute(request, new BasicResponseHandler());
             saveCookiesToPreferences(context, client);
 
@@ -153,28 +155,35 @@ public class Browser {
 
     private String convertToOldFormat(String stationCode, String json) throws JSONException {
         String url = toSchedulesUrl1(stationCode);
-        final JSONArray responses = new JSONArray(json);
+        final JSONObject responseFull= new JSONObject(json);
+
+
+        final JSONArray responses = responseFull.getJSONArray("lines");
         final StringBuilder result = new StringBuilder();
         result.append("<html><body><div class=\"arrivals\">");
         result.append("<table>");
         for (int i=0; i < responses.length(); i++) {
             final JSONObject response = responses.getJSONObject(i);
+            JSONArray arrivals = response.getJSONArray("arrivals");
+            result.append("<tr><td>" +
 
+                    "<div class=\"arr_info_" + response.getString("vehicle_type") + "\">" +
+                    "<a href=\"" + url + "\">" + "<b>" + response.getString("name") + "</b>" + "</a>&nbsp;-&nbsp;" );
 
+            for (int j=0; j < arrivals.length(); j++) {
+                JSONObject arrival = arrivals.getJSONObject(j);
 
-
-                    result.append("<tr><td>" +
-
-                            "<div class=\"arr_info_"+response.getInt("type")+"\">"+
-                            "<a href=\""+url+"\">"+"<b>"+response.getString("lineName")+"</b>"+"</a>&nbsp;-&nbsp;"+response.getString("timing")+"<br />"+
-"</div>"
-+
-                            "</td></tr>");
+                result.append(arrival.getString("time")+"," );
+            }
+            result.append( "<br />" +
+                    "</div>"
+                    +
+                    "</td>"+"</tr>");
 
         }
         result.append("</table>");
         result.append("\n</div></body></html>");
-        return result.toString();
+        return responseFull.getString("timestamp_calculated")+"\n"+result.toString();
     }
 
     private String toSchedulesUrl(String stationCode, int type, String name, String direction) {
@@ -227,7 +236,7 @@ public class Browser {
         }
     }
 
-    private HttpPost createRequest(Context context, Handler uiHandler, HttpClient client, String stationCode) {
+    private HttpGet createRequest(Context context, Handler uiHandler, HttpClient client, String stationCode) {
         try {
             return createRequest(stationCode);
         } catch (Exception e) {
@@ -281,10 +290,11 @@ public class Browser {
         return previous.substring(captchaStart + CAPTCHA_START.length(), captchaEnd);
     }
 
-    private static HttpPost createRequest(String stationCode) {
+    private static HttpGet createRequest(String stationCode) {
         stationCode = toSumcCode(stationCode);
 
-        final HttpPost result = new HttpPost(URL);
+        final HttpGet result = new HttpGet("https://api-arrivals.sofiatraffic.bg/api/v1/arrivals/" +stationCode+
+                "/");
         result.addHeader("User-Agent", USER_AGENT);
 //        result.addHeader("Referer", REFERER);
         // Issue 85:
@@ -295,8 +305,9 @@ public class Browser {
             final StringEntity params =new StringEntity("{\"stopCode\":\"" +
                     stationCode +
                     "\"}");
-            result.addHeader("content-type", "application/json");
-            result.setEntity(params);
+            result.addHeader("accept", "application/json, text/plain, */*");
+//            result.addHeader("content-type", "application/json");
+//            result.setEntity(params);
 
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Not supported default encoding?", e);

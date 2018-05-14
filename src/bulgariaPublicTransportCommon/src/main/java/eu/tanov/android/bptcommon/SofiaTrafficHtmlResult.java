@@ -1,5 +1,7 @@
 package eu.tanov.android.bptcommon;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -63,7 +65,7 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 
 	private static final String PREFERENCE_KEY_WHATS_NEW_VERSION1_09 = "whatsNewShowVersion1_09_estimates";
 	private static final boolean PREFERENCE_DEFAULT_VALUE_WHATS_NEW_VERSION1_09 = true;
-    private static final String HTML_HEADER = "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><style type=\"text/css\">body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} td.number {width:30px;text-align:right;}table {width:100%;}div.arr_info_1 td.number {background-color:#ea0000;}div.arr_info_2 td.number {background-color:#0066aa;}div.arr_info_0 td.number {background-color:#feab10;}.number a:link {color:#FFFFFF;font-weight: bold;}.number a:visited {color:#FFFFFF;font-weight: bold;}.number a:hover {color:#FFFFFF;font-weight: bold;}.number a:active {color:#FFFFFF;font-weight: bold;}.direction {font-size: 2pt;text-align:right;}.estimates a {font-weight: bold;}.arr_title_1 b{color:#ea0000;border-bottom:1px solid #ea0000;}.arr_title_2 b{color:#0066aa;border-bottom:1px solid #0066aa;}.arr_title_0 b{color:#feab10;border-bottom:1px solid #feab10;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid #ddd;}.errorText {color: #f00;}.legal{font-size: 50%;text-align:right;}</style></head>";
+    private static final String HTML_HEADER = "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /><style type=\"text/css\">body {font-family:arial, verdana, sans-serif;font-size:14pt;margin: 0;}.sep {clear: both;}.busStop {font-weight: bold;}.typeVehicle {font-weight:bold;padding-left:3px;} td.number {width:30px;text-align:right;}table {width:100%;}div.arr_info_bus td.number {background-color:#ea0000;}div.arr_info_trolley td.number {background-color:#0066aa;}div.arr_info_tram td.number {background-color:#feab10;}.number a:link {color:#FFFFFF;font-weight: bold;}.number a:visited {color:#FFFFFF;font-weight: bold;}.number a:hover {color:#FFFFFF;font-weight: bold;}.number a:active {color:#FFFFFF;font-weight: bold;}.direction {font-size: 2pt;text-align:right;}.estimates a {font-weight: bold;}.arr_title_1 b{color:#ea0000;border-bottom:1px solid #ea0000;}.arr_title_2 b{color:#0066aa;border-bottom:1px solid #0066aa;}.arr_title_0 b{color:#feab10;border-bottom:1px solid #feab10;}.vehNumber {padding:1px 3px 1px 3px;color:white;width:2em;text-align:center;font-weight:bold;}.content {padding-bottom:2px;margin-top:-4px;border-bottom:1px solid #ddd;}.errorText {color: #f00;}.legal{font-size: 50%;text-align:right;}</style></head>";
 
     private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
     private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
@@ -130,7 +132,17 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 		date = new Date();
 
 		if (hasAtLeastOneWithInfo(responses)) {
-	        ActivityTracker.queriedSofia(context, stationCode);
+            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            try {
+                date = format1.parse( responses.get(0).split("\n", 2)[0]);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException("Can't parse "+responses.get(0), e);
+
+            }
+
+
+            ActivityTracker.queriedSofia(context, stationCode);
 	        final StringBuilder htmlDataBuilder = new StringBuilder(HTML_HEADER.length() + 5000);
 	        htmlDataBuilder.append(HTML_START).append(HTML_HEADER);
 	        for (String next : responses) {
@@ -210,7 +222,7 @@ public class SofiaTrafficHtmlResult extends HtmlResult {
 		int end = 0;
 		int start = body.indexOf(INFO_BEGIN, end);
 		while (start != -1) {
-			start += INFO_BEGIN_LENGTH;
+			start = body.indexOf(">", start)+1;
 			// just copy not remaining time data
 			result.append(body, end, start);
 

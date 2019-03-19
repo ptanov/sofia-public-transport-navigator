@@ -8,12 +8,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.text.format.DateFormat;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 import eu.tanov.android.bptcommon.favorities.BusStopItem;
 import eu.tanov.android.bptcommon.favorities.FavoritiesService;
 import eu.tanov.android.bptcommon.interfaces.IStationsOverlay;
 import eu.tanov.android.bptcommon.interfaces.ILocationView;
+
+import static com.flurry.sdk.eh.d;
+import static eu.tanov.android.bptcommon.R.id.dialog;
 
 public abstract class HtmlResult implements EstimatesResolver {
     protected static final String ENCODING = "utf-8";
@@ -80,7 +84,15 @@ public abstract class HtmlResult implements EstimatesResolver {
         });
         handleFavorities(dialogBuilder);
         handleRefresh(dialogBuilder, browser);
-        dialogBuilder.create().show();
+
+        AlertDialog result = dialogBuilder.create();
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(result.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+        result.getWindow().setAttributes(lp);
+        result.show();
     }
 
     private void handleRefresh(Builder dialogBuilder, final WebView browser) {

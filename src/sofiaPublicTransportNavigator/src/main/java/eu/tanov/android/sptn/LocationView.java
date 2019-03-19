@@ -224,7 +224,7 @@ public class LocationView extends MapActivity implements ILocationView {
 
         selectStartupScreen();
         
-        new CheckForUpdateAsyncTask().execute();
+        //new CheckForUpdateAsyncTask().execute();
     }
 
     private boolean isWifiConnected() {

@@ -1,8 +1,9 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 15
+    compileSdkVersion 23
     buildToolsVersion "26.0.0"
+    useLibrary  'org.apache.http.legacy'
 
     defaultConfig {
         minSdkVersion 7
@@ -18,7 +19,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:19.1.0'
+    compile 'com.android.support:appcompat-v7:23.+'
     compile files('libs/FlurryAnalytics_3.3.0.jar')
     compile files('libs/jackson-annotations-2.1.4.jar')
     compile files('libs/jackson-core-2.1.4.jar')

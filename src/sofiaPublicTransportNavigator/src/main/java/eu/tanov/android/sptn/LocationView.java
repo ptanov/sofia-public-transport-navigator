@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -14,6 +15,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,6 +23,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
@@ -163,6 +167,8 @@ public class LocationView extends MapActivity implements ILocationView {
     private static final int DIALOG_ID_ABOUT = 1;
     private static final int DIALOG_ID_PROGRESS_PLACE_STATIONS = 2;
     private static final int DIALOG_ID_PROGRESS_QUERY_STATION = 3;
+    private static final int DIALOG_ID_PERMISSIONS_REQUEST_LOCATION = 4;
+
     private static final String PACKAGE_TIX_BG = "bg.tix";
     private static final String MARKET_TIX_BG = "market://details?id=" + PACKAGE_TIX_BG;
 
@@ -219,6 +225,8 @@ public class LocationView extends MapActivity implements ILocationView {
         overlays.add(myLocationOverlay);
         overlays.add(stationsOverlay);
         overlays.add(busesOverlay);
+
+        checkLocationPermission();
 
         notifyForChangesInNewVersions();
 
@@ -739,5 +747,24 @@ public class LocationView extends MapActivity implements ILocationView {
 
     public boolean isFetchingCancelled() {
         return fetchingCancelled;
+    }
+
+
+    private boolean checkLocationPermission() {
+        if ((ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED)||(ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED)) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION},
+                        DIALOG_ID_PERMISSIONS_REQUEST_LOCATION);
+
+            return false;
+        } else {
+            return true;
+        }
     }
 }

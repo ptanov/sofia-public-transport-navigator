@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="aboutDialog_title">Bulgarian Public Transport (version 1.47)</string>
+<string name="aboutDialog_title">Bulgarian Public Transport (version 1.48)</string>
     
 <string name="buttonCancel">Cancel</string>
 <string name="error_retrieveEstimates_generic" formatted="false">No Internet connection? Error retrieving schedule information for bus stop %s (%s)</string>

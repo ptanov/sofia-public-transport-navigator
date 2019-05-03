@@ -17,7 +17,6 @@ import eu.tanov.android.bptcommon.interfaces.IStationsOverlay;
 import eu.tanov.android.bptcommon.interfaces.ILocationView;
 
 import static com.flurry.sdk.eh.d;
-import static eu.tanov.android.bptcommon.R.id.dialog;
 
 public abstract class HtmlResult implements EstimatesResolver {
     protected static final String ENCODING = "utf-8";

@@ -1,8 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 'Google Inc.:Google APIs:15'
+    compileSdkVersion 'Google Inc.:Google APIs:23'
     buildToolsVersion "26.0.0"
+    useLibrary  'org.apache.http.legacy'
+
 
     defaultConfig {
         applicationId "eu.tanov.android.sptn"
@@ -20,5 +22,5 @@ android {
 
 dependencies {
     compile project(':bulgariaPublicTransportCommon')
-    compile 'com.android.support:appcompat-v7:19.1.0'
+    compile 'com.android.support:appcompat-v7:23.+'
 }

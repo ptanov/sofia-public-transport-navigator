@@ -10,13 +10,15 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.DrawableRes;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.ItemizedOverlay;
-import com.google.android.maps.MapView;
-import com.google.android.maps.OverlayItem;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import eu.tanov.android.bptcommon.EstimatesResolver;
 import eu.tanov.android.bptcommon.SofiaTrafficHtmlResult;
@@ -27,27 +29,58 @@ import eu.tanov.android.bptcommon.interfaces.IStationsOverlay;
 import eu.tanov.android.bptcommon.utils.ActivityTracker;
 import eu.tanov.android.sptn.LocationView;
 import eu.tanov.android.sptn.R;
-import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.providers.StationProvider;
 import eu.tanov.android.sptn.providers.StationProvider.Station;
 import eu.tanov.android.sptn.sumc.BrowserWithCaptchaSupport;
 import eu.tanov.android.sptn.util.MapHelper;
 
-public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements IStationsOverlay {
+public class StationsOverlay implements IStationsOverlay{
     private static final String TAG = "StationsOverlay";
 
-    private static final String BUSSTOP_PROVIDER_LABEL_SEPARATOR = ":";
+    public static class OverlayItem {
+        protected final LatLng mPoint;
+        protected final String mTitle;
+        protected final String mSnippet;
+        @DrawableRes
+        protected final int mMarker;
+
+
+        public OverlayItem(LatLng mPoint, String mTitle, String mSnippet, @DrawableRes int mMarker) {
+            this.mPoint = mPoint;
+            this.mTitle = mTitle;
+            this.mSnippet = mSnippet;
+            this.mMarker = mMarker;
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public String getSnippet() {
+            return mSnippet;
+        }
+
+        public LatLng getPoint() {
+            return mPoint;
+        }
+
+        @DrawableRes
+        public int getMarker() {
+            return mMarker;
+        }
+    }
+        public static final String BUSSTOP_PROVIDER_LABEL_SEPARATOR = ":";
 
     private static final String PREFERENCE_KEY_SHOW_REMAINING_TIME = "showRemainingTime";
     private static final boolean PREFERENCE_DEFAULT_VALUE_SHOW_REMAINING_TIME = true;
 
-    private final ArrayList<OverlayItem> stations = new ArrayList<OverlayItem>();
+    private final ArrayList<OverlayItem> stations = new ArrayList<>();
     private final LocationView context;
 
-    private final Map<String, Map<String, OverlayItem>> providerToOverlayMap = new HashMap<String, Map<String,OverlayItem>>();
+    private final Map<String, Map<String, OverlayItem>> providerToOverlayMap = new HashMap<>();
     private final Handler uiHandler = new Handler();
 
-    private final MapView map;
+    private final GoogleMap map;
 
     private OverlayItem showBusesOverlayItem;
 
@@ -132,8 +165,8 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements ISt
                     lat = cursor.getDouble(latColumn);
                     lon = cursor.getDouble(lonColumn);
 
-                    final GeoPoint point = MapHelper.createGeoPoint(lat, lon);
-                    final OverlayItem overlayItem = new OverlayItem(point, code, provider + BUSSTOP_PROVIDER_LABEL_SEPARATOR + label);
+                    final LatLng point = MapHelper.createGeoPoint(lat, lon);
+                    final OverlayItem overlayItem = new OverlayItem(point, code, provider + BUSSTOP_PROVIDER_LABEL_SEPARATOR + label,R.drawable.station);
                     addOverlayItem(provider, code, overlayItem);
                     newStations.add(overlayItem);
                 } while (cursor.moveToNext());
@@ -221,11 +254,11 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements ISt
 
     }
 
-    public StationsOverlay(LocationView context, MapView map) {
-        super(boundCenterBottom(context.getResources().getDrawable(R.drawable.station)));
+    public StationsOverlay(LocationView context, GoogleMap map) {
+//        super(boundCenterBottom(context.getResources().getDrawable(R.drawable.station)));
         this.context = context;
         this.map = map;
-        populateFixed();
+//        populateFixed();
     }
 
     /**
@@ -234,22 +267,22 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements ISt
      * .wordpress.com/2009/10/19/android-itemizedoverlay-arrayindexoutofboundsexception-nullpointerexception-
      * workarounds/
      */
-    private void populateFixed() {
-        setLastFocusedIndex(-1);
-        populate();
+//    private void populateFixed() {
+//        setLastFocusedIndex(-1);
+//        populate();
         // redraw items
-        map.invalidate();
-    }
-
-    @Override
-    public boolean onTap(GeoPoint p, MapView mapView) {
-        final boolean result = super.onTap(p, mapView);
-        if (!result) {
-            // only if not on overlay item
-            placeStations(MapHelper.toCoordinate(p.getLatitudeE6()), MapHelper.toCoordinate(p.getLongitudeE6()), true);
-        }
-        return result;
-    }
+//        map.invalidate();
+//    }
+//
+//    @Override
+//    public boolean onTap(GeoPoint p, MapView mapView) {
+//        final boolean result = super.onTap(p, mapView);
+//        if (!result) {
+//            // only if not on overlay item
+//            placeStations(MapHelper.toCoordinate(p.getLatitudeE6()), MapHelper.toCoordinate(p.getLongitudeE6()), true);
+//        }
+//        return result;
+//    }
 
     /**
      * should be called if location changes
@@ -299,11 +332,12 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements ISt
                 // for future improving, now bus stops entered in SEARCH by busstop id can be unknown to our DB
                 throw new IllegalStateException("Unknown code: " + code);
             } else {
-                station = new OverlayItem(new GeoPoint(0, 0), code, provider + BUSSTOP_PROVIDER_LABEL_SEPARATOR + code);
+                station = new OverlayItem(new LatLng(0, 0), code, provider + BUSSTOP_PROVIDER_LABEL_SEPARATOR + code,
+                        R.drawable.station);
             }
         } else {
             if (animateTo) {
-                map.getController().animateTo(station.getPoint());
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(station.getPoint(),LocationView.ZOOM_DEFAULT));
             }
         }
         showStation(station, false);
@@ -321,22 +355,22 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements ISt
         query.start();
     }
 
-    @Override
-    protected OverlayItem createItem(int i) {
-        return stations.get(i);
-    }
-
-    @Override
-    public int size() {
-        return stations.size();
-    }
-
-    @Override
-    protected boolean onTap(int stationIndex) {
-        showStation(stations.get(stationIndex), false);
-
-        return true;
-    }
+//    @Override
+//    protected OverlayItem createItem(int i) {
+//        return stations.get(i);
+//    }
+//
+//    @Override
+//    public int size() {
+//        return stations.size();
+//    }
+//
+//    @Override
+//    protected boolean onTap(int stationIndex) {
+//        showStation(stations.get(stationIndex), false);
+//
+//        return true;
+//    }
 
     /**
      * or hour of arriving
@@ -369,7 +403,13 @@ public class StationsOverlay extends ItemizedOverlay<OverlayItem> implements ISt
             @Override
             public void run() {
                 stations.addAll(newStations);
-                populateFixed();
+//                populateFixed();
+                for (OverlayItem next: newStations) {
+//                    Marker marker =
+                            map.addMarker(new MarkerOptions().position(next.getPoint()).title(next.getTitle()).snippet(next.getSnippet()).icon(
+                            BitmapDescriptorFactory.fromResource(next.getMarker()))).showInfoWindow();
+//                    marker.setTag() is in com.google.android.gms:play-services:9.4.0
+                }
                 context.hideProgressPlaceStations();
             }
         });

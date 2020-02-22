@@ -1,6 +1,6 @@
 package eu.tanov.android.sptn.util;
 
-import com.google.android.maps.GeoPoint;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MapHelper {
 	/**
@@ -8,13 +8,15 @@ public class MapHelper {
 	 */
 	private MapHelper() {}
 
-	public static GeoPoint createGeoPoint(double lat, double lon) {
-		return new GeoPoint(toE6(lat), toE6(lon));
+	public static LatLng createGeoPoint(double lat, double lon) {
+		return new LatLng(lat, lon);
 	}
+	@Deprecated
 	public static int toE6(double coordinate) {
 		final Double result = coordinate * 1E6;
 		return result.intValue();
 	}
+	@Deprecated
 	public static double toCoordinate(int coordinateE6) {
 		return coordinateE6 / 1E6;
 	}

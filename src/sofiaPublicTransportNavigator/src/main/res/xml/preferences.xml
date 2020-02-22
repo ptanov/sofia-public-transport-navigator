@@ -8,14 +8,14 @@
 			android:title="@string/settings_commonStartupScreenFavorities_title"
 			android:defaultValue="false" android:summary="@string/settings_commonStartupScreenFavorities_summary" />
 	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/settings_category_map">
-		<!--
-			<ListPreference android:title="@string/settings_mapType_title"
-			android:summary="@string/settings_mapType_summary"
-			android:key="mapType" android:defaultValue="1"
-			android:entries="@array/mapTypes"
-			android:entryValues="@array/mapTypes_values" />
-		-->
+
+	<!--
+<PreferenceCategory android:title="@string/settings_category_map">
+        <ListPreference android:title="@string/settings_mapType_title"
+        android:summary="@string/settings_mapType_summary"
+        android:key="mapType" android:defaultValue="1"
+        android:entries="@array/mapTypes"
+        android:entryValues="@array/mapTypes_values" />
 		<CheckBoxPreference android:key="mapSatellite"
 			android:title="@string/settings_mapSatellite_title"
 			android:defaultValue="false" />
@@ -30,6 +30,7 @@
 			android:title="@string/settings_mapCompass_title"
 			android:defaultValue="true" android:summary="@string/settings_mapCompass_summary" />
 	</PreferenceCategory>
+    -->
 	<PreferenceCategory android:title="@string/settings_category_stations_info">
 
 		<CheckBoxPreference android:key="showRemainingTime"

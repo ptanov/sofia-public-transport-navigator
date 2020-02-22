@@ -24,6 +24,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.InputType;
@@ -43,11 +44,12 @@ import android.widget.Toast;
 import com.flurry.android.FlurryAgent;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.GoogleAnalytics;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
-import com.google.android.maps.MyLocationOverlay;
-import com.google.android.maps.Overlay;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import eu.tanov.android.bptcommon.favorities.FavoritiesService;
 import eu.tanov.android.bptcommon.interfaces.ILocationView;
@@ -59,8 +61,9 @@ import eu.tanov.android.sptn.providers.InitStations;
 import eu.tanov.android.sptn.util.LocaleHelper;
 import eu.tanov.android.sptn.util.MapHelper;
 
-public class LocationView extends MapActivity implements ILocationView {
+public class LocationView extends FragmentActivity implements ILocationView, OnMapReadyCallback {
     public static final String FLIRRY_ID = "7S33XB55J3RXDK4HBJNP";
+
 
     private final class UpdateBusStopsAsyncTask extends AsyncTask<Void, Void, Boolean> {
         private final BusStopUpdater updater;
@@ -157,12 +160,12 @@ public class LocationView extends MapActivity implements ILocationView {
     public static final String PREFERENCE_KEY_STATISTICS_DISABLE = "disableStatistics";
     public static final boolean PREFERENCE_DEFAULT_VALUE_STATISTICS_DISABLE = false;
 
-    private static final String PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6 = "lastLocationLatitudeE6";
-    private static final String PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6 = "lastLocationLongitudeE6";
+    private static final String PREFERENCE_KEY_LAST_LOCATION_LATITUDE = "lastLocationLatitude";
+    private static final String PREFERENCE_KEY_LAST_LOCATION_LONGITUDE = "lastLocationLongitude";
     private static final String PREFERENCE_KEY_LAST_LOCATION_ZOOM = "lastLocationZoom";
-    private static final int LOCATION_SOFIA_LATITUDE_E6 = 42696827;
-    private static final int LOCATION_SOFIA_LONGITUDE_E6 = 23320916;
-    private static final int ZOOM_DEFAULT = 16;
+    private static final float LOCATION_SOFIA_LATITUDE = 42.696827f;
+    private static final float LOCATION_SOFIA_LONGITUDE = 23.320916f;
+    public static final float ZOOM_DEFAULT = 16;
 
     private static final int DIALOG_ID_ABOUT = 1;
     private static final int DIALOG_ID_PROGRESS_PLACE_STATIONS = 2;
@@ -172,7 +175,6 @@ public class LocationView extends MapActivity implements ILocationView {
     private static final String PACKAGE_TIX_BG = "bg.tix";
     private static final String MARKET_TIX_BG = "market://details?id=" + PACKAGE_TIX_BG;
 
-    private MyLocationOverlay myLocationOverlay;
     private StationsOverlay stationsOverlay;
     private BusesOverlay busesOverlay;
     private boolean progressPlaceStationsDisplayed = false;
@@ -181,18 +183,71 @@ public class LocationView extends MapActivity implements ILocationView {
 
     private String userLocale;
 
-    private MapView map;
+    private GoogleMap map;
     private Timer timer;
     private boolean fetchingCancelled = false;
+    private boolean firstLocation = true;
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        googleMap.setMyLocationEnabled(true);
+//        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
+                stationsOverlay.placeStations(location.getLatitude(), location.getLongitude(), false);
+
+                if (firstLocation) {
+                    // do not move map every time, only first time
+                    firstLocation = false;
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom( MapHelper.createGeoPoint(location.getLatitude(), location.getLongitude()),ZOOM_DEFAULT));
+                }
+
+            }
+        });
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (marker.getTitle().indexOf("(") != -1) {
+                    // SHAME ON ME... very very bad code... but no time... hacking...
+                    return false;
+                }
+                final String[] snippets = marker.getSnippet().split(StationsOverlay.BUSSTOP_PROVIDER_LABEL_SEPARATOR, 2);
+                final String busStopSource = snippets[0];
+
+                stationsOverlay.showStation(busStopSource, marker.getTitle(), true);
+                return false;
+            }
+        });
+        stationsOverlay = new StationsOverlay(this, map);
+        busesOverlay = new BusesOverlay(this, map);
+
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+            @Override
+            public void onMapClick(LatLng latLng) {
+                        stationsOverlay.placeStations(latLng.latitude, latLng.longitude, false);
+
+            }
+        });
+        // locate to last location, before adding onLocationChanged listener
+        map.setTrafficEnabled(true);
+        initializeMapLocation();
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocaleHelper.selectLocale(this);
         userLocale = LocaleHelper.getUserLocale(this);
         setContentView(R.layout.main);
-        map = (MapView) findViewById(R.id.mapview1);
-        map.setBuiltInZoomControls(true);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapview1);
+        mapFragment.getMapAsync(this);
+
+        /*
+map.setBuiltInZoomControls(true);
+
 
         // add overlays
         final List<Overlay> overlays = map.getOverlays();
@@ -220,18 +275,17 @@ public class LocationView extends MapActivity implements ILocationView {
         };
         setCompassSettings();
 
-        busesOverlay = new BusesOverlay(this, map);
 
         overlays.add(myLocationOverlay);
         overlays.add(stationsOverlay);
         overlays.add(busesOverlay);
 
+        */
         checkLocationPermission();
 
         notifyForChangesInNewVersions();
 
         selectStartupScreen();
-        
         //new CheckForUpdateAsyncTask().execute();
     }
 
@@ -247,34 +301,38 @@ public class LocationView extends MapActivity implements ILocationView {
             return;
         }
         final Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        final GeoPoint mapCenter = map.getMapCenter();
-        editor.putInt(PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6, mapCenter.getLatitudeE6());
-        editor.putInt(PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6, mapCenter.getLongitudeE6());
-        editor.putInt(PREFERENCE_KEY_LAST_LOCATION_ZOOM, map.getZoomLevel());
+        final LatLng mapCenter = map.getCameraPosition().target;
+        editor.putFloat(PREFERENCE_KEY_LAST_LOCATION_LATITUDE, (float)mapCenter.latitude);
+        editor.putFloat(PREFERENCE_KEY_LAST_LOCATION_LONGITUDE, (float)mapCenter.longitude);
+        editor.putFloat(PREFERENCE_KEY_LAST_LOCATION_ZOOM, map.getCameraPosition().zoom);
         editor.commit();
     }
 
     public void moveToLocation(View v) {
-        final GeoPoint currentLocation = myLocationOverlay.getMyLocation();
-        if (currentLocation != null) {
-            map.getController().animateTo(currentLocation);
-            map.getController().setZoom(ZOOM_DEFAULT);
-        }
+        if (map ==null || map.getMyLocation() == null){return;}
+        Location location = map.getMyLocation();
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,ZOOM_DEFAULT));
     }
     private void initializeMapLocation() {
+         LatLng location ;
+        try {
+            final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            // locate in Sofia if not set already
+            final float lat = settings.getFloat(PREFERENCE_KEY_LAST_LOCATION_LATITUDE, LOCATION_SOFIA_LATITUDE);
+            final float lon = settings.getFloat(PREFERENCE_KEY_LAST_LOCATION_LONGITUDE, LOCATION_SOFIA_LONGITUDE);
+            final float zoom = settings.getFloat(PREFERENCE_KEY_LAST_LOCATION_ZOOM, ZOOM_DEFAULT);
 
-        final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        // locate in Sofia if not set already
-        final int lat = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_LATITUDE_E6, LOCATION_SOFIA_LATITUDE_E6);
-        final int lon = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_LONGITUDE_E6, LOCATION_SOFIA_LONGITUDE_E6);
-        final int zoom = settings.getInt(PREFERENCE_KEY_LAST_LOCATION_ZOOM, ZOOM_DEFAULT);
+            location = new LatLng(lat, lon);
 
-        final GeoPoint location = new GeoPoint(lat, lon);
-        map.getController().animateTo(location);
-        map.getController().setZoom(zoom);
+        } catch (Exception e) {
+            //old format
+            location = new LatLng(LOCATION_SOFIA_LATITUDE, LOCATION_SOFIA_LONGITUDE);
 
-        stationsOverlay.placeStations(MapHelper.toCoordinate(location.getLatitudeE6()),
-                MapHelper.toCoordinate(location.getLongitudeE6()), false);
+        }
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, ZOOM_DEFAULT));
+
+        stationsOverlay.placeStations(location.latitude, location.longitude, false);
     }
 
     private void notifyForChangesInNewVersions() {
@@ -345,10 +403,6 @@ public class LocationView extends MapActivity implements ILocationView {
     }
 
     private void disableLocationUpdates() {
-        if (myLocationOverlay != null) {
-            myLocationOverlay.disableMyLocation();
-            myLocationOverlay.disableCompass();
-        }
         stopTimer();
     }
     private void stopTimer() {
@@ -359,9 +413,8 @@ public class LocationView extends MapActivity implements ILocationView {
     }
 
     private void enableLocationUpdates() {
-        if (myLocationOverlay != null && !estimatesDialogVisible) {
-            myLocationOverlay.enableMyLocation();
-            setCompassSettings();
+        if (/*myLocationOverlay != null &&*/ !estimatesDialogVisible) {
+//            myLocationOverlay.enableMyLocation();
             //TODO very bad code, but there is no time:
             stopTimer();
             if (stationsOverlay != null && stationsOverlay.getShowBusesOverlayItem() != null) {
@@ -411,40 +464,10 @@ public class LocationView extends MapActivity implements ILocationView {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.layout.menu, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
 
-    private void setMapSettings() {
-        final MapView map = (MapView) findViewById(R.id.mapview1);
-        final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        map.setTraffic(settings.getBoolean(PREFERENCE_KEY_MAP_TRAFFIC, PREFERENCE_DEFAULT_VALUE_MAP_TRAFFIC));
-        map.setSatellite(settings.getBoolean(PREFERENCE_KEY_MAP_SATELLITE, PREFERENCE_DEFAULT_VALUE_MAP_SATELLITE));
-        // as suggested in
-        // http://stackoverflow.com/questions/7478952/mapview-rendering-with-tiles-missing-with-an-x-in-the-center#7510957
-        // :
-        // map.setStreetView(settings.getBoolean(PREFERENCE_KEY_MAP_STREET_VALUE,
-        // PREFERENCE_DEFAULT_VALUE_MAP_STREET_VALUE));
-
-        setCompassSettings(settings);
-    }
-
-    private void setCompassSettings() {
-        final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        setCompassSettings(settings);
-    }
-
-    private void setCompassSettings(SharedPreferences settings) {
-        if (myLocationOverlay == null) {
-            return;
-        }
-
-        if (settings.getBoolean(PREFERENCE_KEY_MAP_COMPASS, PREFERENCE_DEFAULT_VALUE_MAP_COMPASS)) {
-            myLocationOverlay.enableCompass();
-        } else {
-            myLocationOverlay.disableCompass();
-        }
-    }
 
     private void enableDisableStatistics() {
         final boolean disable = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
@@ -461,7 +484,6 @@ public class LocationView extends MapActivity implements ILocationView {
                 return;
             }
             enableDisableStatistics();
-            setMapSettings();
             break;
         case REQUEST_CODE_FAVORITIES:
             if (resultCode != RESULT_OK) {
@@ -484,7 +506,8 @@ public class LocationView extends MapActivity implements ILocationView {
             }
             throw new IllegalStateException("No code provided");
         }
-        map.getController().setZoom(ZOOM_DEFAULT);
+//        map.getController().setZoom(ZOOM_DEFAULT);
+        firstLocation = false;
 
         stationsOverlay.showStation(provider, code, true);
         return true;
@@ -683,10 +706,10 @@ public class LocationView extends MapActivity implements ILocationView {
         startActivityForResult(intent, REQUEST_CODE_FAVORITIES);
     }
 
-    @Override
-    protected boolean isRouteDisplayed() {
-        return false;
-    }
+//    @Override
+//    protected boolean isRouteDisplayed() {
+//        return false;
+//    }
 
     public void hideProgressPlaceStations() {
         if (!progressPlaceStationsDisplayed) {

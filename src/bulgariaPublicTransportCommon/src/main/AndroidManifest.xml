@@ -13,6 +13,10 @@
         android:process="eu.tanov.android.sptn"
         android:sharedUserId="eu.tanov.android.sptn"
         android:theme="@style/AppTheme" >
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
     </application>
 
 </manifest>

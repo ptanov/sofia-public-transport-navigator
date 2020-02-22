@@ -3,13 +3,13 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 'Google Inc.:Google APIs:23'
     buildToolsVersion "26.0.0"
-    useLibrary  'org.apache.http.legacy'
 
 
     defaultConfig {
         applicationId "eu.tanov.android.sptn"
-        minSdkVersion 7
+        minSdkVersion 9
         targetSdkVersion 26
+        useLibrary 'org.apache.http.legacy'
     }
 
     buildTypes {
@@ -23,4 +23,7 @@ android {
 dependencies {
     compile project(':bulgariaPublicTransportCommon')
     compile 'com.android.support:appcompat-v7:23.+'
+
+    compile 'com.google.android.gms:play-services:6.5.87'
+
 }

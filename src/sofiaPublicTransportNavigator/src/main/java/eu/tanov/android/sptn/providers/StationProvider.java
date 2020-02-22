@@ -24,7 +24,7 @@ import android.util.Log;
  * Provides access to a database of stations. Each station has a code and coordinates
  */
 public class StationProvider extends ContentProvider {
-	private static final int DATABASE_VERSION = 24;
+	private static final int DATABASE_VERSION = 25;
 	public static final int STATIONS_LIMIT = 10;
 	private static final String STATIONS_LIMIT_STRING = Integer.toString(STATIONS_LIMIT);
 
